@@ -281,11 +281,11 @@ html.dark.miuix-bg-active {
 }
 
 .echo-select-content:not(.miuix-closing) {
-  animation: miuix-dropdown-in 0.2s ease-out !important;
+  animation: miuix-dropdown-in 0.22s cubic-bezier(0.05, 0.7, 0.1, 1) !important;
 }
 
 .echo-select-content.miuix-closing {
-  animation: miuix-dropdown-out 0.15s ease-out forwards !important;
+  animation: miuix-dropdown-out 0.20s cubic-bezier(0.05, 0.7, 0.1, 1) forwards !important;
 }
 
 @keyframes miuix-dropdown-in {
