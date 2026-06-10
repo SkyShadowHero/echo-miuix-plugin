@@ -1,6 +1,7 @@
 # Echo Miuix
 
 将 EchoMusic 的界面改为 MIUIX (小米澎湃)风格。
+[EchoMusic](https://github.com/hoowhoami/EchoMusic)
 
 ![预览](screenshot/settings.png)
 
