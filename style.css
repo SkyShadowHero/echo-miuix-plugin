@@ -1,0 +1,695 @@
+/* 颜色 */
+html.miuix-bg-active {
+  --miuix-surface: #f7f7f7;
+  --miuix-surface-elevated: #e8e8e8;
+  --miuix-background: #ffffff;
+  --miuix-on-background: #000000;
+  --miuix-primary: #3482ff;
+  --miuix-on-primary: #ffffff;
+  --miuix-error: #e94634;
+  --miuix-slider-background: rgba(0, 0, 0, 0.06);
+  --surface-main-base: var(--miuix-surface);
+}
+html.dark.miuix-bg-active {
+  --miuix-surface: #000000;
+  --miuix-surface-elevated: #1a1a1a;
+  --miuix-background: #242424;
+  --miuix-on-background: rgba(255, 255, 255, 0.9);
+  --miuix-primary: #277af7;
+  --miuix-on-primary: #ffffff;
+  --miuix-error: #f12522;
+  --miuix-slider-background: rgba(255, 255, 255, 0.15);
+  --surface-main-base: var(--miuix-surface);
+}
+
+/* Switch */
+.switch-thumb[data-state="checked"] {
+  transform: translateX(4.5px) scale(1) !important;
+}
+
+.switch-thumb[data-state="unchecked"] {
+  transform: translateX(0px) scale(1) !important;
+}
+
+.switch-thumb[data-state="checked"]:hover {
+  transform: translateX(4.2px) scale(1.1) !important;
+}
+.switch-thumb[data-state="unchecked"]:hover {
+  transform: translateX(0px) scale(1.1) !important;
+}
+
+.switch-thumb[data-state="checked"]:active {
+  transform: translateX(4.5px) scale(0.9) transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+}
+.switch-thumb[data-state="unchecked"]:active {
+  transform: translateX(0px) scale(0.9) transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+}
+
+.switch-root:hover::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(128, 128, 128, 0.12);
+  pointer-events: none;
+  border-radius: 9999px;
+}
+
+/* ── 设置页面 -  ── */
+
+/* 顶部导航栏 */
+.settings-anchor-bar {
+  background: var(--miuix-surface-elevated) !important;
+  border-bottom: none !important;
+  border-radius: 13px !important;
+  margin: 8px 16px !important;
+  padding: 5px !important;
+}
+
+.settings-anchor-item {
+  border-radius: 8px !important;
+  padding: 6px 12px !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  color: rgba(128, 128, 128, 0.7) !important;
+  background: transparent !important;
+  transition: 0.1s ease, color 0.1s ease !important;
+}
+
+.settings-anchor-item:hover {
+  background: transparent !important;
+  color: var(--miuix-on-background) !important;
+}
+
+.settings-anchor-item.is-active {
+  background: var(--miuix-background) !important;
+  color: var(--miuix-on-background) !important;
+  font-weight: 700 !important;
+}
+
+/* 滑动指示器 */
+.settings-anchor-indicator {
+  position: absolute !important;
+  top: 0 !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  height: 100% !important;
+  border-radius: 8px !important;
+  background: var(--miuix-background) !important;
+  transition: transform 0.25s,
+              width 0.25s !important;
+  pointer-events: none !important;
+  z-index: 0 !important;
+}
+
+/* 选中 tab 去掉背景，z-index 保证文字在指示器上方 */
+.settings-anchor-item.is-active {
+  background: transparent !important;
+  color: var(--miuix-on-background) !important;
+  font-weight: 700 !important;
+  position: relative !important;
+  z-index: 1 !important;
+}
+
+/* 未选中 tab 文字在指示器上方 */
+.settings-anchor-item {
+  position: relative !important;
+  z-index: 1 !important;
+}
+
+.settings-card {
+  background: var(--miuix-background) !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0px !important;
+}
+
+.settings-card,
+.settings-card h2,
+.settings-card h3,
+.settings-card p,
+.settings-item {
+  color: var(--miuix-on-background) !important;
+}
+
+.settings-section h2 {
+  color: var(--miuix-on-background) !important;
+}
+
+/* 隐藏分割线 */
+.settings-divider {
+  display: none !important;
+}
+
+/* 选项行 hover 遮罩（只遮当前选项，不遮整个卡片） */
+.settings-card {
+  overflow: hidden !important;
+}
+
+/* 去掉 Tailwind space-y 间距 */
+.settings-card > * {
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+}
+
+.settings-item,
+.shortcut-grid-row,
+.shortcut-grid-header {
+  padding-left: 16px !important;
+  padding-right: 16px !important;
+}
+
+.settings-item {
+  position: relative !important;
+  padding-top: 12px !important;
+  padding-bottom: 12px !important;
+}
+
+.settings-item::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: transparent;
+  pointer-events: none;
+  transition: 0.1s ease;
+  z-index: 0;
+}
+
+.settings-item:hover::after {
+  background: rgba(0, 0, 0, 0.08);
+}
+
+.settings-item > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* ── 设置内按钮 - Miuix 配色 ── */
+
+.settings-item .settings-button {
+  background: var(--miuix-primary) !important;
+  color: #ffffff !important;
+  border: none !important;
+  border-radius: 10px !important;
+  position: relative !important;
+}
+
+.settings-item .settings-button::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: transparent;
+  pointer-events: none;
+  transition: background 0.1s ease;
+}
+
+.settings-item .settings-button:hover::after {
+  background: rgba(0, 0, 0, 0.08) !important;
+}
+
+.settings-item .settings-button:active::after {
+  background: rgba(0, 0, 0, 0.2) !important;
+}
+
+.settings-item .settings-button.danger {
+  background: var(--miuix-error) !important;
+}
+
+/* ── 设置内 Slider -  ── */
+
+.settings-item .slider-track {
+  background: var(--miuix-slider-background) !important;
+  height: 16px !important;
+}
+
+.settings-item .slider-range {
+  background: var(--miuix-primary) !important;
+  margin-right: -8px !important;
+}
+
+.settings-item .slider-thumb {
+  background: var(--miuix-on-primary) !important;
+  width: 16px !important;
+  height: 16px !important;
+  border-color: var(--miuix-primary);
+  border-width: 2px;
+}
+
+/* ── Select 下拉菜单 - 匹配设置卡片样式 ── */
+
+/* 触发器（保留原有样式，只改颜色） */
+.echo-select-trigger {
+  background: none !important;
+  border: none !important;
+  color: var(--miuix-on-background) !important;
+}
+
+.echo-select-trigger:hover {
+  background: none !important;
+}
+
+.echo-select-trigger[data-state='open'] {
+  background: none !important;
+}
+
+.echo-select-value,
+.echo-select-input {
+  color: var(--miuix-on-background) !important;
+}
+
+.echo-select-arrow {
+  color: var(--miuix-on-background) !important;
+  opacity: 0.5 !important;
+}
+
+/* 下拉面板 —— 和设置卡片一致 */
+.echo-select-content {
+  background: var(--miuix-background) !important;
+  border: none !important;
+  border-radius: 16px !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+}
+
+.echo-select-content[data-side="bottom"] {
+  transform-origin: top right !important;
+}
+
+.echo-select-content[data-side="top"] {
+  transform-origin: bottom right !important;
+}
+
+.echo-select-content:not(.miuix-closing) {
+  animation: miuix-dropdown-in 0.2s ease-out !important;
+}
+
+.echo-select-content.miuix-closing {
+  animation: miuix-dropdown-out 0.15s ease-out forwards !important;
+}
+
+@keyframes miuix-dropdown-in {
+  from { opacity: 1; scale: 0.1; }
+  to   { opacity: 1; scale: 1; }
+}
+
+@keyframes miuix-dropdown-out {
+  from { opacity: 1; scale: 1; }
+  to   { opacity: 0; scale: 0.1; }
+}
+
+/* 选项 —— 和设置选项行一致 */
+.echo-select-item {
+  padding: 12px 16px !important;
+  color: var(--miuix-on-background) !important;
+  font-weight: 500 !important;
+  background: transparent !important;
+  border: none !important;
+  border-radius: 0 !important;
+  position: relative !important;
+}
+
+.echo-select-item:hover {
+  background: rgba(0, 0, 0, 0.08) !important;
+}
+
+.echo-select-item:active {
+  background: rgba(0, 0, 0, 0.14) !important;
+}
+
+.echo-select-item.is-selected {
+  color: var(--color-primary) !important;
+  font-weight: 600 !important;
+}
+
+.echo-select-item-check {
+  color: var(--color-primary) !important;
+}
+
+/* 下拉菜单打开时的全局浅色遮罩 */
+.miuix-select-backdrop {
+  position: fixed !important;
+  inset: 0 !important;
+  background: rgba(0, 0, 0, 0.3) !important;
+  z-index: 998 !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  transition: opacity 0.05s ease !important;
+}
+.miuix-select-backdrop.is-visible {
+  opacity: 1 !important;
+}
+
+/* 推荐歌单卡片  */
+.playlist-card-grid .card-container {
+  background: var(--miuix-background) !important;
+  border-radius: 16px !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 6px !important;
+  overflow: clip !important;
+  position: relative !important;
+}
+
+.playlist-card-grid .cover-wrapper {
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+.playlist-card-grid .info-wrapper {
+  padding: 8px 12px 12px !important;
+  min-height: auto !important;
+}
+
+.playlist-card-grid .title {
+  color: var(--miuix-on-background) !important;
+}
+
+.playlist-card-grid .subtitle {
+  color: var(--miuix-on-background) !important;
+  opacity: 0.6 !important;
+}
+
+.playlist-card-grid .card-container::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 16px;
+  background: transparent;
+  pointer-events: none;
+  transition: background 0.2s ease;
+}
+/* ── 插件卡片  ── */
+
+.plugin-card {
+  background: var(--miuix-background) !important;
+  border: none !important;
+  box-shadow: none !important;
+  position: relative !important;
+  overflow: hidden !important;
+  border-radius: 16px !important;
+}
+
+.plugin-card:hover {
+  border-color: transparent !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+.plugin-card-name {
+  color: var(--miuix-on-background) !important;
+}
+
+.plugin-card-meta,
+.plugin-card-description,
+.plugin-card-id {
+  color: var(--miuix-on-background) !important;
+  opacity: 0.6 !important;
+}
+
+.plugin-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 12px;
+  background: transparent;
+  pointer-events: none;
+  transition: 0.1s ease;
+}
+.plugin-card:hover::after {
+  background: rgba(0, 0, 0, 0.08);
+}
+
+/* ── CustomTabBar ── */
+
+.custom-tab-root {
+  background: var(--miuix-surface-elevated) !important;
+  border: none !important;
+  border-radius: 13px !important;
+  padding: 5px !important;
+}
+
+.custom-tab-slider {
+  background: var(--miuix-background) !important;
+  box-shadow: none !important;
+  border-radius: 8px !important;
+}
+
+.custom-tab-item {
+  color: rgba(128, 128, 128, 0.7) !important;
+  font-weight: 500 !important;
+  z-index: 2 !important;
+}
+
+.custom-tab-item.active {
+  color: var(--miuix-on-background) !important;
+  font-weight: 700 !important;
+}
+
+
+/* ── 插件 TabRow  ── */
+
+.plugin-view-tabs {
+  background: var(--miuix-surface-elevated) !important;
+  border: none !important;
+  box-shadow: none !important;
+  border-radius: 13px !important;
+  padding: 5px !important;
+  position: relative !important;
+}
+
+.plugin-tab-indicator {
+  position: absolute !important;
+  padding: 18px !important;
+  border-radius: 8px !important;
+  background: var(--miuix-background) !important;
+  transition: transform 0.25s ease,
+              width 0.25s ease !important;
+  pointer-events: none !important;
+  z-index: 0 !important;
+}
+
+.plugin-view-tab {
+  border-radius: 8px !important;
+  border: none !important;
+  box-shadow: none !important;
+  color: rgba(128, 128, 128, 0.7) !important;
+  font-weight: 500 !important;
+  background: transparent !important;
+  position: relative !important;
+  z-index: 1 !important;
+}
+
+.plugin-view-tab:hover {
+  background: rgba(128, 128, 128, 0.06) !important;
+  color: var(--miuix-on-background) !important;
+}
+
+.plugin-view-tab.is-active {
+  background: transparent !important;
+  color: var(--miuix-on-background) !important;
+  font-weight: 700 !important;
+}
+
+/* ── 排行榜 & 新歌速递 歌曲列表容器 - Miuix 卡片 ── */
+
+.song-list-sticky + .pb-12 {
+  background: var(--miuix-background) !important;
+  border-radius: 16px !important;
+  padding: 0 !important;
+  margin: 12px 20px !important;
+  overflow: hidden !important;
+}
+
+.song-list-sticky + .pb-12 .song-list-row {
+  padding-left: 12px !important;
+  padding-right: 12px !important;
+  border-radius: 0 !important;
+}
+
+.song-list-sticky + .pb-12 .px-6 {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+/* ── 主页卡片 -  ── */
+
+.home-feature-card {
+  background: var(--miuix-background) !important;
+  border: none !important;
+  box-shadow: none !important;
+  position: relative !important;
+  overflow: hidden !important;
+}
+
+.home-feature-card:hover {
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+.home-feature-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 16px;
+  background: transparent;
+  pointer-events: none;
+  transition:0.1s ease;
+}
+.home-feature-card:hover::after {
+  background: rgba(0, 0, 0, 0.08);
+}
+
+.feature-title {
+  color: var(--miuix-on-background) !important;
+}
+
+.feature-sub {
+  color: var(--miuix-on-background) !important;
+  opacity: 0.6 !important;
+}
+
+
+/* ── 侧栏导航卡片 -  ── */
+
+.sidebar-section-body {
+  background: var(--miuix-background) !important;
+  border-radius: 16px !important;
+  padding: 0px !important;
+}
+.sidebar-nav-item {
+  border-radius: 0 !important;
+}
+
+.sidebar-nav-item.is-active * {
+  color: inherit !important;
+}
+
+html .sidebar-nav-item:active {
+  transform: none !important;
+  scale: none !important;
+  background: rgba(0, 0, 0, 0.14) !important;
+}
+
+.sidebar-section-body .space-y-0\.5 > * + * {
+  margin-top: 0 !important;
+}
+
+/* ── 侧边栏背景 & 歌单列表 -  ── */
+
+.sidebar {
+  background: var(--miuix-surface) !important;
+}
+
+.sidebar-scroll-inner {
+  background: var(--miuix-background) !important;
+  border-radius: 16px !important;
+  padding: 0px !important;
+  margin: 0 16px 0 16px !important;
+  overflow: hidden !important;
+}
+
+.sidebar-library-item {
+  border-radius: 0 !important;
+}
+
+.sidebar-library-item:active {
+  transform: none !important;
+  scale: none !important;
+  background: rgba(0, 0, 0, 0.14) !important;
+}
+
+.sidebar-library-item.is-active {
+  color: var(--miuix-primary) !important;
+}
+
+/* ── 侧栏用户卡片 -  ── */
+
+.user-info-card {
+  background: var(--miuix-background) !important;
+  border: none !important;
+  border-radius: 16px !important;
+}
+
+.sidebar-user-link:hover {
+  background-color: rgba(0, 0, 0, 0.08) !important;
+  box-shadow: none !important;
+  transform: background 0.1s !important;
+}
+
+.sidebar-settings-btn {
+  border: none !important;
+  box-shadow: none !important;
+  border-radius: 9999px !important;
+}
+
+.sidebar-settings-btn:hover {
+  background-color: rgba(0, 0, 0, 0.08) !important;
+  transform: background 0.1s !important;
+}
+
+/* 推荐歌单和编辑精选的卡片已被 playlist-card-grid 覆盖 */
+
+/* ── 新碟上架 & 歌手卡片 -  ── */
+
+.album-card .card-container,
+.artist-card .card-container {
+  background: var(--miuix-background) !important;
+  border-radius: 16px !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 6px !important;
+  overflow: clip !important;
+  position: relative !important;
+}
+
+.album-card .cover-wrapper,
+.artist-card .cover-wrapper {
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+.album-card .info-wrapper,
+.artist-card .info-wrapper {
+  padding: 8px 4px 4px !important;
+  min-height: auto !important;
+}
+
+.album-card .title,
+.artist-card .title {
+  color: var(--miuix-on-background) !important;
+}
+
+.album-card .subtitle,
+.artist-card .subtitle {
+  color: var(--miuix-on-background) !important;
+  opacity: 0.6 !important;
+}
+
+.album-card .card-container::after,
+.artist-card .card-container::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 16px;
+  background: transparent;
+  pointer-events: none;
+  transition: background 0.1s ease;
+}
+.album-card:hover .card-container::after,
+.artist-card.is-singer:hover .card-container::after {
+  background: rgba(0, 0, 0, 0.08);
+}
+
+.album-card:hover,
+.artist-card.is-singer:hover {
+  transform: none !important;
+}
+
+.playlist-card-grid:hover {
+  transform: none !important;
+}
+
+.playlist-card-grid:hover .card-container::after {
+  background: rgba(0, 0, 0, 0.08);
+}
