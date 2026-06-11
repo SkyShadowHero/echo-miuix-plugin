@@ -11,7 +11,7 @@ html.miuix-bg-active {
   --surface-main-base: var(--miuix-surface);
 }
 html.dark.miuix-bg-active {
-  --miuix-surface: #000000;
+  --miuix-surface: #1a1a1a;
   --miuix-surface-elevated: #1a1a1a;
   --miuix-background: #242424;
   --miuix-on-background: rgba(255, 255, 255, 0.9);
@@ -713,6 +713,7 @@ html .sidebar-nav-item:active {
 }
 
 .main-content {
+  position: relative !important;
   padding-bottom: 0px !important;
 }
 
