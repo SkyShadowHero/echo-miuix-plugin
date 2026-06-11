@@ -12,69 +12,8 @@ export function activate(ctx) {
   const tabCleanups = setupPluginTabs();
   tabCleanups.forEach((fn) => ctx.dispose(fn));
 
-  const { defineComponent, defineAsyncComponent, h, reactive } = ctx.vue;
-  const Switch = defineAsyncComponent(ctx.ui.components.Switch);
-  const Button = defineAsyncComponent(ctx.ui.components.Button);
-
-  const defaults = {
-    enabled: true,
-  };
-
-  const SettingsPanel = defineComponent({
-    setup() {
-      const draft = reactive({ ...defaults });
-
-      ctx.storage.get('settings').then((saved) => {
-        if (saved && typeof saved === 'object') {
-          Object.assign(draft, { ...defaults, ...saved });
-          applyStyles(draft);
-        }
-      });
-
-      const save = async () => {
-        await ctx.storage.set('settings', { ...draft });
-        ctx.toast.success('设置已保存');
-        applyStyles(draft);
-      };
-
-      const reset = async () => {
-        Object.assign(draft, { ...defaults });
-        await ctx.storage.set('settings', { ...defaults });
-        ctx.toast.info('已恢复默认');
-        applyStyles(defaults);
-      };
-
-      return () =>
-        h('div', { style: 'display: grid; gap: 14px; padding: 4px 0;' }, [
-          h('label', {
-            style: 'display: flex; justify-content: space-between; align-items: center; gap: 12px;',
-          }, [
-            h('span', '自定义背景色'),
-            h(Switch, {
-              modelValue: draft.enabled,
-              'onUpdate:modelValue': (v) => { draft.enabled = Boolean(v); },
-            }),
-          ]),
-          h('div', { style: 'color: var(--text-secondary); font-size: 12px; line-height: 1.5;' },
-            '浅色 #FFFFFF · 深色 #242424'
-          ),
-          h('div', { style: 'display: flex; gap: 8px; margin-top: 4px;' }, [
-            h(Button, { size: 'xs', onClick: save }, { default: () => '保存' }),
-            h(Button, { size: 'xs', variant: 'secondary', onClick: reset }, { default: () => '恢复默认' }),
-          ]),
-        ]);
-    },
-  });
-
-  ctx.ui.settings.define({
-    title: `${ctx.manifest.name} 设置`,
-    component: SettingsPanel,
-  });
-
-  ctx.storage.get('settings').then((saved) => {
-    const settings = { ...defaults, ...(saved || {}) };
-    applyStyles(settings);
-  });
+  // 背景色始终启用
+  document.documentElement.classList.add('miuix-bg-active');
 }
 
 // ── 插件停用 ──
@@ -278,7 +217,4 @@ function setupPluginTabs() {
   return cleanups;
 }
 
-// ── 应用/禁用背景色 ──
-function applyStyles(settings) {
-  document.documentElement.classList.toggle('miuix-bg-active', settings.enabled);
-}
+
