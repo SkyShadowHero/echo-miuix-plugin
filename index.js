@@ -12,6 +12,9 @@ export function activate(ctx) {
   const tabCleanups = setupPluginTabs();
   tabCleanups.forEach((fn) => ctx.dispose(fn));
 
+  const rekaTabCleanups = setupRekaTabsSlider();
+  rekaTabCleanups.forEach((fn) => ctx.dispose(fn));
+
   // 背景色始终启用
   document.documentElement.classList.add('miuix-bg-active');
 
@@ -352,4 +355,82 @@ function setupPluginTabs() {
   return cleanups;
 }
 
+// ── Reka UI Tabs 滑动指示器 ──
+// 创建白色滑块，用 getBoundingClientRect 定位（比 offsetLeft 更精确）
+function setupRekaTabsSlider() {
+  const cleanups = [];
 
+  function findAllTabsLists() {
+    const found = new Set();
+    document.querySelectorAll('[data-reka-tabs-list]').forEach((el) => found.add(el));
+    document.querySelectorAll('.tab-trigger').forEach((el) => {
+      const parent = el.parentElement;
+      if (parent && parent.querySelector('.tab-trigger')) {
+        found.add(parent);
+      }
+    });
+    return [...found];
+  }
+
+  function attachList(list) {
+    if (list.querySelector('.miuix-reka-slider')) return;
+    list.classList.add('miuix-tabs-list');
+
+    const slider = document.createElement('div');
+    slider.className = 'miuix-reka-slider';
+    slider.style.cssText = [
+      'position: absolute',
+      'top: 5px',
+      'bottom: 5px',
+      'border-radius: 8px',
+      'background: var(--miuix-background)',
+      'transition: left 0.25s ease, width 0.25s ease',
+      'pointer-events: none',
+      'z-index: 0',
+      'box-shadow: 0 1px 3px rgba(0,0,0,0.08)',
+    ].join('; ');
+    list.appendChild(slider);
+
+    function update() {
+      const active = list.querySelector('[data-state="active"]');
+      if (!active) return;
+      const lr = list.getBoundingClientRect();
+      const ar = active.getBoundingClientRect();
+      slider.style.left = `${ar.left - lr.left}px`;
+      slider.style.width = `${ar.width}px`;
+    }
+
+    // 初始定位
+    update();
+    requestAnimationFrame(update);
+
+    // 点击时更新
+    const clickHandler = () => requestAnimationFrame(update);
+    list.addEventListener('click', clickHandler);
+
+    // 监听 data-state 变化
+    const obs = new MutationObserver(() => requestAnimationFrame(update));
+    obs.observe(list, { subtree: true, attributeFilter: ['data-state', 'class'] });
+
+    cleanups.push(() => {
+      list.removeEventListener('click', clickHandler);
+      obs.disconnect();
+      slider.remove();
+      list.classList.remove('miuix-tabs-list');
+    });
+  }
+
+  findAllTabsLists().forEach(attachList);
+
+  const observer = new MutationObserver(() => {
+    findAllTabsLists().forEach((list) => {
+      if (!list.querySelector('.miuix-reka-slider')) {
+        attachList(list);
+      }
+    });
+  });
+  observer.observe(document.body, { childList: true, subtree: true });
+  cleanups.push(() => observer.disconnect());
+
+  return cleanups;
+}

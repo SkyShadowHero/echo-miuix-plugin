@@ -730,3 +730,43 @@ html .sidebar-nav-item:active {
   padding-top: 10px !important;
   padding-bottom: 10px !important;
 }
+
+/* ── Reka UI Tabs（和设置页面 tab 完全一样） ── */
+
+/* 容器背景条 — 对应 .settings-anchor-bar */
+.miuix-tabs-list {
+  position: relative !important;
+  background: var(--miuix-surface-elevated) !important;
+  border: none !important;
+  border-radius: 13px !important;
+  padding: 5px !important;
+  gap: 4px !important;
+}
+
+/* tab 选项 — 对应 .settings-anchor-item */
+.tab-trigger {
+  position: relative !important;
+  z-index: 1 !important;
+  border-radius: 8px !important;
+  padding: 4px 18px !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  color: rgba(128, 128, 128, 0.7) !important;
+  background: transparent !important;
+  transition: color 0.1s ease !important;
+}
+
+.tab-trigger:hover {
+  color: var(--miuix-on-background) !important;
+}
+
+/* 激活态 — 文字颜色由 tab 自己控制，背景由 JS slider 提供 */
+.tab-trigger[data-state='active'] {
+  color: var(--miuix-on-background) !important;
+  font-weight: 700 !important;
+}
+
+/* 隐藏底部蓝色指示线 */
+.active-line {
+  display: none !important;
+}
