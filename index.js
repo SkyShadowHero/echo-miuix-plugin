@@ -62,9 +62,15 @@ export function activate(ctx) {
     document.documentElement.classList.toggle('miuix-player-solid', !enabled);
   }
 
-  // 默认全部开启
-  applyAccent(true);
-  applyPlayerBlur(true);
+  // ── 从存储加载已保存的设置 ──
+  ctx.storage.get('settings').then((saved) => {
+    const accentEnabled = saved && typeof saved.accentEnabled === 'boolean'
+      ? saved.accentEnabled : true;
+    const playerBlur = saved && typeof saved.playerBlur === 'boolean'
+      ? saved.playerBlur : true;
+    applyAccent(accentEnabled);
+    applyPlayerBlur(playerBlur);
+  });
 
   const SettingsPanel = defineComponent({
     setup() {
@@ -80,8 +86,6 @@ export function activate(ctx) {
           draft.playerBlur = typeof saved.playerBlur === 'boolean'
             ? saved.playerBlur : true;
         }
-        applyAccent(draft.accentEnabled);
-        applyPlayerBlur(draft.playerBlur);
       });
 
       const save = async () => {
