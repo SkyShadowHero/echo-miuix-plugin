@@ -162,79 +162,91 @@ const TILT_CSS = `
 `;
 
 // ── 卡片 Tilt 按压效果 ──
+// 使用事件委托（document 级别）+ 延迟清除，确保动画可渲染
+// 自己管理 <style> 元素，避免被 ctx.css.inject 的 id 覆盖机制覆盖
 function setupTiltEffect() {
   const cleanups = [];
 
-  const attach = (cardEl, tiltEl) => {
-    if (tiltEl.dataset.tiltAttached) return;
-    tiltEl.dataset.tiltAttached = 'true';
+  // 自己注入 TILT_CSS，独立于 ctx.css.inject（后者同 id 会互相覆盖）
+  const styleEl = document.createElement('style');
+  styleEl.id = 'miuix-tilt-style';
+  styleEl.textContent = TILT_CSS;
+  document.head.appendChild(styleEl);
+  cleanups.push(() => styleEl.remove());
 
+  let activeTiltEl = null;
+  let clearTimer = null;
+
+  // 从事件目标向上找卡片根元素
+  function findCard(el) {
+    return el.closest(
+      '.playlist-card-grid, .album-card, .artist-card, .home-feature-card',
+    );
+  }
+
+  // 获取 tilt 目标（有 card-container 的用容器，否则用自身）
+  function getTarget(card) {
+    return card.querySelector('.card-container') || card;
+  }
+
+  // 提取事件坐标（兼容 mouse / touch）
+  function getClientXY(e) {
+    if (e.changedTouches && e.changedTouches.length > 0) {
+      return { x: e.changedTouches[0].clientX, y: e.changedTouches[0].clientY };
+    }
+    return { x: e.clientX, y: e.clientY };
+  }
+
+  function onDown(e) {
+    // 如果是 touch 事件且已有一个激活的 tilt，先清除
+    if (e.type === 'touchstart' && activeTiltEl) return;
+
+    const card = findCard(e.target);
+    if (!card) return;
+
+    const { x, y } = getClientXY(e);
+    const rect = card.getBoundingClientRect();
+    const rx = x - rect.left;
+    const ry = y - rect.top;
+    const halfW = rect.width / 2;
+    const halfH = rect.height / 2;
+
+    const tiltEl = getTarget(card);
     tiltEl.classList.add('miuix-tilt');
+    tiltEl.style.setProperty('--tilt-rx', `${ry < halfH ? 8 : -8}deg`);
+    tiltEl.style.setProperty('--tilt-ry', `${rx < halfW ? -8 : 8}deg`);
+    tiltEl.style.setProperty(
+      '--tilt-origin',
+      `${rx < halfW ? '100%' : '0%'} ${ry < halfH ? '100%' : '0%'}`,
+    );
+    tiltEl.classList.add('tilt-active');
+    activeTiltEl = tiltEl;
+  }
 
-    const onDown = (e) => {
-      const rect = cardEl.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
-      const halfW = rect.width / 2;
-      const halfH = rect.height / 2;
+  function onUp() {
+    // 延迟清除，确保动画有足够时间渲染
+    clearTimeout(clearTimer);
+    clearTimer = setTimeout(() => {
+      if (activeTiltEl) {
+        activeTiltEl.classList.remove('tilt-active');
+        activeTiltEl = null;
+      }
+    }, 120);
+  }
 
-      tiltEl.style.setProperty('--tilt-rx', `${y < halfH ? 8 : -8}deg`);
-      tiltEl.style.setProperty('--tilt-ry', `${x < halfW ? -8 : 8}deg`);
-      tiltEl.style.setProperty(
-        '--tilt-origin',
-        `${x < halfW ? '100%' : '0%'} ${y < halfH ? '100%' : '0%'}`,
-      );
-      tiltEl.classList.add('tilt-active');
-    };
-    const onUp = () => tiltEl.classList.remove('tilt-active');
-    const onLeave = () => tiltEl.classList.remove('tilt-active');
+  // 使用 mousedown + touchstart 替代 pointerdown（兼容性更好）
+  document.addEventListener('mousedown', onDown);
+  document.addEventListener('touchstart', onDown, { passive: true });
+  document.addEventListener('mouseup', onUp);
+  document.addEventListener('touchend', onUp);
 
-    cardEl.addEventListener('pointerdown', onDown);
-    cardEl.addEventListener('pointerup', onUp);
-    cardEl.addEventListener('pointerleave', onLeave);
-
-    cleanups.push(() => {
-      cardEl.removeEventListener('pointerdown', onDown);
-      cardEl.removeEventListener('pointerup', onUp);
-      cardEl.removeEventListener('pointerleave', onLeave);
-      tiltEl.classList.remove('miuix-tilt', 'tilt-active');
-      delete tiltEl.dataset.tiltAttached;
-    });
-  };
-
-  const attachCard = (el) => {
-    const container = el.querySelector('.card-container');
-    if (container) attach(el, container);
-  };
-
-  const attachFeature = (el) => {
-    attach(el, el);
-  };
-
-  document.querySelectorAll('.playlist-card-grid').forEach(attachCard);
-  document.querySelectorAll('.album-card').forEach(attachCard);
-  document.querySelectorAll('.artist-card.is-singer').forEach(attachCard);
-  document.querySelectorAll('.home-feature-card').forEach(attachFeature);
-
-  const observer = new MutationObserver(() => {
-    document.querySelectorAll('.playlist-card-grid').forEach((el) => {
-      const container = el.querySelector('.card-container');
-      if (container && !container.dataset.tiltAttached) attachCard(el);
-    });
-    document.querySelectorAll('.home-feature-card').forEach((el) => {
-      if (!el.dataset.tiltAttached) attachFeature(el);
-    });
-    document.querySelectorAll('.album-card').forEach((el) => {
-      const container = el.querySelector('.card-container');
-      if (container && !container.dataset.tiltAttached) attachCard(el);
-    });
-    document.querySelectorAll('.artist-card.is-singer').forEach((el) => {
-      const container = el.querySelector('.card-container');
-      if (container && !container.dataset.tiltAttached) attachCard(el);
-    });
+  cleanups.push(() => {
+    document.removeEventListener('mousedown', onDown);
+    document.removeEventListener('touchstart', onDown);
+    document.removeEventListener('mouseup', onUp);
+    document.removeEventListener('touchend', onUp);
+    clearTimeout(clearTimer);
   });
-  observer.observe(document.body, { childList: true, subtree: true });
-  cleanups.push(() => observer.disconnect());
 
   return cleanups;
 }

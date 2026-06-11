@@ -224,13 +224,12 @@ html.dark.miuix-bg-active {
 
 .settings-item .slider-range {
   background: var(--miuix-primary) !important;
-  margin-right: -8px !important;
 }
 
 .settings-item .slider-thumb {
   background: var(--miuix-on-primary) !important;
-  width: 16px !important;
-  height: 16px !important;
+  width: 14px !important;
+  height: 14px !important;
   border-color: var(--miuix-primary);
   border-width: 2px;
 }
