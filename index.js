@@ -15,65 +15,107 @@ export function activate(ctx) {
   // 背景色始终启用
   document.documentElement.classList.add('miuix-bg-active');
 
-  // ── 侧栏顶部渐变装饰开关 ──
+  // ── 音乐控件模糊开关 ──
   ctx.css.inject(`
-    .miuix-accent-hidden .sidebar-accent-gradient {
-      display: none !important;
-    }
-    .miuix-accent-hidden .main-content::after {
-      opacity: 0 !important;
+    .miuix-player-solid .player-bar {
+      background: var(--miuix-background) !important;
+      backdrop-filter: none !important;
+      -webkit-backdrop-filter: none !important;
     }
   `);
 
   const { defineComponent, defineAsyncComponent, h, reactive } = ctx.vue;
   const Switch = defineAsyncComponent(ctx.ui.components.Switch);
+  const Button = defineAsyncComponent(ctx.ui.components.Button);
+
+  // ── 渐变装饰控制 ──
+  // 用一个 <style> 标签直接控制，不依赖 class 切换
+  const accentStyle = document.createElement('style');
+  accentStyle.id = 'miuix-accent-style';
+  document.head.appendChild(accentStyle);
+  ctx.dispose(() => accentStyle.remove());
 
   function applyAccent(enabled) {
-    document.documentElement.classList.toggle('miuix-accent-hidden', !enabled);
+    accentStyle.textContent = enabled ? '' : `
+      .sidebar-accent-gradient { display: none !important; }
+      .main-content::after { opacity: 0 !important; }
+    `;
   }
 
-  const AccentPanel = defineComponent({
+  function applyPlayerBlur(enabled) {
+    document.documentElement.classList.toggle('miuix-player-solid', !enabled);
+  }
+
+  // 默认全部开启
+  applyAccent(true);
+  applyPlayerBlur(true);
+
+  const SettingsPanel = defineComponent({
     setup() {
-      const draft = reactive({ accentEnabled: true });
+      const draft = reactive({
+        accentEnabled: true,
+        playerBlur: true,
+      });
 
       ctx.storage.get('settings').then((saved) => {
-        const v = saved && typeof saved.accentEnabled === 'boolean'
-          ? saved.accentEnabled : true;
-        draft.accentEnabled = v;
-        applyAccent(v);
+        if (saved && typeof saved === 'object') {
+          draft.accentEnabled = typeof saved.accentEnabled === 'boolean'
+            ? saved.accentEnabled : true;
+          draft.playerBlur = typeof saved.playerBlur === 'boolean'
+            ? saved.playerBlur : true;
+        }
+        applyAccent(draft.accentEnabled);
+        applyPlayerBlur(draft.playerBlur);
       });
 
       const save = async () => {
-        await ctx.storage.set('settings', { accentEnabled: draft.accentEnabled });
+        await ctx.storage.set('settings', {
+          accentEnabled: draft.accentEnabled,
+          playerBlur: draft.playerBlur,
+        });
         ctx.toast.success('设置已保存');
         applyAccent(draft.accentEnabled);
+        applyPlayerBlur(draft.playerBlur);
       };
 
       return () =>
-        h('div', { style: 'display: grid; gap: 14px; padding: 4px 0;' }, [
-          h('label', {
-            style: 'display: flex; justify-content: space-between; align-items: center; gap: 12px;',
-          }, [
-            h('span', '侧栏顶部渐变装饰'),
-            h(Switch, {
-              modelValue: draft.accentEnabled,
-              'onUpdate:modelValue': (v) => { draft.accentEnabled = Boolean(v); },
-            }),
+        h('div', { style: 'display: flex; flex-direction: column; align-items: center; gap: 8px;' }, [
+          h('div', { class: 'settings-card', style: 'border-radius: 16px; overflow: hidden; width: 100%;' }, [
+            h('div', {
+              class: 'settings-item',
+              style: 'display: flex; justify-content: space-between; align-items: flex-start; gap: 12px;',
+            }, [
+              h('div', { style: 'flex: 1; min-width: 0;' }, [
+                h('div', { style: 'font-weight: 600; font-size: 14px; color: var(--miuix-on-background); line-height: 1.4;' }, '侧栏顶部渐变装饰'),
+                h('div', { style: 'font-size: 12px; color: var(--miuix-on-background); opacity: 0.6; margin-top: 2px; line-height: 1.5;' }, '侧边栏顶部的主题色渐变氛围层'),
+              ]),
+              h(Switch, {
+                modelValue: draft.accentEnabled,
+                'onUpdate:modelValue': (v) => { draft.accentEnabled = Boolean(v); },
+              }),
+            ]),
+            h('div', {
+              class: 'settings-item',
+              style: 'display: flex; justify-content: space-between; align-items: flex-start; gap: 12px;',
+            }, [
+              h('div', { style: 'flex: 1; min-width: 0;' }, [
+                h('div', { style: 'font-weight: 600; font-size: 14px; color: var(--miuix-on-background); line-height: 1.4;' }, '音乐控件背景模糊'),
+                h('div', { style: 'font-size: 12px; color: var(--miuix-on-background); opacity: 0.6; margin-top: 2px; line-height: 1.5;' }, '关闭后底部音乐控件背景变为纯色'),
+              ]),
+              h(Switch, {
+                modelValue: draft.playerBlur,
+                'onUpdate:modelValue': (v) => { draft.playerBlur = Boolean(v); },
+              }),
+            ]),
           ]),
-          h('div', { style: 'color: var(--text-secondary); font-size: 12px; line-height: 1.5;' },
-            '侧边栏顶部的主题色渐变氛围层'
-          ),
-          h('button', {
-            onClick: save,
-            style: 'background: var(--miuix-primary); color: #fff; border: none; border-radius: 8px; padding: 6px 16px; font-size: 13px; cursor: pointer; margin-top: 4px;',
-          }, '保存'),
+          h(Button, { size: 'xs', onClick: save }, { default: () => '保存' }),
         ]);
     },
   });
 
   ctx.ui.settings.define({
     title: `${ctx.manifest.name} 设置`,
-    component: AccentPanel,
+    component: SettingsPanel,
   });
 }
 
