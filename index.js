@@ -15,6 +15,22 @@ export function activate(ctx) {
   // 背景色始终启用
   document.documentElement.classList.add('miuix-bg-active');
 
+  // ── 全局内容末尾留白 ──
+  function addContentSpacers() {
+    const views = document.querySelectorAll('.scrollbar-view:not(.miuix-padded)');
+    views.forEach((view) => {
+      view.classList.add('miuix-padded');
+      const spacer = document.createElement('div');
+      spacer.className = 'miuix-page-spacer';
+      spacer.style.cssText = 'height:100px; flex-shrink:0; pointer-events:none;';
+      view.appendChild(spacer);
+    });
+  }
+  addContentSpacers();
+  const viewObs = new MutationObserver(addContentSpacers);
+  viewObs.observe(document.body, { childList: true, subtree: true });
+  ctx.dispose(() => viewObs.disconnect());
+
   // ── 音乐控件模糊开关 ──
   ctx.css.inject(`
     .miuix-player-solid .player-bar {

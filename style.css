@@ -722,7 +722,4 @@ html .sidebar-nav-item:active {
   border-radius: 9999px !important;
 }
 
-/* ── 在线插件页面底部留空 ── */
-.plugin-management-page .marketplace-card:last-of-type {
-  margin-bottom: 100px;
-}
+
