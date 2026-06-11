@@ -331,7 +331,7 @@ html.dark.miuix-bg-active {
   position: fixed !important;
   inset: 0 !important;
   background: rgba(0, 0, 0, 0.3) !important;
-  z-index: 998 !important;
+  z-index: 1050 !important;
   opacity: 0 !important;
   pointer-events: none !important;
   transition: opacity 0.05s ease !important;
