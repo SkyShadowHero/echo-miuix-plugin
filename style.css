@@ -161,6 +161,7 @@ html.dark.miuix-bg-active {
 .settings-item {
   position: relative !important;
   padding-top: 12px !important;
+  border-radius: 9999px !important;
   padding-bottom: 12px !important;
 }
 
@@ -774,4 +775,81 @@ html .sidebar-nav-item:active {
 /* 隐藏底部蓝色指示线 */
 .active-line {
   display: none !important;
+}
+
+/* ── 插件设置弹窗 - Miuix BottomSheet 风格 ── */
+
+@keyframes miuix-overlay-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes miuix-overlay-out {
+  from { opacity: 1; }
+  to   { opacity: 0; }
+}
+
+.dialog-overlay {
+  background: rgba(0, 0, 0, 0.3) !important;
+}
+.dialog-overlay[data-state='open'] {
+  animation: miuix-overlay-in 0.1s ease forwards !important;
+}
+.dialog-overlay[data-state='closed'] {
+  animation: miuix-overlay-out 0.1s ease forwards !important;
+}
+
+@keyframes miuix-sheet-in {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
+}
+@keyframes miuix-sheet-out {
+  from { transform: translateY(0); }
+  to   { transform: translateY(100%); }
+}
+
+.dialog-content.plugin-settings-dialog {
+  left: 12px !important;
+  right: 12px !important;
+  top: auto !important;
+  bottom: 0 !important;
+  width: auto !important;
+  max-width: 640px !important;
+  max-height: 90vh !important;
+  min-height: 60vh !important;
+  border-radius: 28px 28px 0 0 !important;
+  border: none !important;
+  padding: 16px 6px 24px 24px !important;
+  margin: 0 auto !important;
+  box-shadow: none !important;
+}
+
+.dialog-content.plugin-settings-dialog[data-state='open'] {
+  animation: miuix-sheet-in 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+}
+
+.dialog-content.plugin-settings-dialog[data-state='closed'] {
+  animation: miuix-sheet-out 0.25s cubic-bezier(0.4, 0, 0.6, 1) forwards !important;
+}
+
+.dialog-content.plugin-settings-dialog::before {
+  content: '' !important;
+  position: absolute !important;
+  top: 14px !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  width: 32px !important;
+  height: 4px !important;
+  border-radius: 2px !important;
+  background: rgba(128, 128, 128, 0.3) !important;
+  z-index: 1 !important;
+}
+
+.dialog-content.plugin-settings-dialog .dialog-header {
+  padding-right: 8px !important;
+}
+
+.dialog-content.plugin-settings-dialog .dialog-close {
+  top: 12px !important;
+  border-radius: 9999px !important;
+  right: 12px !important;
 }
