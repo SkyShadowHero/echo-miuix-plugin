@@ -91,12 +91,11 @@ export function activate(ctx) {
         }
       });
 
-      const save = async () => {
+      const saveNow = async () => {
         await ctx.storage.set('settings', {
           accentEnabled: draft.accentEnabled,
           playerBlur: draft.playerBlur,
         });
-        ctx.toast.success('设置已保存');
         applyAccent(draft.accentEnabled);
         applyPlayerBlur(draft.playerBlur);
       };
@@ -114,7 +113,7 @@ export function activate(ctx) {
               ]),
               h(Switch, {
                 modelValue: draft.accentEnabled,
-                'onUpdate:modelValue': (v) => { draft.accentEnabled = Boolean(v); },
+                'onUpdate:modelValue': (v) => { draft.accentEnabled = Boolean(v); saveNow(); },
               }),
             ]),
             h('div', {
@@ -127,11 +126,11 @@ export function activate(ctx) {
               ]),
               h(Switch, {
                 modelValue: draft.playerBlur,
-                'onUpdate:modelValue': (v) => { draft.playerBlur = Boolean(v); },
+                'onUpdate:modelValue': (v) => { draft.playerBlur = Boolean(v); saveNow(); },
               }),
             ]),
           ]),
-          h(Button, { size: 'xs', onClick: save }, { default: () => '保存' }),
+
         ]);
     },
   });
