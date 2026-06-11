@@ -14,6 +14,67 @@ export function activate(ctx) {
 
   // 背景色始终启用
   document.documentElement.classList.add('miuix-bg-active');
+
+  // ── 侧栏顶部渐变装饰开关 ──
+  ctx.css.inject(`
+    .miuix-accent-hidden .sidebar-accent-gradient {
+      display: none !important;
+    }
+    .miuix-accent-hidden .main-content::after {
+      opacity: 0 !important;
+    }
+  `);
+
+  const { defineComponent, defineAsyncComponent, h, reactive } = ctx.vue;
+  const Switch = defineAsyncComponent(ctx.ui.components.Switch);
+
+  function applyAccent(enabled) {
+    document.documentElement.classList.toggle('miuix-accent-hidden', !enabled);
+  }
+
+  const AccentPanel = defineComponent({
+    setup() {
+      const draft = reactive({ accentEnabled: true });
+
+      ctx.storage.get('settings').then((saved) => {
+        const v = saved && typeof saved.accentEnabled === 'boolean'
+          ? saved.accentEnabled : true;
+        draft.accentEnabled = v;
+        applyAccent(v);
+      });
+
+      const save = async () => {
+        await ctx.storage.set('settings', { accentEnabled: draft.accentEnabled });
+        ctx.toast.success('设置已保存');
+        applyAccent(draft.accentEnabled);
+      };
+
+      return () =>
+        h('div', { style: 'display: grid; gap: 14px; padding: 4px 0;' }, [
+          h('label', {
+            style: 'display: flex; justify-content: space-between; align-items: center; gap: 12px;',
+          }, [
+            h('span', '侧栏顶部渐变装饰'),
+            h(Switch, {
+              modelValue: draft.accentEnabled,
+              'onUpdate:modelValue': (v) => { draft.accentEnabled = Boolean(v); },
+            }),
+          ]),
+          h('div', { style: 'color: var(--text-secondary); font-size: 12px; line-height: 1.5;' },
+            '侧边栏顶部的主题色渐变氛围层'
+          ),
+          h('button', {
+            onClick: save,
+            style: 'background: var(--miuix-primary); color: #fff; border: none; border-radius: 8px; padding: 6px 16px; font-size: 13px; cursor: pointer; margin-top: 4px;',
+          }, '保存'),
+        ]);
+    },
+  });
+
+  ctx.ui.settings.define({
+    title: `${ctx.manifest.name} 设置`,
+    component: AccentPanel,
+  });
 }
 
 // ── 插件停用 ──
