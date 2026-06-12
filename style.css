@@ -718,7 +718,7 @@ html .sidebar-nav-item:active {
   padding-bottom: 10px !important;
 }
 
-/* ── Reka UI Tabs（和设置页面 tab 完全一样） ── */
+/* ── Tabs ── */
 
 /* 容器背景条 — 对应 .settings-anchor-bar */
 .miuix-tabs-list {
@@ -735,7 +735,7 @@ html .sidebar-nav-item:active {
   position: relative !important;
   z-index: 1 !important;
   border-radius: 8px !important;
-  padding: 4px 18px !important;
+  padding: 3px 18px !important;
   font-size: 13px !important;
   font-weight: 500 !important;
   color: rgba(128, 128, 128, 0.7) !important;
@@ -747,7 +747,7 @@ html .sidebar-nav-item:active {
   color: var(--miuix-on-background) !important;
 }
 
-/* 激活态 — 文字颜色由 tab 自己控制，背景由 JS slider 提供 */
+/* 激活态 */
 .tab-trigger[data-state='active'] {
   color: var(--miuix-on-background) !important;
   font-weight: 700 !important;
@@ -758,7 +758,7 @@ html .sidebar-nav-item:active {
   display: none !important;
 }
 
-/* ── 插件设置弹窗 - Miuix BottomSheet 风格 ── */
+/* ── 插件设置弹窗 ── */
 
 @keyframes miuix-overlay-in {
   from { opacity: 0; }
