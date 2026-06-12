@@ -792,6 +792,7 @@ html .sidebar-nav-item:active {
   to   { opacity: 0; }
 }
 
+/* ── Miuix 底部弹窗 ── */
 .dialog-content.plugin-settings-dialog {
   left: 12px !important;
   right: 12px !important;
@@ -837,6 +838,54 @@ html .sidebar-nav-item:active {
   top: 12px !important;
   border-radius: 9999px !important;
   right: 12px !important;
+}
+
+/* ── 添加到弹窗 - Miuix 底部样式 ── */
+.dialog-content:has(.add-to-playlist-body) {
+  left: 12px !important;
+  right: 12px !important;
+  top: auto !important;
+  bottom: 0 !important;
+  width: auto !important;
+  max-width: 640px !important;
+  max-height: 90vh !important;
+  border-radius: 28px 28px 0 0 !important;
+  border: none !important;
+  padding: 16px 6px 24px 24px !important;
+  box-shadow: none !important;
+  margin: 0 auto !important;
+}
+
+.dialog-content:has(.add-to-playlist-body)[data-state='open'] {
+  animation: miuix-sheet-in 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+}
+
+.dialog-content:has(.add-to-playlist-body)[data-state='closed'] {
+  animation: miuix-sheet-out 0.25s cubic-bezier(0.4, 0, 0.6, 1) forwards !important;
+}
+
+.dialog-content:has(.add-to-playlist-body)::before {
+  content: '' !important;
+  position: absolute !important;
+  top: 14px !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  width: 32px !important;
+  height: 4px !important;
+  border-radius: 2px !important;
+  background: rgba(128, 128, 128, 0.3) !important;
+  z-index: 1 !important;
+}
+
+.dialog-content:has(.add-to-playlist-body) .dialog-close {
+  top: 12px !important;
+  right: 12px !important;
+  border-radius: 9999px !important;
+  background: transparent !important;
+}
+
+.dialog-content:has(.add-to-playlist-body) .dialog-close:hover {
+  background: rgba(128, 128, 128, 0.15) !important;
 }
 
 /* ── 歌曲评论卡片 ── */
