@@ -184,7 +184,7 @@ html.dark.miuix-bg-active {
   z-index: 1;
 }
 
-/* ── 设置内按钮 - Miuix 配色 ── */
+/* ── 设置内按钮 ── */
 
 .settings-item .settings-button {
   background: var(--miuix-primary) !important;
@@ -192,6 +192,7 @@ html.dark.miuix-bg-active {
   border: none !important;
   border-radius: 10px !important;
   position: relative !important;
+  box-shadow: none;s
 }
 
 .settings-item .settings-button::after {
@@ -210,6 +211,13 @@ html.dark.miuix-bg-active {
 
 .settings-item .settings-button:active::after {
   background: rgba(0, 0, 0, 0.2) !important;
+}
+
+.settings-item .settings-button.github-star {
+  font-size: 11px !important;
+  height: 30px !important;
+  padding: 0 12px !important;
+  border-radius: 8px !important;
 }
 
 .settings-item .settings-button.danger {

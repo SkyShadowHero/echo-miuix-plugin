@@ -129,6 +129,19 @@ export function activate(ctx) {
                 'onUpdate:modelValue': (v) => { draft.playerBlur = Boolean(v); saveNow(); },
               }),
             ]),
+            h('div', {
+              class: 'settings-item',
+              style: 'display: flex; justify-content: space-between; align-items: flex-start; gap: 12px;',
+            }, [
+              h('div', { style: 'flex: 1; min-width: 0;' }, [
+                h('div', { style: 'font-weight: 600; font-size: 14px; color: var(--miuix-on-background); line-height: 1.4;' }, 'GitHub'),
+                h('div', { style: 'font-size: 12px; color: var(--miuix-on-background); opacity: 0.6; margin-top: 2px; line-height: 1.5;' }, '点击跳转 GitHub 地址，欢迎 Star'),
+              ]),
+              h(Button, {
+                class: 'settings-button github-star',
+                onClick: () => window.open('https://github.com/SkyShadowHero/echo-miuix-plugin', '_blank'),
+              }, 'Github'),
+            ]),
           ]),
 
         ]);
