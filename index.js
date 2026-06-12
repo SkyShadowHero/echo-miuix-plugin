@@ -159,7 +159,7 @@ const INTERACTIONS_CSS = `
 // ── Tilt 效果 CSS ──
 const TILT_CSS = `
 .miuix-tilt {
-  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+  transition: transform 0.2s cubic-bezier(0.2, 0, 0.4, 1) !important;
   transform-origin: var(--tilt-origin, center) !important;
 }
 .miuix-tilt.tilt-active {
@@ -230,7 +230,6 @@ function setupTiltEffect() {
   }
 
   function onUp() {
-    // 延迟清除，确保动画有足够时间渲染
     clearTimeout(clearTimer);
     clearTimer = setTimeout(() => {
       if (activeTiltEl) {
