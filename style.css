@@ -888,6 +888,82 @@ html .sidebar-nav-item:active {
   background: rgba(128, 128, 128, 0.15) !important;
 }
 
+/* ── CustomPicker 弹窗（探索页选择器）- Miuix 底部样式 ── */
+.custom-picker-dialog {
+  left: 12px !important;
+  right: 12px !important;
+  top: auto !important;
+  bottom: 0 !important;
+  width: auto !important;
+  max-width: 640px !important;
+  max-height: 90vh !important;
+  border-radius: 28px 28px 0 0 !important;
+  border: none !important;
+  padding: 16px 6px 24px 24px !important;
+  box-shadow: none !important;
+  margin: 0 auto !important;
+}
+
+.custom-picker-dialog[data-state='open'] {
+  animation: miuix-sheet-in 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+}
+
+.custom-picker-dialog[data-state='closed'] {
+  animation: miuix-sheet-out 0.25s cubic-bezier(0.4, 0, 0.6, 1) forwards !important;
+}
+
+.custom-picker-dialog::before {
+  content: '' !important;
+  position: absolute !important;
+  top: 14px !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  width: 32px !important;
+  height: 4px !important;
+  border-radius: 2px !important;
+  background: rgba(128, 128, 128, 0.3) !important;
+  z-index: 1 !important;
+}
+
+.custom-picker-dialog .dialog-close {
+  top: 12px !important;
+  right: 12px !important;
+  border-radius: 9999px !important;
+  background: transparent !important;
+}
+
+.custom-picker-dialog .dialog-close:hover {
+  background: rgba(128, 128, 128, 0.15) !important;
+}
+
+/* ── 选择器按钮（打开弹窗的）─ Miuix 卡片样式 ── */
+.rank-selector,
+.custom-selector {
+  background: var(--miuix-background) !important;
+  border-radius: 12px !important;
+  border: none !important;
+}
+
+.rank-selector:hover,
+.custom-selector:hover {
+  background: linear-gradient(rgba(0, 0, 0, 0.06), rgba(0, 0, 0, 0.06)), var(--miuix-background) !important;
+}
+
+.rank-selector:active,
+.custom-selector:active {
+  background: linear-gradient(rgba(0, 0, 0, 0.12), rgba(0, 0, 0, 0.12)), var(--miuix-background) !important;
+}
+
+html.dark .rank-selector:hover,
+html.dark .custom-selector:hover {
+  background: linear-gradient(rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.08)), var(--miuix-background) !important;
+}
+
+html.dark .rank-selector:active,
+html.dark .custom-selector:active {
+  background: linear-gradient(rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.15)), var(--miuix-background) !important;
+}
+
 /* ── 歌曲评论卡片 ── */
 .comment-item {
   background: var(--miuix-background) !important;
