@@ -978,3 +978,247 @@ html.dark .custom-selector:active {
   border-radius: 16px !important;
   box-shadow: none !important;
 }
+
+/* ── 顶部全局搜索栏 ── */
+.tb-search-input-wrap {
+  background: var(--miuix-background) !important;
+  border: 1px solid transparent !important;
+  border-radius: 10px !important;
+  height: 32px !important;
+  padding: 0 4px 0 12px !important;
+  box-shadow: none !important;
+  transition: border-color 0.2s ease !important;
+}
+
+.tb-search-input-wrap:focus-within {
+  background: var(--miuix-background) !important;
+  border-color: transparent !important;
+  outline: 1.5px solid var(--miuix-primary) !important;
+  outline-offset: 1px !important;
+  box-shadow: none !important;
+}
+
+.tb-search-input {
+  color: var(--miuix-on-background) !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+}
+
+.tb-search-input::placeholder {
+  color: var(--miuix-on-background) !important;
+  opacity: 0.4 !important;
+}
+
+.tb-search-icon {
+  color: var(--miuix-on-background) !important;
+  opacity: 0.45 !important;
+}
+
+.tb-search-clear {
+  color: var(--miuix-on-background) !important;
+  opacity: 0.5 !important;
+  border-radius: 9999px !important;
+  width: 24px !important;
+  height: 24px !important;
+}
+
+.tb-search-clear:hover {
+  background: rgba(128, 128, 128, 0.15) !important;
+  opacity: 0.8 !important;
+}
+
+.tb-search-goto {
+  height: 24px !important;
+  padding: 0 10px !important;
+  border-radius: 9999px !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  color: var(--miuix-primary) !important;
+  background: color-mix(in srgb, var(--miuix-primary) 10%, transparent) !important;
+}
+
+.tb-search-goto:hover {
+  background: color-mix(in srgb, var(--miuix-primary) 18%, transparent) !important;
+}
+
+/* ── 搜索页搜索栏 ── */
+.search-input-wrap {
+  background: var(--miuix-background) !important;
+  border: 1px solid transparent !important;
+  border-radius: 10px !important;
+  height: 44px !important;
+  padding: 4px 80px 4px 12px !important;
+  box-shadow: none !important;
+  transition: border-color 0.2s ease !important;
+}
+
+.search-input-wrap:focus-within {
+  background: var(--miuix-background) !important;
+  border-color: transparent !important;
+  outline: 1.5px solid var(--miuix-primary) !important;
+  outline-offset: 1px !important;
+  box-shadow: none !important;
+}
+
+.search-input {
+  color: var(--miuix-on-background) !important;
+  font-size: 15px !important;
+  font-weight: 500 !important;
+}
+
+.search-input::placeholder {
+  color: var(--miuix-on-background) !important;
+  opacity: 0.4 !important;
+}
+
+.search-input-icon {
+  color: var(--miuix-on-background) !important;
+  opacity: 0.45 !important;
+}
+
+.search-clear-btn {
+  color: var(--miuix-on-background) !important;
+  opacity: 0.5 !important;
+  border-radius: 9999px !important;
+  width: 28px !important;
+  height: 28px !important;
+  margin-right: 4px !important;
+}
+
+.search-clear-btn:hover {
+  background: rgba(128, 128, 128, 0.15) !important;
+  opacity: 0.8 !important;
+}
+
+.search-submit-btn {
+  top: 4px !important;
+  right: 4px !important;
+  bottom: 4px !important;
+  min-width: 62px !important;
+  border-radius: 8px !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  color: #fff !important;
+  background: var(--miuix-primary) !important;
+}
+
+.search-submit-btn::before {
+  display: none !important;
+}
+
+.search-submit-btn:hover {
+  opacity: 0.9 !important;
+}
+
+/* ── 搜索页卡片 ── */
+
+/* 热词 / 历史标签 */
+.hot-chip,
+.history-chip {
+  background: var(--miuix-background) !important;
+  border-radius: 10px !important;
+  border: none !important;
+  min-height: 32px !important;
+  color: var(--miuix-on-background) !important;
+  opacity: 0.85 !important;
+}
+
+.hot-chip {
+  padding: 6px 12px !important;
+}
+
+.history-chip {
+  padding: 6px 8px 6px 10px !important;
+}
+
+.hot-chip:hover,
+.history-chip:hover {
+  background: rgba(0, 0, 0, 0.06) !important;
+  opacity: 1 !important;
+  transform: none !important;
+}
+
+.hot-chip:active,
+.history-chip:active {
+  background: rgba(0, 0, 0, 0.12) !important;
+}
+
+html.dark .hot-chip:hover,
+html.dark .history-chip:hover {
+  background: rgba(255, 255, 255, 0.08) !important;
+}
+
+html.dark .hot-chip:active,
+html.dark .history-chip:active {
+  background: rgba(255, 255, 255, 0.15) !important;
+}
+
+/* 搜索分类标签 */
+.search-hot-tab {
+  background: var(--miuix-background) !important;
+  border-radius: 10px !important;
+  border: none !important;
+  min-height: 30px !important;
+  padding: 0 14px !important;
+  color: var(--miuix-on-background) !important;
+  opacity: 0.75 !important;
+}
+
+.search-hot-tab:hover {
+  background: rgba(0, 0, 0, 0.06) !important;
+  opacity: 1 !important;
+}
+
+.search-hot-tab:active {
+  background: rgba(0, 0, 0, 0.12) !important;
+}
+
+html.dark .search-hot-tab:hover {
+  background: rgba(255, 255, 255, 0.08) !important;
+}
+
+html.dark .search-hot-tab:active {
+  background: rgba(255, 255, 255, 0.15) !important;
+}
+
+/* 激活的分类标签用主题色 */
+.search-hot-tab.active {
+  background: var(--miuix-primary) !important;
+  color: #fff !important;
+  opacity: 1 !important;
+}
+
+.search-hot-tab.active:hover {
+  opacity: 0.9 !important;
+}
+
+/* 搜索建议面板 */
+.search-suggestions-panel {
+  background: var(--miuix-background) !important;
+  border: none !important;
+  border-radius: 10px !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12) !important;
+  backdrop-filter: none !important;
+}
+
+html.dark .search-suggestions-panel {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4) !important;
+}
+
+.search-suggestion-item {
+  background: transparent !important;
+  border-radius: 10px !important;
+  color: var(--miuix-on-background) !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  transition: none !important;
+}
+
+.search-suggestion-item:hover {
+  background: rgba(0, 0, 0, 0.06) !important;
+  color: var(--miuix-on-background) !important;
+}
+
+html.dark .search-suggestion-item:hover {
+  background: rgba(255, 255, 255, 0.08) !important;
+}
