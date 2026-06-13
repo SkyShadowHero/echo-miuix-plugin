@@ -187,7 +187,7 @@ html.dark.miuix-bg-active {
 /* ── 设置内按钮 ── */
 
 .settings-item .settings-button {
-  background: var(--miuix-primary) !important;
+  background: var(--color-primary) !important;
   color: #ffffff !important;
   border: none !important;
   border-radius: 10px !important;
@@ -588,7 +588,7 @@ html .sidebar-nav-item:active {
 }
 
 .sidebar-library-item.is-active {
-  color: var(--miuix-primary) !important;
+  color: var(--color-primary) !important;
 }
 
 /* ── 侧栏用户卡片 -  ── */
@@ -993,7 +993,7 @@ html.dark .custom-selector:active {
 .tb-search-input-wrap:focus-within {
   background: var(--miuix-background) !important;
   border-color: transparent !important;
-  outline: 1.5px solid var(--miuix-primary) !important;
+  outline: 1.5px solid var(--color-primary) !important;
   outline-offset: 1px !important;
   box-shadow: none !important;
 }
@@ -1033,12 +1033,12 @@ html.dark .custom-selector:active {
   border-radius: 9999px !important;
   font-size: 11px !important;
   font-weight: 600 !important;
-  color: var(--miuix-primary) !important;
-  background: color-mix(in srgb, var(--miuix-primary) 10%, transparent) !important;
+  color: var(--color-primary) !important;
+  background: color-mix(in srgb, var(--color-primary) 10%, transparent) !important;
 }
 
 .tb-search-goto:hover {
-  background: color-mix(in srgb, var(--miuix-primary) 18%, transparent) !important;
+  background: color-mix(in srgb, var(--color-primary) 18%, transparent) !important;
 }
 
 /* ── 搜索页搜索栏 ── */
@@ -1055,7 +1055,7 @@ html.dark .custom-selector:active {
 .search-input-wrap:focus-within {
   background: var(--miuix-background) !important;
   border-color: transparent !important;
-  outline: 1.5px solid var(--miuix-primary) !important;
+  outline: 1.5px solid var(--color-primary) !important;
   outline-offset: 1px !important;
   box-shadow: none !important;
 }
@@ -1099,7 +1099,7 @@ html.dark .custom-selector:active {
   font-size: 13px !important;
   font-weight: 600 !important;
   color: #fff !important;
-  background: var(--miuix-primary) !important;
+  background: var(--color-primary) !important;
 }
 
 .search-submit-btn::before {
@@ -1183,7 +1183,7 @@ html.dark .search-hot-tab:active {
 
 /* 激活的分类标签用主题色 */
 .search-hot-tab.active {
-  background: var(--miuix-primary) !important;
+  background: var(--color-primary) !important;
   color: #fff !important;
   opacity: 1 !important;
 }
