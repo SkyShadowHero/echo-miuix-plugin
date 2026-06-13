@@ -1,7 +1,7 @@
 {
   "id": "echo-miuix-plugin",
   "name": "Echo Miuix",
-  "version": "1.1.9",
+  "version": "1.2.0",
   "description": "修改 EchoMusic 为 MIUIX (小米澎湃)样式",
   "author": "天影大侠",
   "icon": "icon.svg",
