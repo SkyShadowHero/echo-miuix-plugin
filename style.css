@@ -1233,17 +1233,18 @@ html.dark .search-suggestion-item:hover {
   overflow: hidden !important;
 }
 
-/* 已填充部分：主题色，继承轨道高度 */
+/* 已填充部分 */
 .slider-range {
   height: 100% !important;
-  border-radius: 999px !important;
+  border-bottom-right-radius: 999px !important;
+  border-top-right-radius: 999px !important;
   background: var(--color-primary) !important;
 }
 
-/* 拖拽球：10×10 白色，主题色边框 */
+/* 拖拽球 */
 .slider-thumb {
-  width: 10px !important;
-  height: 10px !important;
+  width: 14px !important;
+  height: 14px !important;
   border-radius: 50% !important;
   background: #ffffff !important;
   border: 2px solid var(--color-primary) !important;
