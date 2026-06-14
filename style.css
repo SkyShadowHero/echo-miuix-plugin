@@ -1222,3 +1222,75 @@ html.dark .search-suggestions-panel {
 html.dark .search-suggestion-item:hover {
   background: rgba(255, 255, 255, 0.08) !important;
 }
+
+/* ── Miuix Slider ── */
+
+/* 轨道：10px 高，全圆角 */
+.slider-track {
+  height: 10px !important;
+  border-radius: 999px !important;
+  background: var(--miuix-slider-background) !important;
+  overflow: hidden !important;
+}
+
+/* 已填充部分：主题色，继承轨道高度 */
+.slider-range {
+  height: 100% !important;
+  border-radius: 999px !important;
+  background: var(--color-primary) !important;
+}
+
+/* 拖拽球：10×10 白色，主题色边框 */
+.slider-thumb {
+  width: 10px !important;
+  height: 10px !important;
+  border-radius: 50% !important;
+  background: #ffffff !important;
+  border: 2px solid var(--color-primary) !important;
+  box-sizing: border-box !important;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15) !important;
+  transition: border-width 0.1s ease !important;
+  outline: none !important;
+  -webkit-tap-highlight-color: transparent !important;
+}
+
+html.dark .slider-thumb {
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4) !important;
+}
+
+.slider-thumb:active,
+.slider-root[data-dragging] .slider-thumb {
+  border-width: 2px !important;
+  box-shadow: 0 1px 8px rgba(0, 0, 0, 0.2) !important;
+}
+
+html.dark .slider-thumb:active,
+html.dark .slider-root[data-dragging] .slider-thumb {
+  box-shadow: 0 1px 8px rgba(0, 0, 0, 0.5) !important;
+}
+
+.slider-thumb:focus-visible {
+  outline: none !important;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15) !important;
+}
+
+html.dark .slider-thumb:focus-visible {
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4) !important;
+}
+
+/* 禁用状态 */
+.slider-root[data-disabled] .slider-thumb {
+  border-color: rgba(128, 128, 128, 0.4) !important;
+}
+
+.slider-root[data-disabled] .slider-range {
+  background: rgba(128, 128, 128, 0.4) !important;
+}
+
+/* 数值标签 */
+.slider-value-label {
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  color: var(--miuix-on-background) !important;
+  opacity: 0.6 !important;
+}
