@@ -358,6 +358,7 @@ html.dark.miuix-bg-active {
   opacity: 0.6 !important;
 }
 
+
 .playlist-card-grid .card-container::after {
   content: '';
   position: absolute;
@@ -394,6 +395,7 @@ html.dark.miuix-bg-active {
   color: var(--miuix-on-background) !important;
   opacity: 0.6 !important;
 }
+
 
 .plugin-card::after {
   content: '';
@@ -538,6 +540,7 @@ html.dark.miuix-bg-active {
 }
 
 
+
 /* ── 侧栏导航卡片 -  ── */
 
 .sidebar-section-body {
@@ -653,6 +656,7 @@ html .sidebar-nav-item:active {
   color: var(--miuix-on-background) !important;
   opacity: 0.6 !important;
 }
+
 
 .album-card .card-container::after,
 .artist-card .card-container::after {
@@ -1294,4 +1298,9 @@ html.dark .slider-thumb:focus-visible {
   font-weight: 600 !important;
   color: var(--miuix-on-background) !important;
   opacity: 0.6 !important;
+}
+
+/* ── 快速回顶按钮 ── */
+.back-to-top-btn {
+  bottom: 100px !important;
 }
