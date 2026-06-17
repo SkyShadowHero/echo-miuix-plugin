@@ -47,18 +47,9 @@ export function activate(ctx) {
   const Switch = defineAsyncComponent(ctx.ui.components.Switch);
   const Button = defineAsyncComponent(ctx.ui.components.Button);
 
-  // ── 渐变装饰控制 ──
-  // 用一个 <style> 标签直接控制，不依赖 class 切换
-  const accentStyle = document.createElement('style');
-  accentStyle.id = 'miuix-accent-style';
-  document.head.appendChild(accentStyle);
-  ctx.dispose(() => accentStyle.remove());
-
+  // ── 渐变遮罩控制（使用 EchoMusic 新版 accentGradient API）──
   function applyAccent(enabled) {
-    accentStyle.textContent = enabled ? '' : `
-      .sidebar-accent-gradient { display: none !important; }
-      .main-content::after { opacity: 0 !important; }
-    `;
+    ctx.theme.accentGradient.set({ enabled });
   }
 
   function applyPlayerBlur(enabled) {
@@ -108,8 +99,8 @@ export function activate(ctx) {
               style: 'display: flex; justify-content: space-between; align-items: flex-start; gap: 12px;',
             }, [
               h('div', { style: 'flex: 1; min-width: 0;' }, [
-                h('div', { style: 'font-weight: 600; font-size: 14px; color: var(--miuix-on-background); line-height: 1.4;' }, '顶部渐变装饰'),
-                h('div', { style: 'font-size: 12px; color: var(--miuix-on-background); opacity: 0.6; margin-top: 2px; line-height: 1.5;' }, '顶部的主题色渐变氛围层'),
+                h('div', { style: 'font-weight: 600; font-size: 14px; color: var(--miuix-on-background); line-height: 1.4;' }, '顶部渐变遮罩'),
+                h('div', { style: 'font-size: 12px; color: var(--miuix-on-background); opacity: 0.6; margin-top: 2px; line-height: 1.5;' }, '顶部主题色渐变氛围层，关闭后隐藏'),
               ]),
               h(Switch, {
                 modelValue: draft.accentEnabled,
