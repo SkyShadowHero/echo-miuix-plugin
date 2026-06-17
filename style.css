@@ -178,6 +178,9 @@ html.dark.miuix-bg-active {
 .settings-item:hover::after {
   background: rgba(0, 0, 0, 0.08);
 }
+html.dark .settings-item:hover::after {
+  background: rgba(255, 255, 255, 0.04);
+}
 
 .settings-item > * {
   position: relative;
@@ -211,6 +214,12 @@ html.dark.miuix-bg-active {
 
 .settings-item .settings-button:active::after {
   background: rgba(0, 0, 0, 0.2) !important;
+}
+html.dark .settings-item .settings-button:hover::after {
+  background: rgba(255, 255, 255, 0.05) !important;
+}
+html.dark .settings-item .settings-button:active::after {
+  background: rgba(255, 255, 255, 0.10) !important;
 }
 
 .settings-item .settings-button.github-star {
@@ -303,6 +312,12 @@ html.dark.miuix-bg-active {
 
 .echo-select-item:active {
   background: rgba(0, 0, 0, 0.14) !important;
+}
+html.dark .echo-select-item:hover {
+  background: rgba(255, 255, 255, 0.04) !important;
+}
+html.dark .echo-select-item:active {
+  background: rgba(255, 255, 255, 0.06) !important;
 }
 
 .echo-select-item.is-selected {
@@ -408,6 +423,9 @@ html.dark.miuix-bg-active {
 }
 .plugin-card:hover::after {
   background: rgba(0, 0, 0, 0.08);
+}
+html.dark .plugin-card:hover::after {
+  background: rgba(255, 255, 255, 0.04);
 }
 
 /* ── CustomTabBar ── */
@@ -529,6 +547,9 @@ html.dark.miuix-bg-active {
 .home-feature-card:hover::after {
   background: rgba(0, 0, 0, 0.08);
 }
+html.dark .home-feature-card:hover::after {
+  background: rgba(255, 255, 255, 0.04);
+}
 
 .feature-title {
   color: var(--miuix-on-background) !important;
@@ -561,6 +582,9 @@ html .sidebar-nav-item:active {
   scale: none !important;
   background: rgba(0, 0, 0, 0.14) !important;
 }
+html.dark .sidebar-nav-item:active {
+  background: rgba(255, 255, 255, 0.06) !important;
+}
 
 .sidebar-section-body .space-y-0\.5 > * + * {
   margin-top: 0 !important;
@@ -589,6 +613,9 @@ html .sidebar-nav-item:active {
   scale: none !important;
   background: rgba(0, 0, 0, 0.14) !important;
 }
+html.dark .sidebar-library-item:active {
+  background: rgba(255, 255, 255, 0.06) !important;
+}
 
 .sidebar-library-item.is-active {
   color: var(--color-primary) !important;
@@ -607,6 +634,9 @@ html .sidebar-nav-item:active {
   box-shadow: none !important;
   transform: background 0.1s !important;
 }
+html.dark .sidebar-user-link:hover {
+  background-color: rgba(255, 255, 255, 0.04) !important;
+}
 
 .sidebar-settings-btn {
   border: none !important;
@@ -617,6 +647,9 @@ html .sidebar-nav-item:active {
 .sidebar-settings-btn:hover {
   background-color: rgba(0, 0, 0, 0.08) !important;
   transform: background 0.1s !important;
+}
+html.dark .sidebar-settings-btn:hover {
+  background-color: rgba(255, 255, 255, 0.04) !important;
 }
 
 /* 推荐歌单和编辑精选的卡片已被 playlist-card-grid 覆盖 */
@@ -672,6 +705,10 @@ html .sidebar-nav-item:active {
 .artist-card.is-singer:hover .card-container::after {
   background: rgba(0, 0, 0, 0.08);
 }
+html.dark .album-card:hover .card-container::after,
+html.dark .artist-card.is-singer:hover .card-container::after {
+  background: rgba(255, 255, 255, 0.04);
+}
 
 .album-card:hover,
 .artist-card.is-singer:hover {
@@ -684,6 +721,9 @@ html .sidebar-nav-item:active {
 
 .playlist-card-grid:hover .card-container::after {
   background: rgba(0, 0, 0, 0.08);
+}
+html.dark .playlist-card-grid:hover .card-container::after {
+  background: rgba(255, 255, 255, 0.04);
 }
 
 /* ── 底部音乐控件 ── */
@@ -968,12 +1008,12 @@ html .sidebar-nav-item:active {
 
 html.dark .rank-selector:hover,
 html.dark .custom-selector:hover {
-  background: linear-gradient(rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.08)), var(--miuix-background) !important;
+  background: linear-gradient(rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.04)), var(--miuix-background) !important;
 }
 
 html.dark .rank-selector:active,
 html.dark .custom-selector:active {
-  background: linear-gradient(rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.15)), var(--miuix-background) !important;
+  background: linear-gradient(rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.07)), var(--miuix-background) !important;
 }
 
 /* ── 歌曲评论卡片 ── */
@@ -1149,12 +1189,12 @@ html.dark .custom-selector:active {
 
 html.dark .hot-chip:hover,
 html.dark .history-chip:hover {
-  background: rgba(255, 255, 255, 0.08) !important;
+  background: rgba(255, 255, 255, 0.04) !important;
 }
 
 html.dark .hot-chip:active,
 html.dark .history-chip:active {
-  background: rgba(255, 255, 255, 0.15) !important;
+  background: rgba(255, 255, 255, 0.07) !important;
 }
 
 /* 搜索分类标签 */
@@ -1178,11 +1218,11 @@ html.dark .history-chip:active {
 }
 
 html.dark .search-hot-tab:hover {
-  background: rgba(255, 255, 255, 0.08) !important;
+  background: rgba(255, 255, 255, 0.04) !important;
 }
 
 html.dark .search-hot-tab:active {
-  background: rgba(255, 255, 255, 0.15) !important;
+  background: rgba(255, 255, 255, 0.07) !important;
 }
 
 /* 激活的分类标签用主题色 */
@@ -1224,7 +1264,7 @@ html.dark .search-suggestions-panel {
 }
 
 html.dark .search-suggestion-item:hover {
-  background: rgba(255, 255, 255, 0.08) !important;
+  background: rgba(255, 255, 255, 0.04) !important;
 }
 
 /* ── Miuix Slider ── */
