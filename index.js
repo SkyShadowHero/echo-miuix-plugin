@@ -15,6 +15,9 @@ export function activate(ctx) {
   const rekaTabCleanups = setupRekaTabsSlider();
   rekaTabCleanups.forEach((fn) => ctx.dispose(fn));
 
+  const sidebarBlurCleanups = setupSidebarBlur();
+  sidebarBlurCleanups.forEach((fn) => ctx.dispose(fn));
+
   // 背景色始终启用
   document.documentElement.classList.add('miuix-bg-active');
 
@@ -149,6 +152,7 @@ export function activate(ctx) {
 export function deactivate(ctx) {
   document.documentElement.classList.remove('miuix-bg-active');
 }
+
 
 // ── Sink 效果 CSS ──
 const INTERACTIONS_CSS = `
@@ -356,9 +360,6 @@ function setupPluginTabs() {
 
   return cleanups;
 }
-
-// ── Reka UI Tabs 滑动指示器 ──
-// 创建白色滑块，用 getBoundingClientRect 定位（比 offsetLeft 更精确）
 function setupRekaTabsSlider() {
   const cleanups = [];
 
@@ -436,3 +437,30 @@ function setupRekaTabsSlider() {
 
   return cleanups;
 }
+function setupSidebarBlur() {
+  const cleanups = [];
+
+  const attach = () => {
+    const sidebar = document.querySelector('.sidebar');
+    if (!sidebar || sidebar.querySelector('.miuix-sidebar-blur')) return;
+
+    const overlay = document.createElement('div');
+    overlay.className = 'miuix-sidebar-blur';
+    sidebar.appendChild(overlay);
+    cleanups.push(() => overlay.remove());
+  };
+
+  attach();
+
+  const observer = new MutationObserver(() => {
+    if (document.querySelector('.sidebar') && !document.querySelector('.miuix-sidebar-blur')) {
+      attach();
+    }
+  });
+  observer.observe(document.body, { childList: true, subtree: true });
+  cleanups.push(() => observer.disconnect());
+
+  return cleanups;
+}
+
+// ── 本地音乐插件歌单 DOM 直接样式 ──

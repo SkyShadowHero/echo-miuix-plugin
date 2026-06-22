@@ -9,6 +9,8 @@ html.miuix-bg-active {
   --miuix-error: #e94634;
   --miuix-slider-background: rgba(0, 0, 0, 0.06);
   --surface-main-base: var(--miuix-surface);
+  --row-hover-bg: rgba(0, 0, 0, 0.06);
+  --bg-info-card: rgba(0, 0, 0, 0.04);
 }
 html.dark.miuix-bg-active {
   --miuix-surface: #1a1a1a;
@@ -20,6 +22,8 @@ html.dark.miuix-bg-active {
   --miuix-error: #f12522;
   --miuix-slider-background: rgba(255, 255, 255, 0.15);
   --surface-main-base: var(--miuix-surface);
+  --row-hover-bg: rgba(255, 255, 255, 0.04);
+  --bg-info-card: rgba(255, 255, 255, 0.04);
 }
 
 /* Switch */
@@ -594,6 +598,18 @@ html.dark .sidebar-nav-item:active {
 
 .sidebar {
   background: var(--miuix-surface) !important;
+  position: relative !important;
+}
+
+.miuix-sidebar-blur {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 50px;
+  background: linear-gradient(to bottom, transparent, var(--miuix-surface) 85%);
+  pointer-events: none;
+  z-index: 100;
 }
 
 .sidebar-scroll-inner {
@@ -759,15 +775,12 @@ html.dark .playlist-card-grid:hover .card-container::after {
   box-shadow: inset 0 1px 0 0 rgba(255,255,255,0.15), inset 0 -1px 0 0 rgba(255,255,255,0.15) !important;
 }
 
-/* ── 侧边栏选项加高 ── */
 .sidebar-nav-item {
-  padding-top: 10px !important;
-  padding-bottom: 10px !important;
+  padding: 9px 9px !important;
 }
 
 .sidebar-library-item {
-  padding-top: 10px !important;
-  padding-bottom: 10px !important;
+  padding: 8px 8px !important;
 }
 
 /* ── Tabs ── */
@@ -1343,4 +1356,6 @@ html.dark .slider-thumb:focus-visible {
 /* ── 快速回顶按钮 ── */
 .back-to-top-btn {
   bottom: 100px !important;
+}
+
 }
