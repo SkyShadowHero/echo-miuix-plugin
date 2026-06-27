@@ -1369,4 +1369,236 @@ html.dark .slider-thumb:focus-visible {
   bottom: 100px !important;
 }
 
+/* ── 风格推荐面板 - ── */
+
+/* 面板卡片 */
+.style-recommend-panel {
+  background: var(--miuix-background) !important;
+  border: none !important;
+  border-radius: 16px !important;
+  padding: 14px !important;
+}
+
+/* 分类标签行 */
+.style-category-row {
+  gap: 12px !important;
+}
+
+/* 分类标签容器 */
+.style-category-tabs {
+  background: var(--miuix-surface-elevated) !important;
+  border-radius: 10px !important;
+  padding: 4px !important;
+  gap: 2px !important;
+  position: relative !important;
+}
+
+/* 分类标签滑动指示器 */
+.style-category-indicator {
+  position: absolute !important;
+  top: 4px !important;
+  bottom: 4px !important;
+  left: 0 !important;
+  border-radius: 8px !important;
+  background: var(--miuix-background) !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08) !important;
+  transition: transform 0.25s ease, width 0.25s ease !important;
+  pointer-events: none !important;
+  z-index: 0 !important;
+}
+
+html.dark .style-category-indicator {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* 分类标签按钮 */
+.style-category-btn {
+  height: 28px !important;
+  padding: 0 12px !important;
+  border-radius: 8px !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  color: rgba(128, 128, 128, 0.7) !important;
+  background: transparent !important;
+  position: relative !important;
+  z-index: 1 !important;
+  transition: color 0.15s ease !important;
+}
+
+.style-category-btn:hover {
+  color: var(--miuix-on-background) !important;
+  background: transparent !important;
+}
+
+.style-category-btn.active {
+  color: var(--miuix-on-background) !important;
+  background: transparent !important;
+  font-weight: 700 !important;
+}
+
+/* 面板标签 */
+.style-panel-label {
+  color: var(--miuix-on-background) !important;
+  opacity: 0.55 !important;
+}
+
+/* 风格标签行 */
+.style-tag-row {
+  margin-top: 12px !important;
+  gap: 8px !important;
+}
+
+/* 风格标签按钮 & 默认按钮 */
+.style-tag-btn,
+.style-tag-clear {
+  height: 30px !important;
+  border-radius: 10px !important;
+  padding: 0 12px !important;
+  border: none !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  background: var(--miuix-surface-elevated) !important;
+  color: var(--miuix-on-background) !important;
+  opacity: 0.65 !important;
+  position: relative !important;
+  overflow: hidden !important;
+  transition: opacity 0.15s ease, color 0.15s ease, background 0.15s ease !important;
+}
+
+.style-tag-btn::after,
+.style-tag-clear::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: transparent;
+  pointer-events: none;
+  transition: background 0.1s ease;
+}
+
+.style-tag-btn:hover,
+.style-tag-clear:hover {
+  opacity: 0.85 !important;
+  background: var(--miuix-surface-elevated) !important;
+}
+
+.style-tag-btn:hover::after,
+.style-tag-clear:hover::after {
+  background: rgba(0, 0, 0, 0.06);
+}
+
+html.dark .style-tag-btn:hover::after,
+html.dark .style-tag-clear:hover::after {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.style-tag-btn:active::after,
+.style-tag-clear:active::after {
+  background: rgba(0, 0, 0, 0.12) !important;
+}
+
+html.dark .style-tag-btn:active::after,
+html.dark .style-tag-clear:active::after {
+  background: rgba(255, 255, 255, 0.05) !important;
+}
+
+.style-tag-btn.active,
+.style-tag-clear.active {
+  opacity: 1 !important;
+  color: var(--miuix-on-primary) !important;
+  background: var(--miuix-primary) !important;
+}
+
+.style-tag-btn.active::after,
+.style-tag-clear.active::after {
+  background: transparent !important;
+}
+
+.style-tag-btn.active:hover,
+.style-tag-clear.active:hover {
+  opacity: 0.9 !important;
+}
+
+/* 播放全部按钮 */
+.style-play-btn {
+  height: 34px !important;
+  padding: 0 14px !important;
+  border-radius: 10px !important;
+  background: var(--miuix-primary) !important;
+  color: var(--miuix-on-primary) !important;
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  position: relative !important;
+  overflow: hidden !important;
+}
+
+.style-play-btn::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: transparent;
+  pointer-events: none;
+  transition: background 0.1s ease;
+}
+
+.style-play-btn:hover::after {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+html.dark .style-play-btn:hover::after {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.style-play-btn:active::after {
+  background: rgba(0, 0, 0, 0.2) !important;
+}
+
+html.dark .style-play-btn:active::after {
+  background: rgba(255, 255, 255, 0.12) !important;
+}
+
+/* 歌曲卡片网格 */
+.style-song-grid {
+  margin-top: 12px !important;
+  gap: 4px 8px !important;
+}
+
+.style-song-grid .song-card {
+  background: var(--bg-info-card) !important;
+  border-radius: 12px !important;
+  position: relative !important;
+  overflow: hidden !important;
+}
+
+.style-song-grid .song-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: transparent;
+  pointer-events: none;
+  transition: background 0.1s ease;
+}
+
+.style-song-grid .song-card:hover::after {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+html.dark .style-song-grid .song-card:hover::after {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.style-song-grid .song-card:active::after {
+  background: rgba(0, 0, 0, 0.08) !important;
+}
+
+html.dark .style-song-grid .song-card:active::after {
+  background: rgba(255, 255, 255, 0.05) !important;
+}
+
+/* 占位文字 */
+.style-song-placeholder {
+  color: var(--miuix-on-background) !important;
+  opacity: 0.45 !important;
 }

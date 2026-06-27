@@ -18,6 +18,29 @@ export function activate(ctx) {
   const sidebarBlurCleanups = setupSidebarBlur();
   sidebarBlurCleanups.forEach((fn) => ctx.dispose(fn));
 
+  const styleCategoryCleanups = setupStyleCategoryTabs();
+  styleCategoryCleanups.forEach((fn) => ctx.dispose(fn));
+
+  // ── 风格标签行鼠标滚轮水平滚动 ──
+  function bindTagRowScroll(row) {
+    if (row.dataset.miuixWheel) return;
+    row.dataset.miuixWheel = '1';
+    const onWheel = (e) => {
+      if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
+        e.preventDefault();
+        row.scrollLeft += e.deltaY;
+      }
+    };
+    row.addEventListener('wheel', onWheel, { passive: false });
+  }
+
+  document.querySelectorAll('.style-tag-row').forEach(bindTagRowScroll);
+  const tagRowObs = new MutationObserver(() => {
+    document.querySelectorAll('.style-tag-row:not([data-miuix-wheel])').forEach(bindTagRowScroll);
+  });
+  tagRowObs.observe(document.body, { childList: true, subtree: true });
+  ctx.dispose(() => tagRowObs.disconnect());
+
   // 背景色始终启用
   document.documentElement.classList.add('miuix-bg-active');
 
@@ -194,7 +217,7 @@ function setupTiltEffect() {
   // 从事件目标向上找卡片根元素
   function findCard(el) {
     return el.closest(
-      '.playlist-card-grid, .album-card, .artist-card, .home-feature-card',
+      '.playlist-card-grid, .album-card, .artist-card, .home-feature-card, .song-card',
     );
   }
 
@@ -454,6 +477,48 @@ function setupSidebarBlur() {
 
   const observer = new MutationObserver(() => {
     if (document.querySelector('.sidebar') && !document.querySelector('.miuix-sidebar-blur')) {
+      attach();
+    }
+  });
+  observer.observe(document.body, { childList: true, subtree: true });
+  cleanups.push(() => observer.disconnect());
+
+  return cleanups;
+}
+
+// ── 风格推荐分类标签滑动指示器 ──
+function setupStyleCategoryTabs() {
+  const cleanups = [];
+
+  const attach = () => {
+    const tabs = document.querySelector('.style-category-tabs');
+    if (!tabs) return;
+
+    let indicator = tabs.querySelector('.style-category-indicator');
+    if (!indicator) {
+      indicator = document.createElement('div');
+      indicator.className = 'style-category-indicator';
+      tabs.appendChild(indicator);
+    }
+
+    const move = () => {
+      const active = tabs.querySelector('.style-category-btn.active');
+      if (active) {
+        indicator.style.transform = `translateX(${active.offsetLeft}px)`;
+        indicator.style.width = `${active.offsetWidth}px`;
+      }
+    };
+
+    move();
+
+    tabs.addEventListener('click', () => requestAnimationFrame(move));
+    cleanups.push(() => tabs.removeEventListener('click', move));
+  };
+
+  attach();
+
+  const observer = new MutationObserver(() => {
+    if (document.querySelector('.style-category-tabs') && !document.querySelector('.style-category-indicator')) {
       attach();
     }
   });
