@@ -498,18 +498,46 @@ function setupStyleCategoryTabs() {
     if (!indicator) {
       indicator = document.createElement('div');
       indicator.className = 'style-category-indicator';
+      // 先关掉 transition，等按钮渲染后静默定位
+      indicator.style.transition = 'none';
       tabs.appendChild(indicator);
     }
 
+    let initialDone = false;
+
     const move = () => {
-      const active = tabs.querySelector('.style-category-btn.active');
+      const active = tabs.querySelector('.style-category-btn.active') || tabs.querySelector('.style-category-btn');
       if (active) {
         indicator.style.transform = `translateX(${active.offsetLeft}px)`;
         indicator.style.width = `${active.offsetWidth}px`;
+        // 首次定位成功后恢复 transition
+        if (!initialDone) {
+          initialDone = true;
+          requestAnimationFrame(() => {
+            indicator.style.transition = '';
+          });
+        }
       }
     };
 
+    // 先尝试同步定位
     move();
+
+    // 监听 tabs 内部子节点插入——按钮渲染后立即无动画定位
+    const childObs = new MutationObserver(() => {
+      if (!initialDone) {
+        move();
+      }
+    });
+    childObs.observe(tabs, { childList: true, subtree: true });
+    cleanups.push(() => childObs.disconnect());
+
+    // 后续 .active 切换时带动画跟随
+    const classObs = new MutationObserver(() => {
+      if (initialDone) requestAnimationFrame(move);
+    });
+    classObs.observe(tabs, { subtree: true, attributes: true, attributeFilter: ['class'] });
+    cleanups.push(() => classObs.disconnect());
 
     tabs.addEventListener('click', () => requestAnimationFrame(move));
     cleanups.push(() => tabs.removeEventListener('click', move));
