@@ -18,6 +18,9 @@ export function activate(ctx) {
   const sidebarBlurCleanups = setupSidebarBlur();
   sidebarBlurCleanups.forEach((fn) => ctx.dispose(fn));
 
+  const mainBlurCleanups = setupMainBlur();
+  mainBlurCleanups.forEach((fn) => ctx.dispose(fn));
+
   const styleCategoryCleanups = setupStyleCategoryTabs();
   styleCategoryCleanups.forEach((fn) => ctx.dispose(fn));
 
@@ -71,6 +74,7 @@ export function activate(ctx) {
 
   const { defineComponent, defineAsyncComponent, h, reactive } = ctx.vue;
   const Switch = defineAsyncComponent(ctx.ui.components.Switch);
+  const Slider = defineAsyncComponent(ctx.ui.components.Slider);
   const Button = defineAsyncComponent(ctx.ui.components.Button);
 
   // ── 渐变遮罩控制（使用 EchoMusic 新版 accentGradient API）──
@@ -82,14 +86,28 @@ export function activate(ctx) {
     document.documentElement.classList.toggle('miuix-player-solid', !enabled);
   }
 
+  // ── 底部音乐控件抬升 ──
+  let playerBarOffsetDisposer = null;
+  function applyPlayerBarOffset(offset) {
+    if (playerBarOffsetDisposer) { playerBarOffsetDisposer(); playerBarOffsetDisposer = null; }
+    playerBarOffsetDisposer = ctx.css.inject(
+      '.player-bar-container { bottom: ' + offset + 'px !important; }' +
+      '.back-to-top-btn { bottom: ' + (offset + 92) + 'px !important; }',
+      { id: 'player-bar-offset' },
+    );
+  }
+
   // ── 从存储加载已保存的设置 ──
   ctx.storage.get('settings').then((saved) => {
     const accentEnabled = saved && typeof saved.accentEnabled === 'boolean'
       ? saved.accentEnabled : true;
     const playerBlur = saved && typeof saved.playerBlur === 'boolean'
       ? saved.playerBlur : true;
+    const playerBarOffset = saved && typeof saved.playerBarOffset === 'number'
+      ? saved.playerBarOffset : 8;
     applyAccent(accentEnabled);
     applyPlayerBlur(playerBlur);
+    applyPlayerBarOffset(playerBarOffset);
   });
 
   const SettingsPanel = defineComponent({
@@ -97,6 +115,7 @@ export function activate(ctx) {
       const draft = reactive({
         accentEnabled: true,
         playerBlur: true,
+        playerBarOffset: 8,
       });
 
       ctx.storage.get('settings').then((saved) => {
@@ -105,6 +124,8 @@ export function activate(ctx) {
             ? saved.accentEnabled : true;
           draft.playerBlur = typeof saved.playerBlur === 'boolean'
             ? saved.playerBlur : true;
+          draft.playerBarOffset = typeof saved.playerBarOffset === 'number'
+            ? saved.playerBarOffset : 8;
         }
       });
 
@@ -112,9 +133,11 @@ export function activate(ctx) {
         await ctx.storage.set('settings', {
           accentEnabled: draft.accentEnabled,
           playerBlur: draft.playerBlur,
+          playerBarOffset: draft.playerBarOffset,
         });
         applyAccent(draft.accentEnabled);
         applyPlayerBlur(draft.playerBlur);
+        applyPlayerBarOffset(draft.playerBarOffset);
       };
 
       return () =>
@@ -144,6 +167,22 @@ export function activate(ctx) {
               h(Switch, {
                 modelValue: draft.playerBlur,
                 'onUpdate:modelValue': (v) => { draft.playerBlur = Boolean(v); saveNow(); },
+              }),
+            ]),
+            h('div', {
+              class: 'settings-item',
+              style: 'display: flex; flex-direction: column; gap: 4px; padding-top: 8px; padding-bottom: 8px;',
+            }, [
+              h('div', { style: 'font-weight: 600; font-size: 14px; color: var(--miuix-on-background); line-height: 1.4;' }, '底部音乐控件抬升'),
+              h('div', { style: 'font-size: 12px; color: var(--miuix-on-background); opacity: 0.6; margin-top: 2px; line-height: 1.5;' }, '抬升底部音乐控件，露出主内容底部的沉浸式渐变（默认 8px）'),
+              h(Slider, {
+                modelValue: draft.playerBarOffset,
+                min: 0,
+                max: 200,
+                step: 2,
+                showValue: true,
+                valueSuffix: 'px',
+                'onUpdate:modelValue': (v) => { draft.playerBarOffset = Number(v); saveNow(); },
               }),
             ]),
             h('div', {
@@ -477,6 +516,33 @@ function setupSidebarBlur() {
 
   const observer = new MutationObserver(() => {
     if (document.querySelector('.sidebar') && !document.querySelector('.miuix-sidebar-blur')) {
+      attach();
+    }
+  });
+  observer.observe(document.body, { childList: true, subtree: true });
+  cleanups.push(() => observer.disconnect());
+
+  return cleanups;
+}
+
+// ── 主内容底部渐变遮罩 ──
+function setupMainBlur() {
+  const cleanups = [];
+
+  const attach = () => {
+    const main = document.querySelector('.main-content');
+    if (!main || main.querySelector('.miuix-main-blur')) return;
+
+    const overlay = document.createElement('div');
+    overlay.className = 'miuix-main-blur';
+    main.appendChild(overlay);
+    cleanups.push(() => overlay.remove());
+  };
+
+  attach();
+
+  const observer = new MutationObserver(() => {
+    if (document.querySelector('.main-content') && !document.querySelector('.miuix-main-blur')) {
       attach();
     }
   });
