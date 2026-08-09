@@ -256,7 +256,7 @@ function setupTiltEffect() {
   // 从事件目标向上找卡片根元素
   function findCard(el) {
     return el.closest(
-      '.playlist-card-grid, .album-card, .artist-card, .home-feature-card, .song-card',
+      '.playlist-card-grid, .album-card, .artist-card, .home-feature-card',
     );
   }
 
