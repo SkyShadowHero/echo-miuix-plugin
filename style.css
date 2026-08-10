@@ -15,7 +15,7 @@ html.miuix-bg-active {
 html.dark.miuix-bg-active {
   --miuix-surface: #1a1a1a;
   --miuix-surface-elevated: #1a1a1a;
-  --miuix-background: #242424;
+  --miuix-background: #2e2e2e;
   --miuix-on-background: rgba(255, 255, 255, 0.9);
   --miuix-primary: #277af7;
   --miuix-on-primary: #ffffff;
@@ -356,6 +356,10 @@ html.dark .echo-select-item:active {
 }
 .miuix-select-backdrop.is-visible {
   opacity: 1 !important;
+}
+/* 深色模式下改为亮色遮罩（提亮背景，突出下拉菜单） */
+html.dark .miuix-select-backdrop {
+  background: rgba(255, 255, 255, 0.18) !important;
 }
 
 /* 推荐歌单卡片  */
@@ -859,6 +863,10 @@ html.dark .playlist-card-grid:hover .card-container::after {
 
 .dialog-overlay {
   background: rgba(0, 0, 0, 0.15) !important;
+}
+/* 深色模式下插件设置遮罩改为亮色遮罩 */
+html.dark .dialog-overlay {
+  background: rgba(255, 255, 255, 0.18) !important;
 }
 .dialog-overlay[data-state='open'] {
   animation: miuix-overlay-in 0.1s ease forwards !important;
