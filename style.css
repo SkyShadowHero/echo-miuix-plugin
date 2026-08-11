@@ -265,13 +265,19 @@ html.dark .settings-item .settings-button:active::after {
 
 /* 下拉面板 */
 .echo-select-content {
-  min-width: 140px !important;
+  min-width: max-content !important;
+  width: auto !important;
+  max-width: min(360px, calc(100vw - 32px)) !important;
   background: var(--miuix-background) !important;
   border: none !important;
   border-radius: 16px !important;
   box-shadow: none !important;
   padding: 0 !important;
   overflow: hidden !important;
+  /* 右对齐触发按钮（纯 CSS，无 JS）：
+     content 默认左边缘与触发按钮左边缘对齐，
+     translateX(触发宽度 - 自身宽度) 使右边缘对齐 */
+  transform: translateX(calc(var(--reka-popover-trigger-width, 0px) - 100%)) !important;
 }
 
 .echo-select-content[data-side="bottom"] {
@@ -303,7 +309,7 @@ html.dark .settings-item .settings-button:active::after {
 /* 选项 */
 .echo-select-item {
   display: grid !important;
-  grid-template-columns: 1fr auto !important;
+  grid-template-columns: max-content 1fr !important;
   align-items: center !important;
   gap: 16px !important;
   padding: 12px 24px !important;
@@ -313,6 +319,7 @@ html.dark .settings-item .settings-button:active::after {
   border: none !important;
   border-radius: 0 !important;
   position: relative !important;
+  width: 100% !important;
 }
 
 .echo-select-item:hover {
@@ -336,12 +343,14 @@ html.dark .echo-select-item:active {
 
 .echo-select-item-check {
   color: var(--color-primary) !important;
+  justify-self: end !important;
 }
 
 /* 去掉文字省略号（EchoMusic 默认给文字加了 text-overflow: ellipsis） */
 .echo-select-item > :not(.echo-select-item-check) {
   overflow: visible !important;
   text-overflow: clip !important;
+  white-space: nowrap !important;
 }
 
 /* 下拉菜单打开时的全局浅色遮罩 */
