@@ -357,10 +357,10 @@ html.dark .echo-select-item:active {
 .miuix-select-backdrop.is-visible {
   opacity: 1 !important;
 }
-/* 深色模式下改为亮色遮罩（提亮背景，突出下拉菜单） */
+/* 深色模式下改为亮色遮罩（提亮背景，突出下拉菜单）
 html.dark .miuix-select-backdrop {
   background: rgba(255, 255, 255, 0.18) !important;
-}
+} */
 
 /* 推荐歌单卡片  */
 .playlist-card-grid .card-container {
@@ -864,10 +864,10 @@ html.dark .playlist-card-grid:hover .card-container::after {
 .dialog-overlay {
   background: rgba(0, 0, 0, 0.15) !important;
 }
-/* 深色模式下插件设置遮罩改为亮色遮罩 */
+/* 深色模式下插件设置遮罩改为亮色遮罩
 html.dark .dialog-overlay {
   background: rgba(255, 255, 255, 0.18) !important;
-}
+} */
 .dialog-overlay[data-state='open'] {
   animation: miuix-overlay-in 0.1s ease forwards !important;
 }
