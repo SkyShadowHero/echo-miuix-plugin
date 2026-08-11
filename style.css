@@ -274,10 +274,6 @@ html.dark .settings-item .settings-button:active::after {
   box-shadow: none !important;
   padding: 0 !important;
   overflow: hidden !important;
-  /* 右对齐触发按钮（纯 CSS，无 JS）：
-     content 默认左边缘与触发按钮左边缘对齐，
-     translateX(触发宽度 - 自身宽度) 使右边缘对齐 */
-  transform: translateX(calc(var(--reka-popover-trigger-width, 0px) - 100%)) !important;
 }
 
 .echo-select-content[data-side="bottom"] {
