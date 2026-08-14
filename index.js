@@ -92,7 +92,8 @@ export function activate(ctx) {
     if (playerBarOffsetDisposer) { playerBarOffsetDisposer(); playerBarOffsetDisposer = null; }
     playerBarOffsetDisposer = ctx.css.inject(
       '.player-bar-container { bottom: ' + offset + 'px !important; }' +
-      '.back-to-top-btn { bottom: ' + (offset + 92) + 'px !important; }',
+      '.back-to-top-btn { bottom: ' + (offset + 92) + 'px !important; }' +
+      '.settings-back-to-top { bottom: ' + (offset + 92) + 'px !important; }',
       { id: 'player-bar-offset' },
     );
   }

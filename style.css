@@ -1393,6 +1393,9 @@ html.dark .slider-thumb:focus-visible {
 .back-to-top-btn {
   bottom: 100px !important;
 }
+.settings-back-to-top {
+  bottom: 100px !important;
+}
 
 /* ── 风格推荐面板 - ── */
 
