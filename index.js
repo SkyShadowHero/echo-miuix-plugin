@@ -57,6 +57,16 @@ export function activate(ctx) {
       spacer.style.cssText = 'height:100px; flex-shrink:0; pointer-events:none;';
       view.appendChild(spacer);
     });
+    // 众乐房房间页（.listen-session 撑满整页、没有 .scrollbar-view）：
+    // 底部会被悬浮底栏遮挡，同样补 100px 留白
+    const sessions = document.querySelectorAll('.listen-session:not(.miuix-padded)');
+    sessions.forEach((session) => {
+      session.classList.add('miuix-padded');
+      const spacer = document.createElement('div');
+      spacer.className = 'miuix-page-spacer';
+      spacer.style.cssText = 'height:100px; flex-shrink:0; pointer-events:none;';
+      session.appendChild(spacer);
+    });
   }
   addContentSpacers();
   const viewObs = new MutationObserver(addContentSpacers);
