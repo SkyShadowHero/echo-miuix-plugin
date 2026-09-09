@@ -90,6 +90,9 @@ export function activate(ctx) {
   // ── 渐变遮罩控制（使用 EchoMusic 新版 accentGradient API）──
   function applyAccent(enabled) {
     ctx.theme.accentGradient.set({ enabled });
+    // 渐变开启时让侧栏背景恢复半透明，顶部氛围渐变才能在侧栏同样透出；
+    // 关闭时回退到不透明底色（对应 style.css 里的 .miuix-accent-on 规则）
+    document.documentElement.classList.toggle('miuix-accent-on', enabled);
   }
 
   function applyPlayerBlur(enabled) {
@@ -224,6 +227,7 @@ export function activate(ctx) {
 // ── 插件停用 ──
 export function deactivate(ctx) {
   document.documentElement.classList.remove('miuix-bg-active');
+  document.documentElement.classList.remove('miuix-accent-on');
 }
 
 

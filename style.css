@@ -621,6 +621,12 @@ html.dark .sidebar-nav-item:active {
   position: relative !important;
 }
 
+/* 顶部渐变开启（html 上有 miuix-accent-on）：侧栏背景改回 Echo 的半透明透出式
+   底色，让顶部主题色渐变带在侧栏同样可见；关闭时上方的不透明底色规则生效。 */
+html.miuix-bg-active.miuix-accent-on .sidebar {
+  background: color-mix(in srgb, var(--surface-sidebar-base) 14%, transparent) !important;
+}
+
 .miuix-sidebar-blur {
   position: absolute;
   bottom: 0;
