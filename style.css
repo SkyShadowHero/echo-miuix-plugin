@@ -1,27 +1,37 @@
 /* 颜色 */
+/* 表面色拆成「底色 + 透明度」：普通模式透明度 100%（外观与原来完全一致），
+   模糊背景 / 半透明样式下由文件末尾的「表面透明度适配」按模式调低，
+   避免模糊背景上出现成片的纯色白/黑。 */
 html.miuix-bg-active {
-  --miuix-surface: #f7f7f7;
-  --miuix-surface-elevated: #e8e8e8;
-  --miuix-background: #ffffff;
+  --miuix-surface-base: #f7f7f7;
+  --miuix-surface-elevated-base: #e8e8e8;
+  --miuix-background-base: #ffffff;
+  --miuix-surface-alpha: 100%;
+  --miuix-elevated-alpha: 100%;
+  --miuix-background-alpha: 100%;
+  --miuix-surface: color-mix(in srgb, var(--miuix-surface-base) var(--miuix-surface-alpha), transparent);
+  --miuix-surface-elevated: color-mix(in srgb, var(--miuix-surface-elevated-base) var(--miuix-elevated-alpha), transparent);
+  --miuix-background: color-mix(in srgb, var(--miuix-background-base) var(--miuix-background-alpha), transparent);
   --miuix-on-background: #000000;
   --miuix-primary: #3482ff;
   --miuix-on-primary: #ffffff;
   --miuix-error: #e94634;
   --miuix-slider-background: rgba(0, 0, 0, 0.06);
-  --surface-main-base: var(--miuix-surface);
+  /* 主画布保持不透明底色：整体背景透明度交给 Echo「窗口背景」自己控制 */
+  --surface-main-base: var(--miuix-surface-base);
   --row-hover-bg: rgba(0, 0, 0, 0.06);
   --bg-info-card: rgba(0, 0, 0, 0.04);
 }
 html.dark.miuix-bg-active {
-  --miuix-surface: #1a1a1a;
-  --miuix-surface-elevated: #1a1a1a;
-  --miuix-background: #2e2e2e;
+  --miuix-surface-base: #1a1a1a;
+  --miuix-surface-elevated-base: #1a1a1a;
+  --miuix-background-base: #2e2e2e;
   --miuix-on-background: rgba(255, 255, 255, 0.9);
   --miuix-primary: #277af7;
   --miuix-on-primary: #ffffff;
   --miuix-error: #f12522;
   --miuix-slider-background: rgba(255, 255, 255, 0.15);
-  --surface-main-base: var(--miuix-surface);
+  --surface-main-base: var(--miuix-surface-base);
   --row-hover-bg: rgba(255, 255, 255, 0.04);
   --bg-info-card: rgba(255, 255, 255, 0.04);
 }
@@ -1635,4 +1645,53 @@ html.dark .style-song-grid .song-card:active::after {
 .style-song-placeholder {
   color: var(--miuix-on-background) !important;
   opacity: 0.45 !important;
+}
+
+/* ── 表面透明度适配（Echo 新版模糊背景 / 半透明样式）────────────────────────
+   Echo 在「窗口背景」模式下会把主画布、侧栏、播放栏、吸顶条强制透明，只留一层背景；
+   若有插件通过 ctx.theme.surface.set() 贡献透明度，还会给 body 加上
+   echo-surface-translucent 并设置 --surface-*-opacity。
+   此时如果 miuix 的卡片/面板仍是不透明纯色，模糊背景上就会出现成片的白/黑，
+   所以这里让 miuix 的表面按同样的模式降透明度；普通模式下透明度仍是 100%，外观不变。 */
+
+/* 表面色的合成放在 body 上：透明度变量可以就近解析，
+   也让 body 上由插件贡献的 --surface-*-opacity 能生效 */
+html.miuix-bg-active body {
+  --miuix-surface: color-mix(in srgb, var(--miuix-surface-base) var(--miuix-surface-alpha), transparent);
+  --miuix-surface-elevated: color-mix(in srgb, var(--miuix-surface-elevated-base) var(--miuix-elevated-alpha), transparent);
+  --miuix-background: color-mix(in srgb, var(--miuix-background-base) var(--miuix-background-alpha), transparent);
+}
+
+/* 1) 模糊背景 / 透明窗口（Echo「窗口背景」开启且有模糊、透明度或自定义背景色） */
+html.miuix-bg-active.app-background-transparent {
+  --miuix-surface-alpha: 45%;
+  --miuix-background-alpha: 55%;
+  --miuix-elevated-alpha: 70%;
+}
+
+/* 2) 有插件贡献表面透明度时，直接跟随 Echo 的设置（含背景模糊强度） */
+body.echo-surface-translucent {
+  --miuix-surface-alpha: var(--surface-main-opacity, 45%);
+  --miuix-background-alpha: var(--surface-card-opacity, 55%);
+  --miuix-elevated-alpha: var(--surface-elevated-opacity, 70%);
+}
+
+/* 3) 浮层类表面（下拉、搜索建议等）保持较高的不透明度，保证可读性——
+      与 Echo 自身「内容表面透出背景、弹窗浮层仍用不透明背景」的约定一致。
+      注意：风格推荐面板（.style-recommend-panel）是页面内的卡片，
+      与其它卡片用同一套透明度，不要放进这里。 */
+html.miuix-bg-active.app-background-transparent
+  :is(.echo-select-content, .search-suggestions-panel, .custom-selector),
+body.echo-surface-translucent
+  :is(.echo-select-content, .search-suggestions-panel, .custom-selector) {
+  --miuix-background: color-mix(in srgb, var(--miuix-background-base) 88%, transparent);
+}
+
+/* 4) 选中指示块（分段控件/标签行里的小滑块）：比所在容器更实一些，
+      半透明后仍能看出「当前选中」 */
+html.miuix-bg-active.app-background-transparent
+  :is(.settings-anchor-indicator, .style-category-indicator, .custom-tab-slider, .plugin-tab-indicator),
+body.echo-surface-translucent
+  :is(.settings-anchor-indicator, .style-category-indicator, .custom-tab-slider, .plugin-tab-indicator) {
+  --miuix-background: color-mix(in srgb, var(--miuix-background-base) 88%, transparent);
 }
