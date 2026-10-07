@@ -359,12 +359,16 @@ html.dark .echo-select-item:active {
   white-space: nowrap !important;
 }
 
-/* 下拉菜单打开时的全局浅色遮罩 */
+/* 下拉菜单打开时的全局浅色遮罩。
+   z-index 需高于宿主弹窗层级（Dialog 栈基准 1600、内容 +10；
+   Drawer 1400/1410；CommentDrawer 1500/1510），
+   又要低于下拉面板自身（.echo-popover-content = 9999），故取 9990。
+   宿主弹窗层级调整时同步更新此值。 */
 .miuix-select-backdrop {
   position: fixed !important;
   inset: 0 !important;
   background: rgba(0, 0, 0, 0.15) !important;
-  z-index: 1420 !important;
+  z-index: 9990 !important;
   opacity: 0 !important;
   pointer-events: none !important;
   transition: opacity 0.05s ease !important;
@@ -821,6 +825,20 @@ html.dark .playlist-card-grid:hover .card-container::after {
 
 .dark .player-bar {
   box-shadow: inset 0 1px 0 0 rgba(255,255,255,0.15), inset 0 -1px 0 0 rgba(255,255,255,0.15) !important;
+}
+
+/* ── 评论区 / 详情页发送评论框 ──
+   发送框（.comment-composer-bottom / .detail-comment-composer）是 position: sticky，
+   而悬浮底栏容器是 z-index:1000 且位于 .main-content 之外（主内容 isolation:isolate），
+   会盖住贴在滚动区底部的发送框。这里把发送框的 sticky 底部抬升到底栏之上。
+   --drawer-bottom-offset 由宿主 PlayerBar 发布（= 底栏高度 + 8）；
+   --miuix-player-bar-offset 由「底部音乐控件抬升」设置发布（默认 8）。
+   底栏顶部 = --drawer-bottom-offset + (offset - 8)，再补 12px 间距。 */
+.comment-composer-bottom,
+.detail-comment-composer {
+  bottom: calc(
+    var(--drawer-bottom-offset, 96px) + var(--miuix-player-bar-offset, 8px) + 4px
+  ) !important;
 }
 
 .sidebar-nav-item {

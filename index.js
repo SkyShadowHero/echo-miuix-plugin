@@ -103,6 +103,8 @@ export function activate(ctx) {
   let playerBarOffsetDisposer = null;
   function applyPlayerBarOffset(offset) {
     if (playerBarOffsetDisposer) { playerBarOffsetDisposer(); playerBarOffsetDisposer = null; }
+    // 发布底栏抬升量，供评论区发送框等 sticky 元素避让（见 style.css）
+    document.documentElement.style.setProperty('--miuix-player-bar-offset', offset + 'px');
     playerBarOffsetDisposer = ctx.css.inject(
       '.player-bar-container { bottom: ' + offset + 'px !important; }' +
       '.back-to-top-btn { bottom: ' + (offset + 92) + 'px !important; }' +
