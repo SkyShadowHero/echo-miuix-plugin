@@ -3212,3 +3212,57 @@ body.echo-surface-translucent
   from { clip-path: inset(-80px -80px -80px -80px); }
   to   { clip-path: inset(calc(100% + 80px) -80px -80px -80px); }
 }
+
+/* ══════════════════════════════════════════════════════════════════════
+   顶栏「更多」菜单（TitleBarMoreMenu）MIUIX
+   ══════════════════════════════════════════════════════════════════════ */
+.titlebar-more-menu {
+  background: var(--miuix-background) !important;
+  border: none !important;
+  border-radius: 16px !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.16) !important;
+  color: var(--miuix-on-background) !important;
+}
+.titlebar-more-menu[data-state='open'] {
+  animation: miuix-menu-drop-in 0.22s cubic-bezier(0.05, 0.7, 0.1, 1) both !important;
+}
+@keyframes miuix-menu-drop-in {
+  from { clip-path: inset(-80px -80px calc(100% + 80px) -80px); }
+  to   { clip-path: inset(-80px -80px -80px -80px); }
+}
+.titlebar-more-heading {
+  border-bottom-color: color-mix(in srgb, var(--miuix-on-background) 12%, transparent) !important;
+  color: var(--miuix-on-background) !important;
+}
+.titlebar-more-item {
+  border-radius: 10px !important;
+  color: var(--miuix-on-background) !important;
+}
+.titlebar-more-item:not(:disabled):hover,
+.titlebar-more-item:focus-visible:not(:disabled) {
+  background: color-mix(in srgb, var(--miuix-on-background) 8%, transparent) !important;
+  color: var(--miuix-on-background) !important;
+}
+.titlebar-pin {
+  border-radius: 10px !important;
+  color: color-mix(in srgb, var(--miuix-on-background) 55%, transparent) !important;
+}
+.titlebar-pin:hover {
+  background: color-mix(in srgb, var(--miuix-on-background) 8%, transparent) !important;
+}
+.titlebar-pin.pinned {
+  color: var(--miuix-primary) !important;
+  background: color-mix(in srgb, var(--miuix-primary) 12%, transparent) !important;
+}
+.titlebar-reset {
+  border-radius: 10px !important;
+  color: var(--miuix-on-background) !important;
+}
+.titlebar-reset:hover {
+  background: color-mix(in srgb, var(--miuix-on-background) 8%, transparent) !important;
+}
+.titlebar-more-empty {
+  color: color-mix(in srgb, var(--miuix-on-background) 55%, transparent) !important;
+}
