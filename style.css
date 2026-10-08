@@ -6,9 +6,9 @@ html.miuix-bg-active {
   --miuix-surface-base: #f7f7f7;
   --miuix-surface-elevated-base: #e8e8e8;
   --miuix-background-base: #ffffff;
-  --miuix-surface-alpha: 100%;
-  --miuix-elevated-alpha: 100%;
-  --miuix-background-alpha: 100%;
+  --miuix-surface-alpha: var(--surface-main-opacity, 100%);
+  --miuix-elevated-alpha: var(--surface-elevated-opacity, 100%);
+  --miuix-background-alpha: var(--surface-card-opacity, 100%);
   --miuix-surface: color-mix(in srgb, var(--miuix-surface-base) var(--miuix-surface-alpha), transparent);
   --miuix-surface-elevated: color-mix(in srgb, var(--miuix-surface-elevated-base) var(--miuix-elevated-alpha), transparent);
   --miuix-background: color-mix(in srgb, var(--miuix-background-base) var(--miuix-background-alpha), transparent);
@@ -17,8 +17,20 @@ html.miuix-bg-active {
   --miuix-on-primary: #ffffff;
   --miuix-error: #e94634;
   --miuix-slider-background: rgba(0, 0, 0, 0.06);
-  /* 主画布保持不透明底色：整体背景透明度交给 Echo「窗口背景」自己控制 */
+  /* 主画布保持不透明底色：整体背景透明度交给 Echo「窗口背景」自己控制。
+     适配 Echo β8 新外观系统：皮肤层/面板取色跟随 MIUIX 调色板，
+     画布用 surface-base，卡片/浮层/播放面板用 background-base。 */
   --surface-main-base: var(--miuix-surface-base);
+  --surface-sidebar-base: var(--miuix-surface-base);
+  --surface-card-base: var(--miuix-background-base);
+  --surface-elevated-base: var(--miuix-background-base);
+  --surface-dialog-base: var(--miuix-background-base);
+  --surface-player-base: var(--miuix-background-base);
+  /* 输入框（宿主 .song-search-input 等用 !important + @layer 引用这些变量，
+     覆盖变量即可绕过分层优先级） */
+  --field-bg: var(--miuix-background);
+  --field-focus-bg: var(--miuix-background);
+  --field-hover-bg: var(--miuix-surface-elevated);
   --row-hover-bg: rgba(0, 0, 0, 0.06);
   --bg-info-card: rgba(0, 0, 0, 0.04);
 }
@@ -32,6 +44,11 @@ html.dark.miuix-bg-active {
   --miuix-error: #f12522;
   --miuix-slider-background: rgba(255, 255, 255, 0.15);
   --surface-main-base: var(--miuix-surface-base);
+  --surface-sidebar-base: var(--miuix-surface-base);
+  --surface-card-base: var(--miuix-background-base);
+  --surface-elevated-base: var(--miuix-background-base);
+  --surface-dialog-base: var(--miuix-background-base);
+  --surface-player-base: var(--miuix-background-base);
   --row-hover-bg: rgba(255, 255, 255, 0.04);
   --bg-info-card: rgba(255, 255, 255, 0.04);
 }
@@ -209,7 +226,7 @@ html.dark .settings-item:hover::after {
   border: none !important;
   border-radius: 10px !important;
   position: relative !important;
-  box-shadow: none;s
+  box-shadow: none !important;
 }
 
 .settings-item .settings-button::after {
@@ -493,7 +510,10 @@ html.dark .plugin-card:hover::after {
 }
 
 
-/* ── 插件 TabRow  ── */
+/* ── 插件 TabRow ──
+   插件视图 / 风格分类 Tab 现已统一使用宿主 CustomTabBar（.custom-tab-root），
+   滑块由 CustomTabBar 自身渲染（.custom-tab-slider），插件不再注入指示器。
+   这里只保留容器皮肤覆盖。 */
 
 .plugin-view-tabs {
   background: var(--miuix-surface-elevated) !important;
@@ -504,42 +524,12 @@ html.dark .plugin-card:hover::after {
   position: relative !important;
 }
 
-.plugin-tab-indicator {
-  position: absolute !important;
-  padding: 18px !important;
-  border-radius: 8px !important;
-  background: var(--miuix-background) !important;
-  transition: transform 0.25s ease,
-              width 0.25s ease !important;
-  pointer-events: none !important;
-  z-index: 0 !important;
-}
-
-.plugin-view-tab {
-  border-radius: 8px !important;
-  border: none !important;
-  box-shadow: none !important;
-  color: rgba(128, 128, 128, 0.7) !important;
-  font-weight: 500 !important;
-  background: transparent !important;
-  position: relative !important;
-  z-index: 1 !important;
-}
-
-.plugin-view-tab:hover {
-  background: rgba(128, 128, 128, 0.06) !important;
-  color: var(--miuix-on-background) !important;
-}
-
-.plugin-view-tab.is-active {
-  background: transparent !important;
-  color: var(--miuix-on-background) !important;
-  font-weight: 700 !important;
-}
-
 /* ── 排行榜 & 新歌速递 歌曲列表容器 - Miuix 卡片 ── */
 
-.song-list-sticky + .pb-12 {
+/* 歌曲列表容器：新版 PageStickyHeader 会把标题 teleport 到独立层，
+   页面里留下 .page-sticky-placeholder 占位，因此容器改用该占位元素的相邻选择器 */
+.song-list-sticky + .pb-12,
+.page-sticky-placeholder + .pb-12 {
   background: var(--miuix-background) !important;
   border-radius: 16px !important;
   padding: 0 !important;
@@ -547,13 +537,15 @@ html.dark .plugin-card:hover::after {
   overflow: hidden !important;
 }
 
-.song-list-sticky + .pb-12 .song-list-row {
+.song-list-sticky + .pb-12 .song-list-row,
+.page-sticky-placeholder + .pb-12 .song-list-row {
   padding-left: 12px !important;
   padding-right: 12px !important;
   border-radius: 0 !important;
 }
 
-.song-list-sticky + .pb-12 .px-6 {
+.song-list-sticky + .pb-12 .px-6,
+.page-sticky-placeholder + .pb-12 .px-6 {
   padding-left: 0 !important;
   padding-right: 0 !important;
 }
@@ -564,6 +556,7 @@ html.dark .plugin-card:hover::after {
   background: var(--miuix-background) !important;
   border: none !important;
   box-shadow: none !important;
+  border-radius: 16px !important;
   position: relative !important;
   overflow: hidden !important;
 }
@@ -577,7 +570,8 @@ html.dark .plugin-card:hover::after {
   content: '';
   position: absolute;
   inset: 0;
-  border-radius: 16px;
+  /* 与卡片本体同圆角，避免 hover 遮罩圆角与卡片实际圆角不一致 */
+  border-radius: inherit !important;
   background: transparent;
   pointer-events: none;
   transition:0.1s ease;
@@ -635,25 +629,7 @@ html.dark .sidebar-nav-item:active {
   position: relative !important;
 }
 
-/* 顶部渐变开启（html 上有 miuix-accent-on）：侧栏背景改回 Echo 的半透明透出式
-   底色，让顶部主题色渐变带在侧栏同样可见；关闭时上方的不透明底色规则生效。 */
-html.miuix-bg-active.miuix-accent-on .sidebar {
-  background: color-mix(in srgb, var(--surface-sidebar-base) 14%, transparent) !important;
-}
-
 .miuix-sidebar-blur {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 50px;
-  background: linear-gradient(to bottom, transparent, var(--miuix-surface) 85%);
-  pointer-events: none;
-  z-index: 100;
-}
-
-/* 主内容底部渐变遮罩 */
-.miuix-main-blur {
   position: absolute;
   bottom: 0;
   left: 0;
@@ -662,6 +638,40 @@ html.miuix-bg-active.miuix-accent-on .sidebar {
   background: linear-gradient(to bottom, transparent, var(--miuix-surface) 90%);
   pointer-events: none;
   z-index: 100;
+}
+
+/* 主内容底部渐变遮罩。
+   β8 主内容区比窗口内缩 8px（.main-workspace 的 padding-right），
+   绝对定位在 .main-content 内会让遮罩右侧缺一条；改为相对窗口定位并铺满到
+   窗口右侧（层级仍位于 .main-content 栈内，低于播放面板，不会盖住底栏）。 */
+.miuix-main-blur {
+  position: fixed !important;
+  bottom: 0 !important;
+  left: var(--layout-sidebar-width, 230px) !important;
+  right: 0 !important;
+  height: 60px;
+  background: linear-gradient(to bottom, transparent, var(--miuix-surface) 90%);
+  pointer-events: none;
+  z-index: 100;
+}
+
+/* 插件注入的占位 / 滑块元素：样式集中在此，便于随插件样式整体启停 */
+.miuix-page-spacer {
+  height: 100px;
+  flex-shrink: 0;
+  pointer-events: none;
+}
+
+.miuix-reka-slider {
+  position: absolute;
+  top: 5px;
+  bottom: 5px;
+  border-radius: 8px;
+  background: var(--miuix-background);
+  transition: left 0.25s ease, width 0.25s ease;
+  pointer-events: none;
+  z-index: 0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
 }
 
 .sidebar-scroll-inner {
@@ -689,21 +699,41 @@ html.dark .sidebar-library-item:active {
   color: var(--color-primary) !important;
 }
 
-/* ── 侧栏用户卡片 -  ── */
+/* ── 侧栏最顶部用户卡片：卡片本体不做 hover/active 遮罩
+   （内部头像区 / 箭头各自有遮罩，避免多层遮罩叠加）── */
 
-.user-info-card {
+.user-info-card,
+.user-info-card:hover,
+.user-info-card:active {
   background: var(--miuix-background) !important;
   border: none !important;
   border-radius: 16px !important;
+  /* 左内边距与上下一致（0.4 rem），让左侧可点遮罩留白均匀 */
+  padding: 4px !important;
+}
+
+/* 卡片内的可点区域（头像+昵称）hover/active 遮罩，与卡片同圆角；遮罩加内边距 */
+.sidebar-user-link {
+  padding: 4px 8px !important;
+  border-radius: 12px !important;
+  transition: background-color 0.18s cubic-bezier(0.2, 0, 0, 1) !important;
 }
 
 .sidebar-user-link:hover {
-  background-color: rgba(0, 0, 0, 0.08) !important;
+  background-color: color-mix(in srgb, var(--miuix-on-background) 8%, transparent) !important;
   box-shadow: none !important;
-  transform: background 0.1s !important;
 }
-html.dark .sidebar-user-link:hover {
-  background-color: rgba(255, 255, 255, 0.04) !important;
+
+.sidebar-user-link:active {
+  background-color: color-mix(in srgb, var(--miuix-on-background) 14%, transparent) !important;
+}
+
+.account-trigger {
+  border-radius: 9999px !important;
+}
+
+.account-trigger:hover {
+  background: color-mix(in srgb, var(--miuix-on-background) 8%, transparent) !important;
 }
 
 .sidebar-settings-btn {
@@ -718,6 +748,168 @@ html.dark .sidebar-user-link:hover {
 }
 html.dark .sidebar-settings-btn:hover {
   background-color: rgba(255, 255, 255, 0.04) !important;
+}
+
+/* ── β8 新增侧栏元素（快捷入口 / 工具 / 会员徽章 / 歌单工具行 / 创建菜单 / 折叠栏）适配 MIUIX ── */
+
+/* 快捷入口卡片网格（收藏 / 最近 / …） */
+.shortcut-card,
+.shortcut-add {
+  background: var(--miuix-background) !important;
+  border: none !important;
+  border-radius: 16px !important;
+  box-shadow: none !important;
+  color: var(--miuix-on-background) !important;
+}
+.shortcut-card:is(:hover, :focus-within) {
+  background: color-mix(in srgb, var(--miuix-background) 85%, var(--miuix-on-background) 15%) !important;
+}
+.shortcut-card:has(.shortcut-activate[aria-current='page']) {
+  background: var(--miuix-background) !important;
+  color: var(--miuix-primary) !important;
+}
+.shortcut-card:has(.shortcut-activate[aria-current='page']) .shortcut-icon {
+  color: var(--miuix-primary) !important;
+}
+.shortcut-add {
+  background: transparent !important;
+  border: 1px dashed color-mix(in srgb, var(--miuix-on-background) 20%, transparent) !important;
+  color: color-mix(in srgb, var(--miuix-on-background) 55%, transparent) !important;
+}
+.shortcut-add:hover {
+  background: color-mix(in srgb, var(--miuix-on-background) 6%, transparent) !important;
+}
+.shortcut-icon,
+.shortcut-label {
+  color: var(--miuix-on-background) !important;
+}
+.shortcut-remove {
+  border-radius: 9999px !important;
+}
+.shortcut-remove:hover {
+  background: color-mix(in srgb, var(--miuix-on-background) 10%, transparent) !important;
+}
+
+/* 侧栏底部工具按钮（历史 / … / 设置 / 主题） */
+.sidebar-app-tool {
+  border-radius: 12px !important;
+  color: var(--miuix-on-background) !important;
+}
+.sidebar-app-tool:hover {
+  background: color-mix(in srgb, var(--miuix-on-background) 7%, transparent) !important;
+}
+
+/* 用户卡片文字 / 会员徽章 */
+.sidebar-profile-name {
+  color: var(--miuix-on-background) !important;
+}
+.sidebar-profile-meta {
+  color: color-mix(in srgb, var(--miuix-on-background) 55%, transparent) !important;
+}
+.sidebar-account-divider {
+  background: color-mix(in srgb, var(--miuix-on-background) 12%, transparent) !important;
+}
+.sidebar-member-badge {
+  border-radius: 9999px !important;
+  background: color-mix(in srgb, var(--miuix-on-background) 8%, transparent) !important;
+  color: color-mix(in srgb, var(--miuix-on-background) 70%, transparent) !important;
+}
+.sidebar-member-badge.is-svip,
+.sidebar-member-badge.is-tvip {
+  background: color-mix(in srgb, var(--miuix-primary) 16%, transparent) !important;
+  color: var(--miuix-primary) !important;
+}
+
+/* 歌单分组标题 & 工具行（自建 / 收藏 / 排序 / 刷新 / 添加） */
+.sidebar-section-header,
+.sidebar-tab-divider {
+  color: color-mix(in srgb, var(--miuix-on-background) 55%, transparent) !important;
+}
+.sidebar-playlist-tab {
+  color: color-mix(in srgb, var(--miuix-on-background) 60%, transparent) !important;
+}
+.sidebar-playlist-tab:hover {
+  color: var(--miuix-on-background) !important;
+}
+.sidebar-section-action,
+.sidebar-icon-btn {
+  border-radius: 10px !important;
+  color: var(--miuix-on-background) !important;
+}
+.sidebar-section-action:hover,
+.sidebar-icon-btn:hover {
+  background: color-mix(in srgb, var(--miuix-on-background) 8%, transparent) !important;
+}
+.sidebar-playlist-divider {
+  background: color-mix(in srgb, var(--miuix-on-background) 8%, transparent) !important;
+  height: 1px !important;
+  /* 水平居中：显式宽度 + 自动外边距，flex 容器下再 align-self 兜底 */
+  display: block !important;
+  flex: none !important;
+  align-self: center !important;
+  width: calc(100% - 32px) !important;
+  margin: 0 auto !important;
+}
+
+/* 去掉 space-y 间隔，避免分割线上下出现空隙 */
+.sidebar-scroll-inner > * + * {
+  margin-top: 0 !important;
+  margin-block-start: 0 !important;
+}
+
+/* 创建歌单下拉菜单 */
+.sidebar-create-menu {
+  background: var(--miuix-background) !important;
+  border: none !important;
+  border-radius: 16px !important;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.14) !important;
+  padding: 6px !important;
+}
+.sidebar-create-menu-title,
+.sidebar-create-menu-title-row {
+  color: var(--miuix-on-background) !important;
+}
+.sidebar-create-menu-desc {
+  color: color-mix(in srgb, var(--miuix-on-background) 55%, transparent) !important;
+}
+.sidebar-create-menu-item {
+  border-radius: 12px !important;
+}
+.sidebar-create-menu-item:hover {
+  background: color-mix(in srgb, var(--miuix-on-background) 7%, transparent) !important;
+}
+.sidebar-create-menu-icon {
+  color: var(--miuix-primary) !important;
+}
+
+/* 折叠栏（rail） */
+.sidebar-rail-avatar-btn {
+  background: var(--miuix-background) !important;
+  border-radius: 12px !important;
+}
+.sidebar-rail-avatar-btn:hover {
+  background: color-mix(in srgb, var(--miuix-primary) 12%, transparent) !important;
+}
+.sidebar-rail-item:hover,
+.sidebar-rail-cover-btn:hover {
+  background: color-mix(in srgb, var(--miuix-on-background) 8%, transparent) !important;
+}
+.sidebar-rail-item.is-active,
+.sidebar-rail-cover-btn.is-active {
+  background: color-mix(in srgb, var(--miuix-primary) 14%, transparent) !important;
+  color: var(--miuix-primary) !important;
+}
+.sidebar-rail-tabs {
+  background: var(--miuix-surface-elevated) !important;
+  box-shadow: none !important;
+}
+.sidebar-rail-tab-indicator {
+  background: var(--miuix-background) !important;
+  box-shadow: none !important;
+}
+.sidebar-rail-empty {
+  background: color-mix(in srgb, var(--miuix-on-background) 6%, transparent) !important;
+  color: color-mix(in srgb, var(--miuix-on-background) 60%, transparent) !important;
 }
 
 /* 推荐歌单和编辑精选的卡片已被 playlist-card-grid 覆盖 */
@@ -798,9 +990,11 @@ html.dark .playlist-card-grid:hover .card-container::after {
 
 .player-bar {
   border-radius: 9999px !important;
-  background: color-mix(in srgb, var(--miuix-background) 80%, transparent) !important;
-  backdrop-filter: blur(20px) !important;
-  -webkit-backdrop-filter: blur(20px) !important;
+  /* 纯色：不透明、不模糊。用字面色以防变量未解析导致透明 */
+  background: #ffffff !important;
+  background-color: #ffffff !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
   box-shadow: inset 0 1px 0 0 rgba(255,255,255,0.8), inset 0 -1px 0 0 rgba(255,255,255,0.8) !important;
   padding-left: 22px !important;
   padding-right: 22px !important;
@@ -814,16 +1008,29 @@ html.dark .playlist-card-grid:hover .card-container::after {
   padding-bottom: 0 !important;
 }
 
+/* Echo β8 给 .main-player-panel 加了 overflow:hidden（用于裁剪皮肤圆角）。
+   本插件把 .player-bar-container 设为 absolute 后该面板高度塌成 0，
+   浮动底栏会被裁剪消失。放开裁剪，让浮动底栏重新可见。 */
+.main-player-panel {
+  overflow: visible !important;
+}
+
 .main-content {
   position: relative !important;
   padding-bottom: 0px !important;
 }
 
-.player-bar .rounded-\[10px\] {
-  border-radius: 9999px !important;
+/* 沉浸底栏：β8 的 .main-workspace 在底部留了 gap 和内边距，
+   使 .main-content 到不了窗口底部，底部沉浸渐变遮罩（.miuix-main-blur）整体偏高。
+   去掉底部 gap 与内边距，让内容延伸到窗口底部，遮罩与浮动底栏对齐。 */
+.main-workspace {
+  gap: 0 !important;
+  padding-bottom: 0 !important;
 }
 
 .dark .player-bar {
+  background: #2e2e2e !important;
+  background-color: #2e2e2e !important;
   box-shadow: inset 0 1px 0 0 rgba(255,255,255,0.15), inset 0 -1px 0 0 rgba(255,255,255,0.15) !important;
 }
 
@@ -836,9 +1043,7 @@ html.dark .playlist-card-grid:hover .card-container::after {
    底栏顶部 = --drawer-bottom-offset + (offset - 8)，再补 12px 间距。 */
 .comment-composer-bottom,
 .detail-comment-composer {
-  bottom: calc(
-    var(--drawer-bottom-offset, 96px) + var(--miuix-player-bar-offset, 8px) + 4px
-  ) !important;
+  bottom: calc(var(--drawer-bottom-offset, 96px) + 12px) !important;
 }
 
 .sidebar-nav-item {
@@ -1106,11 +1311,17 @@ html.dark .custom-selector:active {
   box-shadow: none !important;
 }
 
+/* ── 顶栏按钮圆角统一为 MIUIX（按钮只有 32~34px，16px 会变成胶囊/圆，故取 12px） ── */
+.title-bar button,
+.title-bar .action-icon {
+  border-radius: 12px !important;
+}
+
 /* ── 顶部全局搜索栏 ── */
 .tb-search-input-wrap {
   background: var(--miuix-background) !important;
   border: 1px solid transparent !important;
-  border-radius: 10px !important;
+  border-radius: 12px !important;
   height: 32px !important;
   padding: 0 4px 0 12px !important;
   box-shadow: none !important;
@@ -1353,7 +1564,7 @@ html.dark .search-suggestion-item:hover {
 /* ── Miuix Slider ── */
 
 /* 轨道：10px 高，全圆角 */
-.slider-track {
+.echo-slider-track {
   height: 10px !important;
   border-radius: 999px !important;
   background: var(--miuix-slider-background) !important;
@@ -1361,7 +1572,7 @@ html.dark .search-suggestion-item:hover {
 }
 
 /* 已填充部分 */
-.slider-range {
+.echo-slider-range {
   height: 100% !important;
   border-bottom-right-radius: 999px !important;
   border-top-right-radius: 999px !important;
@@ -1369,7 +1580,7 @@ html.dark .search-suggestion-item:hover {
 }
 
 /* 拖拽球 */
-.slider-thumb {
+.echo-slider-thumb {
   width: 14px !important;
   height: 14px !important;
   border-radius: 50% !important;
@@ -1382,36 +1593,36 @@ html.dark .search-suggestion-item:hover {
   -webkit-tap-highlight-color: transparent !important;
 }
 
-html.dark .slider-thumb {
+html.dark .echo-slider-thumb {
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4) !important;
 }
 
-.slider-thumb:active,
-.slider-root[data-dragging] .slider-thumb {
+.echo-slider-thumb:active,
+.slider-root[data-dragging] .echo-slider-thumb {
   border-width: 2px !important;
   box-shadow: 0 1px 8px rgba(0, 0, 0, 0.2) !important;
 }
 
-html.dark .slider-thumb:active,
-html.dark .slider-root[data-dragging] .slider-thumb {
+html.dark .echo-slider-thumb:active,
+html.dark .slider-root[data-dragging] .echo-slider-thumb {
   box-shadow: 0 1px 8px rgba(0, 0, 0, 0.5) !important;
 }
 
-.slider-thumb:focus-visible {
+.echo-slider-thumb:focus-visible {
   outline: none !important;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15) !important;
 }
 
-html.dark .slider-thumb:focus-visible {
+html.dark .echo-slider-thumb:focus-visible {
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4) !important;
 }
 
 /* 禁用状态 */
-.slider-root[data-disabled] .slider-thumb {
+.slider-root[data-disabled] .echo-slider-thumb {
   border-color: rgba(128, 128, 128, 0.4) !important;
 }
 
-.slider-root[data-disabled] .slider-range {
+.slider-root[data-disabled] .echo-slider-range {
   background: rgba(128, 128, 128, 0.4) !important;
 }
 
@@ -1423,8 +1634,10 @@ html.dark .slider-thumb:focus-visible {
   opacity: 0.6 !important;
 }
 
-/* ── 快速回顶按钮 ── */
-.back-to-top-btn {
+/* ── 快速回顶按钮 ──
+   新版 BackToTop 的定位在包裹层（Tailwind .bottom-4），按钮自身的 bottom 无效；
+   这里用 :has 选中包裹层，把按钮抬到悬浮底栏之上。 */
+.absolute:has(> .back-to-top-btn) {
   bottom: 100px !important;
 }
 .settings-back-to-top {
@@ -1446,57 +1659,8 @@ html.dark .slider-thumb:focus-visible {
   gap: 12px !important;
 }
 
-/* 分类标签容器 */
-.style-category-tabs {
-  background: var(--miuix-surface-elevated) !important;
-  border-radius: 10px !important;
-  padding: 4px !important;
-  gap: 2px !important;
-  position: relative !important;
-}
-
-/* 分类标签滑动指示器 */
-.style-category-indicator {
-  position: absolute !important;
-  top: 4px !important;
-  bottom: 4px !important;
-  left: 0 !important;
-  border-radius: 8px !important;
-  background: var(--miuix-background) !important;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08) !important;
-  transition: transform 0.25s ease, width 0.25s ease !important;
-  pointer-events: none !important;
-  z-index: 0 !important;
-}
-
-html.dark .style-category-indicator {
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3) !important;
-}
-
-/* 分类标签按钮 */
-.style-category-btn {
-  height: 28px !important;
-  padding: 0 12px !important;
-  border-radius: 8px !important;
-  font-size: 12px !important;
-  font-weight: 600 !important;
-  color: rgba(128, 128, 128, 0.7) !important;
-  background: transparent !important;
-  position: relative !important;
-  z-index: 1 !important;
-  transition: color 0.15s ease !important;
-}
-
-.style-category-btn:hover {
-  color: var(--miuix-on-background) !important;
-  background: transparent !important;
-}
-
-.style-category-btn.active {
-  color: var(--miuix-on-background) !important;
-  background: transparent !important;
-  font-weight: 700 !important;
-}
+/* 分类标签容器现为宿主 CustomTabBar（.custom-tab-root），
+   滑块（.custom-tab-slider）由组件自行渲染，插件不再注入指示器。 */
 
 /* 面板标签 */
 .style-panel-label {
@@ -1675,23 +1839,23 @@ html.dark .style-song-grid .song-card:active::after {
 /* 表面色的合成放在 body 上：透明度变量可以就近解析，
    也让 body 上由插件贡献的 --surface-*-opacity 能生效 */
 html.miuix-bg-active body {
+  /* 跟随宿主主题/窗口透明度发布的表面不透明度 */
+  --miuix-surface-alpha: var(--surface-main-opacity, 100%);
+  --miuix-elevated-alpha: var(--surface-elevated-opacity, 100%);
+  --miuix-background-alpha: var(--surface-card-opacity, 100%);
   --miuix-surface: color-mix(in srgb, var(--miuix-surface-base) var(--miuix-surface-alpha), transparent);
   --miuix-surface-elevated: color-mix(in srgb, var(--miuix-surface-elevated-base) var(--miuix-elevated-alpha), transparent);
   --miuix-background: color-mix(in srgb, var(--miuix-background-base) var(--miuix-background-alpha), transparent);
 }
 
-/* 1) 模糊背景 / 透明窗口（Echo「窗口背景」开启且有模糊、透明度或自定义背景色） */
-html.miuix-bg-active.app-background-transparent {
+/* 1) 透明窗口 / 模糊背景：miuix 的所有表面（画布 / 卡片 / 浮层）一起降为半透明，
+      露出窗口背景，避免模糊背景上出现成片纯色白/黑。
+      注：宿主的 --surface-card-opacity 在透明态仍是 100%，故此处用固定半透明值；
+      直接作用于合成所在的 body，确保覆盖上面的默认值。 */
+html.miuix-bg-active.app-background-transparent body {
   --miuix-surface-alpha: 45%;
   --miuix-background-alpha: 55%;
   --miuix-elevated-alpha: 70%;
-}
-
-/* 2) 有插件贡献表面透明度时，直接跟随 Echo 的设置（含背景模糊强度） */
-body.echo-surface-translucent {
-  --miuix-surface-alpha: var(--surface-main-opacity, 45%);
-  --miuix-background-alpha: var(--surface-card-opacity, 55%);
-  --miuix-elevated-alpha: var(--surface-elevated-opacity, 70%);
 }
 
 /* 3) 浮层类表面（下拉、搜索建议等）保持较高的不透明度，保证可读性——
@@ -1708,8 +1872,1343 @@ body.echo-surface-translucent
 /* 4) 选中指示块（分段控件/标签行里的小滑块）：比所在容器更实一些，
       半透明后仍能看出「当前选中」 */
 html.miuix-bg-active.app-background-transparent
-  :is(.settings-anchor-indicator, .style-category-indicator, .custom-tab-slider, .plugin-tab-indicator),
+  :is(.settings-anchor-indicator, .custom-tab-slider),
 body.echo-surface-translucent
-  :is(.settings-anchor-indicator, .style-category-indicator, .custom-tab-slider, .plugin-tab-indicator) {
+  :is(.settings-anchor-indicator, .custom-tab-slider) {
   --miuix-background: color-mix(in srgb, var(--miuix-background-base) 88%, transparent);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   β8 新界面 MIUIX 覆盖（设置面板 / 个性主题 / 插件标签等）
+   宿主的这些新组件使用 --content-panel-bg / --control-* 等中性 token，
+   这里统一换成 MIUIX 的表面与圆角，保持整体风格一致。
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* ── 新版设置面板 ── */
+.settings-section {
+  background: transparent !important;
+}
+
+.settings-sidebar {
+  background: transparent !important;
+  border: none !important;
+}
+
+.settings-nav-item {
+  border-radius: 10px !important;
+  font-weight: 500 !important;
+  color: color-mix(in srgb, var(--miuix-on-background) 60%, transparent) !important;
+  background: transparent !important;
+}
+
+.settings-nav-item:hover {
+  background: color-mix(in srgb, var(--miuix-on-background) 7%, transparent) !important;
+  color: var(--miuix-on-background) !important;
+}
+
+.settings-nav-item.is-active {
+  background: var(--miuix-background) !important;
+  color: var(--miuix-on-background) !important;
+  font-weight: 700 !important;
+}
+
+.settings-heading h1,
+.settings-heading-hint {
+  color: var(--miuix-on-background) !important;
+}
+
+.settings-search-shell,
+.settings-search {
+  background: var(--miuix-background) !important;
+  border: none !important;
+  /* 与内部搜索按钮（hover 遮罩）同圆角，避免“实际圆角 / 遮罩圆角”不一致 */
+  border-radius: 9999px !important;
+}
+
+.settings-search-input {
+  color: var(--miuix-on-background) !important;
+}
+
+.settings-search-input::placeholder {
+  color: color-mix(in srgb, var(--miuix-on-background) 45%, transparent) !important;
+}
+
+.settings-search-icon,
+.settings-search-icon-button,
+.settings-search-clear,
+.settings-search-trigger-icon {
+  color: color-mix(in srgb, var(--miuix-on-background) 55%, transparent) !important;
+}
+
+/* 设置页顶部搜索按钮：MIUIX hover / active 遮罩 */
+.settings-search-icon-button {
+  transition: background-color 0.18s ease, color 0.18s ease !important;
+}
+
+.settings-search-icon-button:hover,
+.settings-search-clear:hover {
+  background: color-mix(in srgb, var(--miuix-on-background) 8%, transparent) !important;
+  color: color-mix(in srgb, var(--miuix-on-background) 85%, transparent) !important;
+}
+
+.settings-search-icon-button:active,
+.settings-search-clear:active {
+  background: color-mix(in srgb, var(--miuix-on-background) 14%, transparent) !important;
+}
+
+.settings-action {
+  border-radius: 10px !important;
+}
+
+.settings-color-item {
+  background: var(--miuix-surface-elevated) !important;
+  border: none !important;
+  border-radius: 12px !important;
+}
+
+.settings-color-swatch {
+  border-radius: 9999px !important;
+}
+
+.settings-notice,
+.settings-notice:hover,
+.settings-notice:active {
+  background: color-mix(in srgb, var(--miuix-primary) 12%, transparent) !important;
+  border: none !important;
+  /* 与所在设置卡片（rounded-2xl）同圆角，避免提示条圆角与卡片对不上 */
+  border-radius: var(--radius-2xl, var(--radius-card, 12px)) !important;
+}
+
+/* 提示条不参与 hover/active 遮罩 */
+.settings-notice::before,
+.settings-notice::after {
+  content: none !important;
+  background: transparent !important;
+}
+
+.settings-input {
+  background: var(--miuix-surface-elevated) !important;
+  color: var(--miuix-on-background) !important;
+}
+
+/* ── 个性主题（主题中心）卡片 ── */
+.theme-select-card {
+  background: var(--miuix-background) !important;
+  border: none !important;
+  border-radius: 16px !important;
+  box-shadow: none !important;
+}
+
+/* MIUIX 个性主题卡片：不做悬浮/位移；hover/active 的遮罩变化带过渡时长 */
+.theme-select-card,
+.theme-select-card:hover,
+.theme-select-card:active {
+  transition: background-color 0.18s cubic-bezier(0.2, 0, 0, 1) !important;
+  transform: none !important;
+  translate: none !important;
+  scale: none !important;
+}
+
+.theme-select-card:hover {
+  background: color-mix(in srgb, var(--miuix-background) 90%, var(--miuix-on-background) 10%) !important;
+}
+
+.theme-select-card:active {
+  background: color-mix(in srgb, var(--miuix-background) 78%, var(--miuix-on-background) 22%) !important;
+}
+
+.theme-card-title,
+.theme-current-name,
+.theme-catalog-heading,
+.theme-palette-heading h2,
+.theme-image-heading h2 {
+  color: var(--miuix-on-background) !important;
+}
+
+.theme-card-description {
+  color: var(--miuix-on-background) !important;
+  opacity: 0.6 !important;
+}
+
+.theme-catalog-heading::after {
+  background: color-mix(in srgb, var(--miuix-on-background) 12%, transparent) !important;
+}
+
+.theme-custom-panel {
+  background: var(--miuix-background) !important;
+  border: none !important;
+  border-radius: 16px !important;
+}
+
+.theme-image-drop {
+  background: var(--miuix-surface-elevated) !important;
+  border-radius: 16px !important;
+}
+
+.theme-image-controls {
+  background: var(--miuix-background) !important;
+  border-radius: 16px !important;
+}
+
+.theme-color-swatch,
+.theme-custom-color {
+  border-radius: 12px !important;
+}
+
+.theme-adjustments-drawer {
+  background: var(--miuix-background) !important;
+  border-radius: 16px 0 0 16px !important;
+  border: none !important;
+}
+
+.theme-drawer-heading,
+.theme-range-heading {
+  color: var(--miuix-on-background) !important;
+}
+
+.editor-section {
+  background: transparent !important;
+  border: none !important;
+}
+
+.editor-details summary:hover {
+  background: color-mix(in srgb, var(--miuix-on-background) 7%, transparent) !important;
+}
+
+.theme-plugin-settings {
+  background: var(--miuix-surface-elevated) !important;
+  border-radius: 12px !important;
+  border: none !important;
+}
+
+/* ── 插件管理标签的文本 ── */
+.plugin-view-tab-label {
+  color: inherit !important;
+  font-weight: inherit !important;
+}
+
+.plugin-view-tab-count {
+  color: inherit !important;
+  opacity: 0.55 !important;
+}
+
+/* ── 通用：设置/主题面板里的分段控件（CustomTabBar）在 MIUIX 下统一外观 ── */
+.settings-page .custom-tab-root,
+.theme-center .custom-tab-root {
+  background: var(--miuix-surface-elevated) !important;
+  border: none !important;
+  border-radius: 13px !important;
+  padding: 5px !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   侧栏「添加卡片」功能（+ 按钮 / 添加卡片弹层）MIUIX 覆盖
+   ═══════════════════════════════════════════════════════════════════════ */
+
+.shortcut-add {
+  background: var(--miuix-background) !important;
+  border: 1.5px dashed color-mix(in srgb, var(--miuix-primary) 55%, transparent) !important;
+  border-radius: 16px !important;
+  color: var(--miuix-primary) !important;
+}
+
+.shortcut-add:hover {
+  background: color-mix(in srgb, var(--miuix-background) 85%, var(--miuix-on-background) 15%) !important;
+  color: var(--miuix-primary) !important;
+}
+
+.shortcut-add.is-wide {
+  height: 30px !important;
+}
+
+/* 快捷入口卡片（为你推荐 / 探索发现…）与添加卡片按钮：
+   hover 时背景/描边/文字与图标↔文字切换都加过渡时长，避免直接跳变 */
+.shortcut-card,
+.shortcut-add {
+  transition:
+    background-color 0.18s cubic-bezier(0.2, 0, 0, 1),
+    border-color 0.18s cubic-bezier(0.2, 0, 0, 1),
+    color 0.18s cubic-bezier(0.2, 0, 0, 1);
+}
+
+.shortcut-icon,
+.shortcut-label {
+  transition: opacity 0.18s cubic-bezier(0.2, 0, 0, 1);
+}
+
+/* 添加卡片弹层 */
+.dialog-content.shortcut-picker,
+.shortcut-picker {
+  background: var(--miuix-background) !important;
+  border: none !important;
+  border-radius: 20px !important;
+}
+
+/* 添加卡片菜单：以左边为轴向右「揭示」展开 / 收回（内容本身不缩放、不平移）
+   裁剪区域向外留出阴影余量，避免阴影在动画结束后才突然闪现 */
+.dialog-content.shortcut-picker[data-state='open'] {
+  animation: miuix-picker-in 0.3s cubic-bezier(0.05, 0.7, 0.1, 1) both !important;
+}
+.dialog-content.shortcut-picker[data-state='closed'] {
+  opacity: 1 !important;
+  animation: miuix-picker-out 0.22s cubic-bezier(0.4, 0, 1, 1) forwards !important;
+}
+@keyframes miuix-picker-in {
+  from {
+    clip-path: inset(-80px calc(100% + 80px) -80px -80px);
+  }
+  to {
+    clip-path: inset(-80px -80px -80px -80px);
+  }
+}
+@keyframes miuix-picker-out {
+  from {
+    clip-path: inset(-80px -80px -80px -80px);
+  }
+  to {
+    clip-path: inset(-80px calc(100% + 80px) -80px -80px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .dialog-content.shortcut-picker[data-state] {
+    animation: none !important;
+  }
+}
+
+.shortcut-picker-hint,
+.shortcut-picker-empty,
+.shortcut-candidates small {
+  color: color-mix(in srgb, var(--miuix-on-background) 55%, transparent) !important;
+}
+
+.shortcut-functions-heading,
+.shortcut-picker-section h3 {
+  color: var(--miuix-on-background) !important;
+}
+
+/* 常用功能 / 常听艺人 卡片按钮 */
+.shortcut-candidates button,
+.shortcut-artists button {
+  background: var(--miuix-surface-elevated) !important;
+  border-radius: 16px !important;
+  color: var(--miuix-on-background) !important;
+}
+
+/* 最近常听 列表按钮 */
+.shortcut-playlists button {
+  border-radius: 12px !important;
+  color: var(--miuix-on-background) !important;
+}
+
+/* ═══ 通用 MIUIX 悬停/按下遮罩 ═══
+   在元素底色之上叠一层 on-background 半透明遮罩（不替换底色），hover 6% / active 13%，带 0.15s 过渡。
+   新增需要遮罩的元素时，把它的选择器加进下面 :is() 列表即可（元素自带 ::after 遮罩的不要加入）。 */
+:is(.shortcut-candidates button, .shortcut-artists button, .shortcut-playlists button) {
+  position: relative;
+}
+:is(.shortcut-candidates button, .shortcut-artists button, .shortcut-playlists button)::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: var(--miuix-on-background);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s cubic-bezier(0.2, 0, 0, 1);
+}
+:is(.shortcut-candidates button, .shortcut-artists button, .shortcut-playlists button):hover::after {
+  opacity: 0.06;
+}
+:is(.shortcut-candidates button, .shortcut-artists button, .shortcut-playlists button):active::after {
+  opacity: 0.13;
+}
+
+.shortcut-picker button[aria-pressed='true'] {
+  color: color-mix(in srgb, var(--miuix-on-background) 55%, transparent) !important;
+}
+
+.shortcut-reset {
+  border-radius: 10px !important;
+  color: var(--miuix-on-background) !important;
+}
+
+.shortcut-resource-action,
+.shortcut-playlists button > svg {
+  color: color-mix(in srgb, var(--miuix-on-background) 55%, transparent) !important;
+}
+
+/* ── 弹窗关闭按钮：MIUIX 圆形（覆盖任务中心、添加卡片等所有弹窗） ── */
+.dialog-close {
+  border-radius: 9999px !important;
+  width: 30px !important;
+  height: 30px !important;
+  min-width: 0 !important;
+  padding: 0 !important;
+  background: transparent !important;
+  color: color-mix(in srgb, var(--miuix-on-background) 70%, transparent) !important;
+}
+
+.dialog-close:hover {
+  background: color-mix(in srgb, var(--miuix-on-background) 10%, transparent) !important;
+  color: var(--miuix-on-background) !important;
+}
+
+/* ── 插件标签（插件管理页 Tab）MIUIX ── */
+.plugin-view-tabs,
+.plugin-view-tabs.custom-tab-root {
+  background: var(--miuix-surface-elevated) !important;
+  border: none !important;
+  border-radius: 13px !important;
+  padding: 5px !important;
+}
+
+.plugin-view-tabs .custom-tab-slider {
+  background: var(--miuix-background) !important;
+  border-radius: 8px !important;
+  box-shadow: none !important;
+}
+
+.plugin-view-tabs .custom-tab-item {
+  color: color-mix(in srgb, var(--miuix-on-background) 60%, transparent) !important;
+  font-weight: 500 !important;
+}
+
+.plugin-view-tabs .custom-tab-item.active {
+  color: var(--miuix-on-background) !important;
+  font-weight: 700 !important;
+}
+
+/* ── 插件卡片标签（描述/状态）改为 MIUIX：去掉 inset 描边，改浅色填充圆角 ── */
+.plugin-feature-tags span,
+.plugin-feature-tags .ui-tag,
+.marketplace-tags span,
+.marketplace-tags .ui-tag {
+  box-shadow: none !important;
+  border: none !important;
+  border-radius: 9px !important;
+  background: color-mix(in srgb, var(--miuix-on-background) 8%, transparent) !important;
+  color: color-mix(in srgb, var(--miuix-on-background) 72%, transparent) !important;
+}
+
+/* 状态徽章（已启用 / 更新 / 警告 / 错误）也去描边，保留各自色调 */
+.plugin-status-badge {
+  box-shadow: none !important;
+  border: none !important;
+  border-radius: 9px !important;
+}
+
+/* ── 设置面板搜索按钮：与顶栏统一 12px（含 hover 态，避免 hover 变圆） ── */
+.settings-search-icon-button,
+.settings-search-icon-button:hover,
+.settings-search-clear,
+.settings-search-clear:hover {
+  border-radius: 12px !important;
+}
+.settings-search {
+  border-radius: 12px !important;
+}
+
+/* ── 消息提示（Toast）MIUIX ── */
+.toast-card {
+  background: var(--miuix-background) !important;
+  border: none !important;
+  border-radius: 16px !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.16) !important;
+  color: var(--miuix-on-background) !important;
+}
+.toast-title,
+.toast-message {
+  color: var(--miuix-on-background) !important;
+}
+.has-title .toast-message,
+.toast-detail {
+  color: color-mix(in srgb, var(--miuix-on-background) 60%, transparent) !important;
+}
+.toast-close {
+  border-radius: 9999px !important;
+  color: color-mix(in srgb, var(--miuix-on-background) 65%, transparent) !important;
+}
+.toast-close:hover {
+  background: color-mix(in srgb, var(--miuix-on-background) 10%, transparent) !important;
+  color: var(--miuix-on-background) !important;
+}
+.toast-action,
+.toast-icon {
+  border-radius: 10px !important;
+}
+
+/* ── 侧栏账号弹层（侧栏顶部头像卡片箭头弹出）MIUIX ── */
+.echo-popover-content {
+  background: var(--miuix-background) !important;
+  border: none !important;
+  border-radius: 16px !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.16) !important;
+  color: var(--miuix-on-background) !important;
+}
+.account-name strong,
+.account-stats dd {
+  color: var(--miuix-on-background) !important;
+}
+.account-name > span,
+.account-signature,
+.account-stats dt,
+.account-listening > :first-child,
+.account-membership div > span,
+.account-login span {
+  color: color-mix(in srgb, var(--miuix-on-background) 55%, transparent) !important;
+}
+.account-stats {
+  border-color: color-mix(in srgb, var(--miuix-on-background) 12%, transparent) !important;
+}
+.account-stats > div + div {
+  border-left-color: color-mix(in srgb, var(--miuix-on-background) 12%, transparent) !important;
+}
+.account-action {
+  border-radius: 10px !important;
+}
+.account-membership-marker {
+  background: var(--miuix-primary) !important;
+}
+
+/* 弹层出现动画统一用「下拉菜单同款」（避免用别的动画覆盖后把下拉菜单动画也改坏） */
+.echo-popover-content[data-state='open'] {
+  animation: miuix-dropdown-in 0.22s cubic-bezier(0.05, 0.7, 0.1, 1) !important;
+}
+
+/* 侧栏账号弹层：clip-path 从上往下揭示 / 向上收起（裁剪区留阴影余量） */
+.echo-popover-content:has(.account-panel)[data-state='open'] {
+  animation: miuix-account-drop-in 0.24s cubic-bezier(0.05, 0.7, 0.1, 1) both !important;
+}
+.echo-popover-content:has(.account-panel)[data-state='closed'] {
+  animation: miuix-account-drop-out 0.2s cubic-bezier(0.4, 0, 1, 1) forwards !important;
+}
+@keyframes miuix-account-drop-in {
+  from {
+    clip-path: inset(-80px -80px calc(100% + 80px) -80px);
+  }
+  to {
+    clip-path: inset(-80px -80px -80px -80px);
+  }
+}
+@keyframes miuix-account-drop-out {
+  from {
+    clip-path: inset(-80px -80px -80px -80px);
+  }
+  to {
+    clip-path: inset(-80px -80px calc(100% + 80px) -80px);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   个人主页（点击侧栏头像卡片进入）MIUIX 覆盖
+   ═══════════════════════════════════════════════════════════════════════ */
+.profile-overview,
+.profile-details {
+  background: var(--miuix-background) !important;
+  border: none !important;
+  border-radius: 16px !important;
+  box-shadow: none !important;
+}
+
+.profile-social-user {
+  background: var(--miuix-surface-elevated) !important;
+  border-radius: 12px !important;
+}
+
+.profile-chat-bubble {
+  background: var(--miuix-surface-elevated) !important;
+  border-radius: 14px !important;
+}
+
+.profile-stat + .profile-stat::before {
+  background: color-mix(in srgb, var(--miuix-on-background) 12%, transparent) !important;
+}
+
+.profile-social-icon-btn {
+  border-radius: 10px !important;
+}
+.profile-social-icon-btn:hover {
+  background: color-mix(in srgb, var(--miuix-on-background) 8%, transparent) !important;
+}
+
+.profile-social-header,
+.profile-stats {
+  border-color: color-mix(in srgb, var(--miuix-on-background) 12%, transparent) !important;
+}
+
+/* ── 所有回顶按钮（宿主 BackToTop / 本地音乐 .local-back-top 等）MIUIX ── */
+.back-to-top-btn {
+  background: var(--miuix-background) !important;
+  color: var(--miuix-on-background) !important;
+  border: none !important;
+  border-radius: 12px !important;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.14) !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+
+.back-to-top-btn:hover {
+  background: color-mix(in srgb, var(--miuix-background) 85%, var(--miuix-on-background) 15%) !important;
+  color: var(--miuix-on-background) !important;
+  transform: none !important;
+}
+
+.back-to-top-btn:active {
+  background: color-mix(in srgb, var(--miuix-background) 78%, var(--miuix-on-background) 22%) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   批量操作面板（右侧抽屉）MIUIX 覆盖
+   ═══════════════════════════════════════════════════════════════════════ */
+.drawer-panel.batch-drawer {
+  background: var(--miuix-background) !important;
+  border: none !important;
+  border-radius: 16px !important;
+}
+
+.batch-heading-icon {
+  background: color-mix(in srgb, var(--miuix-primary) 12%, transparent) !important;
+  color: var(--miuix-primary) !important;
+  border-radius: 12px !important;
+}
+
+.batch-title,
+.batch-select {
+  color: var(--miuix-on-background) !important;
+}
+
+.batch-subtitle,
+.batch-count,
+.batch-empty,
+.batch-selection {
+  color: color-mix(in srgb, var(--miuix-on-background) 55%, transparent) !important;
+}
+
+.batch-selection,
+.batch-footer {
+  border-color: color-mix(in srgb, var(--miuix-on-background) 12%, transparent) !important;
+}
+
+.batch-action {
+  border-radius: 10px !important;
+}
+
+.batch-row {
+  border-radius: 10px !important;
+}
+
+.batch-row:not(.is-selected):hover {
+  background: color-mix(in srgb, var(--miuix-on-background) 7%, transparent) !important;
+}
+
+.batch-row.is-selected {
+  background: color-mix(in srgb, var(--miuix-primary) 12%, transparent) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   复选框：Miuix 风格（圆形）——未选 = 中性灰底圆，选中 = 主色底 + 白色对勾
+   （参考 Miuix Checkbox：CircleShape，未选 secondary，选中 primary + onPrimary 勾）
+   ═══════════════════════════════════════════════════════════════════════ */
+.checkbox {
+  box-sizing: border-box;
+  width: 22px !important;
+  height: 22px !important;
+  border-radius: 9999px !important;
+  border: none !important;
+  background: color-mix(in srgb, var(--miuix-on-background) 20%, transparent) !important;
+}
+
+.checkbox[data-state='unchecked']:not([data-disabled]):hover {
+  background: color-mix(in srgb, var(--miuix-on-background) 28%, transparent) !important;
+}
+
+.checkbox[data-state='unchecked']:not([data-disabled]):active {
+  background: color-mix(in srgb, var(--miuix-on-background) 34%, transparent) !important;
+}
+
+.checkbox[data-state='checked'],
+.checkbox[data-state='indeterminate'] {
+  background: var(--miuix-primary) !important;
+}
+
+.checkbox:is([data-state='checked'], [data-state='indeterminate']):not([data-disabled]):hover {
+  background: color-mix(in srgb, var(--miuix-primary) 88%, #000000) !important;
+}
+
+.checkbox:is([data-state='checked'], [data-state='indeterminate']):not([data-disabled]):active {
+  background: color-mix(in srgb, var(--miuix-primary) 80%, #000000) !important;
+}
+
+.checkbox-indicator {
+  color: var(--miuix-on-primary, #ffffff) !important;
+  /* 勾从左往右画出来（勾在选中时才挂载，animation 在挂载时播放一次） */
+  animation: miuix-check-draw 0.22s cubic-bezier(0.2, 0, 0, 1) both;
+}
+
+@keyframes miuix-check-draw {
+  from { clip-path: inset(0 100% 0 0); }
+  to   { clip-path: inset(0 0 0 0); }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   歌曲列表页：搜索框 + 排序/定位按钮 MIUIX
+   ═══════════════════════════════════════════════════════════════════════ */
+/* 搜索框：宿主的 .song-search-input 写在 @layer utilities 且带 !important，
+   分层 !important 会压过未分层的 !important，故字段覆盖放进 @layer base（层级更早 → important 更优先） */
+@layer base {
+  .song-search-input {
+    background: var(--miuix-background) !important;
+    color: var(--miuix-on-background) !important;
+    border: none !important;
+    border-radius: 10px !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    /* 只过渡背景色；避免 outline-color 从默认 currentColor(黑) 过渡到主题色时先闪一圈黑边 */
+    outline-color: transparent !important;
+    transition: background-color 0.15s cubic-bezier(0.2, 0, 0, 1) !important;
+  }
+
+  .song-search-input::placeholder {
+    color: color-mix(in srgb, var(--miuix-on-background) 45%, transparent) !important;
+  }
+
+  .song-search-input:hover:not(:focus) {
+    background: var(--miuix-surface-elevated) !important;
+  }
+
+  .song-search-input:focus {
+    background: var(--miuix-background) !important;
+    outline: 1.5px solid var(--miuix-primary) !important;
+    outline-offset: 1px !important;
+    box-shadow: none !important;
+  }
+}
+
+.song-search-clear {
+  border-radius: 9999px !important;
+  color: color-mix(in srgb, var(--miuix-on-background) 55%, transparent) !important;
+}
+
+.song-search-clear:hover {
+  background: color-mix(in srgb, var(--miuix-on-background) 10%, transparent) !important;
+}
+
+.song-locate-btn,
+.song-sort-btn {
+  background: var(--miuix-background) !important;
+  border-radius: 10px !important;
+  color: color-mix(in srgb, var(--miuix-on-background) 70%, transparent) !important;
+}
+
+.song-locate-btn:hover,
+.song-sort-btn:hover {
+  background: var(--miuix-surface-elevated) !important;
+  color: var(--miuix-on-background) !important;
+}
+
+.song-sort-choice:hover,
+.song-sort-choice.is-active {
+  color: var(--miuix-primary) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   音乐统计页 MIUIX（卡片/面板底色、圆角、间距、文字色）
+   ═══════════════════════════════════════════════════════════════════════ */
+.history-stat-card,
+.history-panel,
+.history-album-highlight {
+  background: var(--miuix-background) !important;
+  border: none !important;
+  border-radius: 16px !important;
+  box-shadow: none !important;
+}
+
+.history-stat-card,
+.history-panel {
+  padding: 16px !important;
+}
+
+.history-stat-grid {
+  gap: 12px !important;
+}
+
+.history-stats-layout {
+  gap: 12px !important;
+}
+
+.history-stat-card-icon {
+  border-radius: 12px !important;
+}
+
+.history-stat-value,
+.history-panel-title {
+  color: var(--miuix-on-background) !important;
+}
+
+.history-stat-label,
+.history-panel-subtitle,
+.history-stat-caption,
+.history-week-date,
+.history-time-hint,
+.history-rank-meta,
+.history-song-rank-meta,
+.history-album-label {
+  color: color-mix(in srgb, var(--miuix-on-background) 55%, transparent) !important;
+}
+
+/* ═══ 评论发送控件（CommentComposer）MIUIX ═══ */
+.comment-composer:not(.is-barrage) {
+  background: var(--miuix-background) !important;
+  border: none !important;
+  border-radius: 16px !important;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.06) !important;
+}
+
+.comment-composer:not(.is-barrage):focus-within {
+  border-color: transparent !important;
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--miuix-primary) 28%, transparent) !important;
+}
+
+.comment-composer textarea {
+  color: var(--miuix-on-background) !important;
+}
+
+.comment-composer textarea::placeholder {
+  color: color-mix(in srgb, var(--miuix-on-background) 45%, transparent) !important;
+}
+
+.comment-composer .comment-send {
+  border-radius: 10px !important;
+}
+
+/* 弹幕发送框（barrage） */
+.comment-composer.is-barrage textarea {
+  background: var(--miuix-surface-elevated) !important;
+  border: none !important;
+  border-radius: 12px !important;
+  color: var(--miuix-on-background) !important;
+}
+
+/* ═══ 播放队列抽屉（PlayerQueueDrawer）MIUIX ═══ */
+.drawer-panel.queue-drawer {
+  background: var(--miuix-background) !important;
+  border: none !important;
+  border-radius: 16px !important;
+}
+
+.queue-title,
+.queue-title-meta {
+  color: var(--miuix-on-background) !important;
+}
+
+.queue-title-subtitle,
+.queue-status,
+.queue-empty {
+  color: color-mix(in srgb, var(--miuix-on-background) 55%, transparent) !important;
+}
+
+.queue-icon-btn,
+.queue-arrow-btn {
+  border-radius: 10px !important;
+  color: color-mix(in srgb, var(--miuix-on-background) 65%, transparent) !important;
+}
+
+.queue-icon-btn:hover,
+.queue-arrow-btn:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--miuix-on-background) 8%, transparent) !important;
+  color: var(--miuix-on-background) !important;
+}
+
+.queue-progress-segment {
+  background: color-mix(in srgb, var(--miuix-on-background) 14%, transparent) !important;
+}
+
+.queue-progress-thumb {
+  background: var(--miuix-primary) !important;
+}
+
+/* ═══ 顶栏搜索按钮弹出的面板（.tb-search-panel）MIUIX + 从上往下弹出 ═══ */
+.tb-search-panel {
+  background: var(--miuix-background) !important;
+  border: none !important;
+  border-radius: 16px !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.16) !important;
+  color: var(--miuix-on-background) !important;
+  transform-origin: top center !important;
+}
+
+.tb-search-panel[data-state='open'] {
+  animation: miuix-tb-search-drop 0.2s cubic-bezier(0.2, 0, 0, 1) backwards !important;
+}
+
+.tb-search-panel[data-state='closed'] {
+  animation: miuix-tb-search-fold 0.16s cubic-bezier(0.4, 0, 1, 1) forwards !important;
+}
+
+@keyframes miuix-tb-search-drop {
+  from { clip-path: inset(-80px -80px calc(100% + 80px) -80px); }
+  to   { clip-path: inset(-80px -80px -80px -80px); }
+}
+
+@keyframes miuix-tb-search-fold {
+  from { clip-path: inset(-80px -80px -80px -80px); }
+  to   { clip-path: inset(-80px -80px calc(100% + 80px) -80px); }
+}
+
+.tb-search-chip {
+  background: var(--miuix-surface-elevated) !important;
+  border-radius: 10px !important;
+  color: var(--miuix-on-background) !important;
+}
+
+.tb-search-chip:hover {
+  background: color-mix(in srgb, var(--miuix-on-background) 10%, var(--miuix-surface-elevated)) !important;
+}
+
+.tb-suggest-heading,
+.tb-search-status,
+.tb-query-hint {
+  color: color-mix(in srgb, var(--miuix-on-background) 55%, transparent) !important;
+}
+
+.tb-suggest-item {
+  border-radius: 10px !important;
+  color: var(--miuix-on-background) !important;
+}
+
+.tb-suggest-item:hover,
+.tb-suggest-item.is-active {
+  background: color-mix(in srgb, var(--miuix-on-background) 8%, transparent) !important;
+}
+
+.tb-query-footer {
+  background: var(--miuix-background) !important;
+  border-color: color-mix(in srgb, var(--miuix-on-background) 12%, transparent) !important;
+}
+
+.tb-query-submit {
+  color: var(--miuix-primary) !important;
+}
+
+/* ═══ 收缩态侧栏（rail）MIUIX：按钮 hover 圆角 + 悬停提示 tip ═══ */
+.sidebar-rail-item,
+.sidebar-rail-cover-btn,
+.sidebar-rail-avatar-btn {
+  border-radius: 12px !important;
+}
+
+/* 悬浮提示（tooltip）MIUIX */
+.app-tooltip-surface {
+  background: var(--miuix-background) !important;
+  color: var(--miuix-on-background) !important;
+  border-radius: 12px !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.14) !important;
+}
+
+.floating-surface-arrow {
+  background: var(--miuix-background) !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+
+/* 悬停文字提示不要小箭头（去掉那个尖角） */
+.app-tooltip-arrow {
+  display: none !important;
+}
+
+/* ── 抽屉面板（播放队列 / 批量操作 / 评论 / 主题调整等）与弹层统一：clip-path 揭示 ── */
+/* 右侧抽屉：从右边缘向左揭示 */
+.drawer-panel {
+  opacity: 1 !important;
+  transform: none !important;
+  clip-path: inset(-80px -80px -80px calc(100% + 80px));
+  transition:
+    clip-path 0.3s cubic-bezier(0.05, 0.7, 0.1, 1),
+    visibility 0s linear 0.24s !important;
+}
+.drawer-panel[data-state='open'] {
+  clip-path: inset(-80px -80px -80px -80px);
+  transition:
+    clip-path 0.3s cubic-bezier(0.05, 0.7, 0.1, 1),
+    visibility 0s linear 0s !important;
+}
+/* 底部抽屉：从下边缘向上揭示 */
+.drawer-bottom {
+  clip-path: inset(calc(100% + 80px) -80px -80px -80px);
+  transition:
+    clip-path 0.3s cubic-bezier(0.05, 0.7, 0.1, 1),
+    visibility 0s linear 0.24s !important;
+}
+.drawer-bottom[data-state='open'] {
+  clip-path: inset(-80px -80px -80px -80px);
+  transition:
+    clip-path 0.3s cubic-bezier(0.05, 0.7, 0.1, 1),
+    visibility 0s linear 0s !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  .drawer-panel,
+  .drawer-bottom {
+    transition: none !important;
+  }
+}
+
+/* ── 设置页 / 歌词（播放）页 顶部按钮与顶栏统一为 12px ── */
+.settings-search-shell,
+.settings-search,
+.settings-search-icon-button,
+.settings-search-clear,
+.settings-modal-close,
+.settings-header-actions .action-icon,
+.lyric-page-toolbar button,
+.lyric-page-toolbar .portrait-collapse-btn,
+.lyric-page-toolbar .portrait-switcher,
+.lyric-page-toolbar .portrait-switcher-btn,
+.lyric-page-toolbar .toolbar-right button {
+  border-radius: 12px !important;
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   mini 播放器窗口（.mini-*）MIUIX
+   ══════════════════════════════════════════════════════════════════════ */
+.mini-card {
+  background: var(--miuix-background) !important;
+  border-radius: 16px !important;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--miuix-on-background) 12%, transparent) !important;
+  color: var(--miuix-on-background) !important;
+}
+
+.mini-title {
+  color: var(--miuix-on-background) !important;
+}
+.mini-artist,
+.mini-volume-label {
+  color: color-mix(in srgb, var(--miuix-on-background) 55%, transparent) !important;
+}
+
+/* 顶部窗口 / 操作按钮 */
+.mini-window-btn,
+.mini-action-btn,
+.mini-center-btn {
+  border-radius: 12px !important;
+  color: color-mix(in srgb, var(--miuix-on-background) 70%, transparent) !important;
+}
+.mini-window-btn:hover,
+.mini-action-btn:hover,
+.mini-center-btn:hover {
+  color: var(--miuix-on-background) !important;
+}
+.mini-window-btn.active,
+.mini-window-btn.active:hover,
+.mini-action-btn.active,
+.mini-center-btn:hover,
+.mini-fav-btn:hover {
+  color: var(--miuix-primary) !important;
+}
+.mini-fav-btn.is-favorite,
+.mini-fav-btn.is-favorite:hover {
+  color: var(--miuix-error) !important;
+}
+
+/* 封面 */
+.mini-cover,
+.mini-cover-placeholder,
+.mini-queue-cover {
+  border-radius: 10px !important;
+}
+
+/* 播放按钮 */
+.mini-center-play {
+  background: var(--miuix-surface-elevated) !important;
+  color: var(--miuix-on-background) !important;
+}
+.mini-center-play:hover,
+.mini-center-play.playing {
+  color: var(--miuix-primary) !important;
+}
+
+/* 音量浮层 */
+.mini-volume-slider {
+  background: var(--miuix-background) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.16) !important;
+}
+
+/* 播放队列 */
+.mini-shell.is-expanded .mini-queue {
+  border-top-color: color-mix(in srgb, var(--miuix-on-background) 12%, transparent) !important;
+}
+.mini-shell.is-expanded.expand-up .mini-queue {
+  border-bottom-color: color-mix(in srgb, var(--miuix-on-background) 12%, transparent) !important;
+}
+.mini-queue-item {
+  border-radius: 10px !important;
+}
+.mini-queue-item:hover {
+  background: color-mix(in srgb, var(--miuix-on-background) 7%, transparent) !important;
+}
+.mini-queue-item.active {
+  background: color-mix(in srgb, var(--miuix-primary) 12%, transparent) !important;
+}
+.mini-queue-song {
+  color: var(--miuix-on-background) !important;
+}
+.mini-queue-item.active .mini-queue-song {
+  color: var(--miuix-primary) !important;
+}
+.mini-queue-artist,
+.mini-queue-empty {
+  color: color-mix(in srgb, var(--miuix-on-background) 55%, transparent) !important;
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   歌曲详情 · 榜单成就（.detail-* / .ranking-*）MIUIX
+   ══════════════════════════════════════════════════════════════════════ */
+.detail-section {
+  background: var(--miuix-background) !important;
+  border: none !important;
+  border-radius: 16px !important;
+  padding: 16px !important;
+}
+.detail-title {
+  margin-bottom: 10px !important;
+  font-size: 15px !important;
+}
+.detail-title,
+.ranking-title,
+.ranking-filter-title {
+  color: var(--miuix-on-background) !important;
+}
+.detail-summary {
+  margin-bottom: 10px !important;
+}
+.detail-summary,
+.ranking-meta,
+.ranking-filter-meta,
+.ranking-expand-icon,
+.ranking-filter-empty {
+  color: color-mix(in srgb, var(--miuix-on-background) 55%, transparent) !important;
+}
+.ranking-list {
+  gap: 10px !important;
+}
+.ranking-card {
+  background: var(--miuix-surface-elevated) !important;
+  border: none !important;
+  border-radius: 14px !important;
+}
+.ranking-card-toggle {
+  padding: 12px 14px !important;
+  gap: 12px !important;
+  transition: background-color 0.16s cubic-bezier(0.2, 0, 0, 1) !important;
+}
+.ranking-card-toggle:hover {
+  background: color-mix(in srgb, var(--miuix-on-background) 6%, transparent) !important;
+}
+.ranking-card-logo {
+  width: 40px !important;
+  height: 40px !important;
+  border-radius: 12px !important;
+  background: color-mix(in srgb, var(--miuix-on-background) 8%, transparent) !important;
+}
+.ranking-title {
+  font-size: 15px !important;
+}
+.ranking-meta {
+  gap: 16px !important;
+  margin-top: 4px !important;
+  font-size: 12px !important;
+}
+.ranking-rank {
+  color: var(--miuix-primary) !important;
+  background: color-mix(in srgb, var(--miuix-primary) 12%, transparent) !important;
+  border: none !important;
+  border-radius: 10px !important;
+  padding: 4px 10px !important;
+  font-size: 13px !important;
+}
+.ranking-filter-panel {
+  gap: 8px !important;
+  padding: 0 14px 14px !important;
+  overflow: hidden !important;
+  transform-origin: top;
+  animation: miuix-rank-expand 0.28s cubic-bezier(0.22, 1, 0.36, 1) both !important;
+}
+@keyframes miuix-rank-expand {
+  from {
+    max-height: 0;
+    opacity: 0;
+  }
+  to {
+    max-height: 1000px;
+    opacity: 1;
+  }
+}
+.ranking-filter-row,
+.ranking-filter-skeleton-row {
+  background: color-mix(in srgb, var(--miuix-on-background) 5%, transparent) !important;
+  border: none !important;
+  border-radius: 12px !important;
+  padding: 10px 12px !important;
+  gap: 10px !important;
+}
+.ranking-filter-rank {
+  color: var(--miuix-primary) !important;
+}
+.ranking-filter-empty {
+  background: color-mix(in srgb, var(--miuix-on-background) 5%, transparent) !important;
+  border-radius: 12px !important;
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   选画质弹层（QualityPopover：.quality-popover / .pm-*）MIUIX
+   ══════════════════════════════════════════════════════════════════════ */
+.quality-popover.echo-popover-content {
+  border: none !important;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.16) !important;
+}
+.pm-title {
+  color: var(--miuix-on-background) !important;
+}
+.pm-status,
+.pm-hint {
+  color: color-mix(in srgb, var(--miuix-on-background) 55%, transparent) !important;
+}
+.pm-divider {
+  background: color-mix(in srgb, var(--miuix-on-background) 12%, transparent) !important;
+}
+.pm-item {
+  border-radius: 10px !important;
+  color: var(--miuix-on-background) !important;
+}
+.pm-item:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--miuix-on-background) 8%, transparent) !important;
+}
+.pm-item:active:not(:disabled) {
+  background: color-mix(in srgb, var(--miuix-on-background) 13%, transparent) !important;
+}
+.pm-item.is-active,
+.pm-item.is-pending,
+.pm-item.is-active:focus-visible,
+.pm-item.is-pending:focus-visible {
+  color: var(--miuix-primary) !important;
+  background: color-mix(in srgb, var(--miuix-primary) 12%, transparent) !important;
+}
+.pm-item.is-active:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--miuix-primary) 16%, transparent) !important;
+}
+.pm-item.is-active:active:not(:disabled) {
+  background: color-mix(in srgb, var(--miuix-primary) 20%, transparent) !important;
+}
+.pm-item:focus-visible:not(:disabled) {
+  box-shadow: inset 0 0 0 1.5px var(--miuix-primary) !important;
+}
+.pm-spinner {
+  color: var(--miuix-primary) !important;
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   MV 详情 · 视频片源（.mv-* / .card-block）MIUIX
+   ══════════════════════════════════════════════════════════════════════ */
+.card-block {
+  background: var(--miuix-background) !important;
+  border: none !important;
+  border-radius: 16px !important;
+  padding: 16px !important;
+}
+.section-title,
+.mv-title,
+.mv-author,
+.mv-source-title,
+.mv-stat-value {
+  color: var(--miuix-on-background) !important;
+}
+.mv-submeta,
+.mv-meta-separator,
+.mv-stat-label,
+.mv-description,
+.mv-version-index,
+.mv-empty-hint {
+  color: color-mix(in srgb, var(--miuix-on-background) 55%, transparent) !important;
+}
+.mv-player-box {
+  border-radius: 16px !important;
+}
+.mv-cover-thumb {
+  border-radius: 12px !important;
+}
+.mv-stat-item {
+  background: color-mix(in srgb, var(--miuix-on-background) 5%, transparent) !important;
+  border-radius: 12px !important;
+}
+.mv-version-button {
+  border: none !important;
+  background: var(--miuix-surface-elevated) !important;
+  border-radius: 10px !important;
+  color: var(--miuix-on-background) !important;
+}
+.mv-recommend {
+  background: color-mix(in srgb, var(--miuix-primary) 12%, transparent) !important;
+  color: var(--miuix-primary) !important;
+}
+
+/* 片源列表 */
+.mv-source-list {
+  gap: 10px !important;
+}
+.mv-source-card {
+  background: var(--miuix-surface-elevated) !important;
+  border: none !important;
+  border-radius: 14px !important;
+  padding: 14px 16px !important;
+}
+.mv-source-card.is-active {
+  background: color-mix(in srgb, var(--miuix-primary) 12%, transparent) !important;
+  border: none !important;
+  box-shadow: inset 0 0 0 1.5px var(--miuix-primary) !important;
+}
+.mv-source-status {
+  color: var(--miuix-primary) !important;
+}
+.mv-source-badge {
+  background: color-mix(in srgb, var(--miuix-on-background) 8%, transparent) !important;
+  border: none !important;
+  border-radius: 8px !important;
+  color: color-mix(in srgb, var(--miuix-on-background) 72%, transparent) !important;
+}
+
+/* ── 详情页右上角资源类型标签（.type-badge：favorite / cloud / song 等）MIUIX ── */
+.type-badge {
+  height: 20px !important;
+  padding: 0 8px !important;
+  border-radius: 8px !important;
+  background: color-mix(in srgb, var(--miuix-primary) 12%, transparent) !important;
+  color: var(--miuix-primary) !important;
+  box-shadow: none !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.2px !important;
+}
+
+/* ── 编辑侧边栏弹层：clip-path 从下往上揭示（自底向上展开） ── */
+.echo-popover-content.sidebar-layout-popover[data-state='open'] {
+  animation: miuix-panel-rise-in 0.26s cubic-bezier(0.05, 0.7, 0.1, 1) both !important;
+}
+.echo-popover-content.sidebar-layout-popover[data-state='closed'] {
+  animation: miuix-panel-rise-out 0.2s cubic-bezier(0.4, 0, 1, 1) forwards !important;
+}
+@keyframes miuix-panel-rise-in {
+  from { clip-path: inset(calc(100% + 80px) -80px -80px -80px); }
+  to   { clip-path: inset(-80px -80px -80px -80px); }
+}
+@keyframes miuix-panel-rise-out {
+  from { clip-path: inset(-80px -80px -80px -80px); }
+  to   { clip-path: inset(calc(100% + 80px) -80px -80px -80px); }
 }

@@ -1,16 +1,87 @@
 // ── 插件入口 ──
 export function activate(ctx) {
+  // ── 插件样式开关：仅在「主题中心」启用 Miuix 主题时才生效 ──
+  // manifest 里的 style.css 注入为 <style id="echo-plugin-style-<id>-manifest">，
+  // 通过切换它的 media 来整体启用/停用 MIUIX 外观。
+  const MIUIX_MANIFEST_STYLE_ID = 'echo-plugin-style-echo-miuix-plugin-manifest';
+  const setMiuixTheme = (enabled) => {
+    document.documentElement.classList.toggle('miuix-theme-active', enabled);
+    const styleEl = document.getElementById(MIUIX_MANIFEST_STYLE_ID);
+    if (styleEl) styleEl.media = enabled ? '' : 'not all';
+  };
+
+  // ── mini 播放器窗口：独立窗口，不受主题中心开关控制，固定启用 MIUIX 皮肤 ──
+  if (typeof location !== 'undefined' && location.hash.includes('mini-player')) {
+    document.documentElement.classList.add('miuix-bg-active');
+    setMiuixTheme(true);
+    return;
+  }
+
   ctx.css.inject(INTERACTIONS_CSS);
   ctx.css.inject(TILT_CSS);
+
+  // 默认停用；若主题装饰层已先于插件挂载（类已存在）则保持其状态，避免竞态把已启用状态关掉
+  if (!document.documentElement.classList.contains('miuix-theme-active')) setMiuixTheme(false);
+
+  const ThemeMarker = {
+    setup() {
+      ctx.vue.onMounted(() => setMiuixTheme(true));
+      ctx.vue.onUnmounted(() => setMiuixTheme(false));
+      return () => null;
+    },
+  };
+
+  // ── 注册为宿主「主题中心」可选的 Miuix 主题（需要 manifest.capabilities.theme）──
+  // 主题 tokens 让宿主表面取色与插件皮肤一致；decorations 作为「主题已启用」的开关。
+  try {
+    ctx.theme.register({
+      id: 'miuix',
+      title: 'Miuix',
+      description: '小米澎湃 (HyperOS) 风格皮肤',
+      defaultMode: 'system',
+      decorations: { background: ThemeMarker },
+      variants: {
+        light: {
+          tokens: {
+            shell: '#f7f7f7',
+            sidebar: '#f7f7f7',
+            main: '#f7f7f7',
+            card: '#ffffff',
+            elevated: '#e8e8e8',
+            player: '#ffffff',
+            text: '#000000',
+            secondary: '#666666',
+            border: '#dedede',
+          },
+          accent: '#3482ff',
+        },
+        dark: {
+          tokens: {
+            shell: '#1a1a1a',
+            sidebar: '#1a1a1a',
+            main: '#1a1a1a',
+            card: '#2e2e2e',
+            elevated: '#1a1a1a',
+            player: '#2e2e2e',
+            text: '#ffffff',
+            secondary: '#bcbcbc',
+            border: '#444446',
+          },
+          accent: '#277af7',
+        },
+      },
+    });
+  } catch (error) {
+    // 宿主不支持插件主题能力时回退为始终启用，避免插件完全失效
+    console.warn('[echo-miuix-plugin] 主题注册失败，回退为始终启用：', error);
+    setMiuixTheme(true);
+  }
 
   const tiltCleanups = setupTiltEffect();
   tiltCleanups.forEach((fn) => ctx.dispose(fn));
 
   const backdropCleanups = setupSelectBackdrop();
   backdropCleanups.forEach((fn) => ctx.dispose(fn));
-
-  const tabCleanups = setupPluginTabs();
-  tabCleanups.forEach((fn) => ctx.dispose(fn));
 
   const rekaTabCleanups = setupRekaTabsSlider();
   rekaTabCleanups.forEach((fn) => ctx.dispose(fn));
@@ -20,9 +91,6 @@ export function activate(ctx) {
 
   const mainBlurCleanups = setupMainBlur();
   mainBlurCleanups.forEach((fn) => ctx.dispose(fn));
-
-  const styleCategoryCleanups = setupStyleCategoryTabs();
-  styleCategoryCleanups.forEach((fn) => ctx.dispose(fn));
 
   // ── 风格标签行鼠标滚轮水平滚动 ──
   function bindTagRowScroll(row) {
@@ -54,7 +122,6 @@ export function activate(ctx) {
       view.classList.add('miuix-padded');
       const spacer = document.createElement('div');
       spacer.className = 'miuix-page-spacer';
-      spacer.style.cssText = 'height:100px; flex-shrink:0; pointer-events:none;';
       view.appendChild(spacer);
     });
     // 众乐房房间页（.listen-session 撑满整页、没有 .scrollbar-view）：
@@ -64,7 +131,6 @@ export function activate(ctx) {
       session.classList.add('miuix-padded');
       const spacer = document.createElement('div');
       spacer.className = 'miuix-page-spacer';
-      spacer.style.cssText = 'height:100px; flex-shrink:0; pointer-events:none;';
       session.appendChild(spacer);
     });
   }
@@ -73,134 +139,52 @@ export function activate(ctx) {
   viewObs.observe(document.body, { childList: true, subtree: true });
   ctx.dispose(() => viewObs.disconnect());
 
-  // ── 音乐控件模糊开关 ──
-  ctx.css.inject(`
-    .miuix-player-solid .player-bar {
-      background: var(--miuix-background) !important;
-      backdrop-filter: none !important;
-      -webkit-backdrop-filter: none !important;
-    }
-  `);
+  // ── 榜单成就卡片：宿主用 v-if 直接卸载面板，没有 leave 过渡，
+  //    这里拦截「收缩」点击，先播放收起动画，再放行宿主的折叠逻辑 ──
+  (() => {
+    let skip = false;
+    const DURATION = 240;
+    const onToggleClick = (event) => {
+      if (skip) return;
+      const toggle = event.target && event.target.closest && event.target.closest('.ranking-card-toggle');
+      if (!toggle) return;
+      const card = toggle.closest('.ranking-card');
+      if (!card || !card.classList.contains('is-expanded')) return;
+      const panel = card.querySelector('.ranking-filter-panel');
+      if (!panel) return;
+
+      // 阻止宿主 @click，先播放收起动画
+      event.stopPropagation();
+      // 进入动画是 !important，普通内联覆盖不了它；必须用 important 内联把它停掉，
+      // 否则 fill: both 会把 max-height 锁在 1000px，收不起来
+      panel.style.setProperty('animation', 'none', 'important');
+      panel.style.overflow = 'hidden';
+      panel.style.maxHeight = `${panel.scrollHeight}px`;
+      panel.style.transition = 'max-height 0.24s cubic-bezier(0.4, 0, 0.6, 1), opacity 0.2s ease';
+      void panel.offsetHeight; // 强制回流，让起始高度生效
+      panel.style.maxHeight = '0px';
+      panel.style.opacity = '0';
+
+      window.setTimeout(() => {
+        skip = true;
+        toggle.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
+        skip = false;
+      }, DURATION);
+    };
+    document.addEventListener('click', onToggleClick, true);
+    ctx.dispose(() => document.removeEventListener('click', onToggleClick, true));
+  })();
 
   const { defineComponent, defineAsyncComponent, h, reactive } = ctx.vue;
   const Switch = defineAsyncComponent(ctx.ui.components.Switch);
   const Slider = defineAsyncComponent(ctx.ui.components.Slider);
   const Button = defineAsyncComponent(ctx.ui.components.Button);
 
-  // ── 渐变遮罩控制（使用 EchoMusic 新版 accentGradient API）──
-  function applyAccent(enabled) {
-    ctx.theme.accentGradient.set({ enabled });
-    // 渐变开启时让侧栏背景恢复半透明，顶部氛围渐变才能在侧栏同样透出；
-    // 关闭时回退到不透明底色（对应 style.css 里的 .miuix-accent-on 规则）
-    document.documentElement.classList.toggle('miuix-accent-on', enabled);
-  }
-
-  function applyPlayerBlur(enabled) {
-    document.documentElement.classList.toggle('miuix-player-solid', !enabled);
-  }
-
-  // ── 底部音乐控件抬升 ──
-  let playerBarOffsetDisposer = null;
-  function applyPlayerBarOffset(offset) {
-    if (playerBarOffsetDisposer) { playerBarOffsetDisposer(); playerBarOffsetDisposer = null; }
-    // 发布底栏抬升量，供评论区发送框等 sticky 元素避让（见 style.css）
-    document.documentElement.style.setProperty('--miuix-player-bar-offset', offset + 'px');
-    playerBarOffsetDisposer = ctx.css.inject(
-      '.player-bar-container { bottom: ' + offset + 'px !important; }' +
-      '.back-to-top-btn { bottom: ' + (offset + 92) + 'px !important; }' +
-      '.settings-back-to-top { bottom: ' + (offset + 92) + 'px !important; }',
-      { id: 'player-bar-offset' },
-    );
-  }
-
-  // ── 从存储加载已保存的设置 ──
-  ctx.storage.get('settings').then((saved) => {
-    const accentEnabled = saved && typeof saved.accentEnabled === 'boolean'
-      ? saved.accentEnabled : true;
-    const playerBlur = saved && typeof saved.playerBlur === 'boolean'
-      ? saved.playerBlur : true;
-    const playerBarOffset = saved && typeof saved.playerBarOffset === 'number'
-      ? saved.playerBarOffset : 8;
-    applyAccent(accentEnabled);
-    applyPlayerBlur(playerBlur);
-    applyPlayerBarOffset(playerBarOffset);
-  });
-
   const SettingsPanel = defineComponent({
     setup() {
-      const draft = reactive({
-        accentEnabled: true,
-        playerBlur: true,
-        playerBarOffset: 8,
-      });
-
-      ctx.storage.get('settings').then((saved) => {
-        if (saved && typeof saved === 'object') {
-          draft.accentEnabled = typeof saved.accentEnabled === 'boolean'
-            ? saved.accentEnabled : true;
-          draft.playerBlur = typeof saved.playerBlur === 'boolean'
-            ? saved.playerBlur : true;
-          draft.playerBarOffset = typeof saved.playerBarOffset === 'number'
-            ? saved.playerBarOffset : 8;
-        }
-      });
-
-      const saveNow = async () => {
-        await ctx.storage.set('settings', {
-          accentEnabled: draft.accentEnabled,
-          playerBlur: draft.playerBlur,
-          playerBarOffset: draft.playerBarOffset,
-        });
-        applyAccent(draft.accentEnabled);
-        applyPlayerBlur(draft.playerBlur);
-        applyPlayerBarOffset(draft.playerBarOffset);
-      };
-
       return () =>
         h('div', { style: 'display: flex; flex-direction: column; align-items: center; gap: 8px;' }, [
           h('div', { class: 'settings-card', style: 'border-radius: 16px; overflow: hidden; width: 100%;' }, [
-            h('div', {
-              class: 'settings-item',
-              style: 'display: flex; justify-content: space-between; align-items: flex-start; gap: 12px;',
-            }, [
-              h('div', { style: 'flex: 1; min-width: 0;' }, [
-                h('div', { style: 'font-weight: 600; font-size: 14px; color: var(--miuix-on-background); line-height: 1.4;' }, '顶部渐变遮罩'),
-                h('div', { style: 'font-size: 12px; color: var(--miuix-on-background); opacity: 0.6; margin-top: 2px; line-height: 1.5;' }, '顶部主题色渐变氛围层，关闭后隐藏'),
-              ]),
-              h(Switch, {
-                modelValue: draft.accentEnabled,
-                'onUpdate:modelValue': (v) => { draft.accentEnabled = Boolean(v); saveNow(); },
-              }),
-            ]),
-            h('div', {
-              class: 'settings-item',
-              style: 'display: flex; justify-content: space-between; align-items: flex-start; gap: 12px;',
-            }, [
-              h('div', { style: 'flex: 1; min-width: 0;' }, [
-                h('div', { style: 'font-weight: 600; font-size: 14px; color: var(--miuix-on-background); line-height: 1.4;' }, '音乐控件背景模糊'),
-                h('div', { style: 'font-size: 12px; color: var(--miuix-on-background); opacity: 0.6; margin-top: 2px; line-height: 1.5;' }, '关闭后底部音乐控件背景变为纯色'),
-              ]),
-              h(Switch, {
-                modelValue: draft.playerBlur,
-                'onUpdate:modelValue': (v) => { draft.playerBlur = Boolean(v); saveNow(); },
-              }),
-            ]),
-            h('div', {
-              class: 'settings-item',
-              style: 'display: flex; flex-direction: column; gap: 4px; padding-top: 8px; padding-bottom: 8px;',
-            }, [
-              h('div', { style: 'font-weight: 600; font-size: 14px; color: var(--miuix-on-background); line-height: 1.4;' }, '底部音乐控件抬升'),
-              h('div', { style: 'font-size: 12px; color: var(--miuix-on-background); opacity: 0.6; margin-top: 2px; line-height: 1.5;' }, '抬升底部音乐控件，露出主内容底部的沉浸式渐变（默认 8px）'),
-              h(Slider, {
-                modelValue: draft.playerBarOffset,
-                min: 0,
-                max: 200,
-                step: 2,
-                showValue: true,
-                valueSuffix: 'px',
-                'onUpdate:modelValue': (v) => { draft.playerBarOffset = Number(v); saveNow(); },
-              }),
-            ]),
             h('div', {
               class: 'settings-item',
               style: 'display: flex; justify-content: space-between; align-items: flex-start; gap: 12px;',
@@ -229,7 +213,6 @@ export function activate(ctx) {
 // ── 插件停用 ──
 export function deactivate(ctx) {
   document.documentElement.classList.remove('miuix-bg-active');
-  document.documentElement.classList.remove('miuix-accent-on');
 }
 
 
@@ -291,6 +274,8 @@ function setupTiltEffect() {
   }
 
   function onDown(e) {
+    // 仅在主题中心启用 Miuix 主题时才生效
+    if (!document.documentElement.classList.contains('miuix-theme-active')) return;
     // 如果是 touch 事件且已有一个激活的 tilt，先清除
     if (e.type === 'touchstart' && activeTiltEl) return;
 
@@ -398,47 +383,6 @@ function setupSelectBackdrop() {
   return cleanups;
 }
 
-// ── 插件 Tab 滑动指示器 ──
-function setupPluginTabs() {
-  const cleanups = [];
-
-  const attach = () => {
-    const tabs = document.querySelector('.plugin-view-tabs');
-    if (!tabs) return;
-
-    let indicator = tabs.querySelector('.plugin-tab-indicator');
-    if (!indicator) {
-      indicator = document.createElement('div');
-      indicator.className = 'plugin-tab-indicator';
-      tabs.appendChild(indicator);
-    }
-
-    const move = () => {
-      const active = tabs.querySelector('.plugin-view-tab.is-active');
-      if (active) {
-        indicator.style.transform = `translateX(${active.offsetLeft}px)`;
-        indicator.style.width = `${active.offsetWidth}px`;
-      }
-    };
-
-    move();
-
-    tabs.addEventListener('click', () => requestAnimationFrame(move));
-    cleanups.push(() => tabs.removeEventListener('click', move));
-  };
-
-  attach();
-
-  const observer = new MutationObserver(() => {
-    if (document.querySelector('.plugin-view-tabs') && !document.querySelector('.plugin-tab-indicator')) {
-      attach();
-    }
-  });
-  observer.observe(document.body, { childList: true, subtree: true });
-  cleanups.push(() => observer.disconnect());
-
-  return cleanups;
-}
 function setupRekaTabsSlider() {
   const cleanups = [];
 
@@ -460,17 +404,6 @@ function setupRekaTabsSlider() {
 
     const slider = document.createElement('div');
     slider.className = 'miuix-reka-slider';
-    slider.style.cssText = [
-      'position: absolute',
-      'top: 5px',
-      'bottom: 5px',
-      'border-radius: 8px',
-      'background: var(--miuix-background)',
-      'transition: left 0.25s ease, width 0.25s ease',
-      'pointer-events: none',
-      'z-index: 0',
-      'box-shadow: 0 1px 3px rgba(0,0,0,0.08)',
-    ].join('; ');
     list.appendChild(slider);
 
     function update() {
@@ -560,76 +493,6 @@ function setupMainBlur() {
 
   const observer = new MutationObserver(() => {
     if (document.querySelector('.main-content') && !document.querySelector('.miuix-main-blur')) {
-      attach();
-    }
-  });
-  observer.observe(document.body, { childList: true, subtree: true });
-  cleanups.push(() => observer.disconnect());
-
-  return cleanups;
-}
-
-// ── 风格推荐分类标签滑动指示器 ──
-function setupStyleCategoryTabs() {
-  const cleanups = [];
-
-  const attach = () => {
-    const tabs = document.querySelector('.style-category-tabs');
-    if (!tabs) return;
-
-    let indicator = tabs.querySelector('.style-category-indicator');
-    if (!indicator) {
-      indicator = document.createElement('div');
-      indicator.className = 'style-category-indicator';
-      // 先关掉 transition，等按钮渲染后静默定位
-      indicator.style.transition = 'none';
-      tabs.appendChild(indicator);
-    }
-
-    let initialDone = false;
-
-    const move = () => {
-      const active = tabs.querySelector('.style-category-btn.active') || tabs.querySelector('.style-category-btn');
-      if (active) {
-        indicator.style.transform = `translateX(${active.offsetLeft}px)`;
-        indicator.style.width = `${active.offsetWidth}px`;
-        // 首次定位成功后恢复 transition
-        if (!initialDone) {
-          initialDone = true;
-          requestAnimationFrame(() => {
-            indicator.style.transition = '';
-          });
-        }
-      }
-    };
-
-    // 先尝试同步定位
-    move();
-
-    // 监听 tabs 内部子节点插入——按钮渲染后立即无动画定位
-    const childObs = new MutationObserver(() => {
-      if (!initialDone) {
-        move();
-      }
-    });
-    childObs.observe(tabs, { childList: true, subtree: true });
-    cleanups.push(() => childObs.disconnect());
-
-    // 后续 .active 切换时带动画跟随
-    const classObs = new MutationObserver(() => {
-      if (initialDone) requestAnimationFrame(move);
-    });
-    classObs.observe(tabs, { subtree: true, attributes: true, attributeFilter: ['class'] });
-    cleanups.push(() => classObs.disconnect());
-
-    tabs.addEventListener('click', () => requestAnimationFrame(move));
-    cleanups.push(() => tabs.removeEventListener('click', move));
-  };
-
-  attach();
-
-  const observer = new MutationObserver(() => {
-    if (document.querySelector('.style-category-tabs') && !document.querySelector('.style-category-indicator')) {
       attach();
     }
   });
