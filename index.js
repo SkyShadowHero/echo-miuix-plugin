@@ -175,6 +175,88 @@ export function activate(ctx) {
     ctx.dispose(() => document.removeEventListener('click', onToggleClick, true));
   })();
 
+  // ── 底部弹层（设置 / 插件设置）抓取条：上拉增高回弹 + hover/active 高亮 ──
+  (() => {
+    const SHEET_SELECTOR =
+      '.dialog-content.global-settings-dialog, .dialog-content.plugin-settings-dialog';
+    const HANDLE_ZONE = 28;
+    let drag = null;
+    let hovered = null;
+    const setHovered = (sheet) => {
+      if (hovered === sheet) return;
+      if (hovered) hovered.classList.remove('miuix-handle-hover');
+      hovered = sheet;
+      if (sheet) sheet.classList.add('miuix-handle-hover');
+    };
+    const sheetHandleAt = (x, y) => {
+      const el = document.elementFromPoint(x, y);
+      const sheet = el && el.closest ? el.closest(SHEET_SELECTOR) : null;
+      if (!sheet) return null;
+      return y - sheet.getBoundingClientRect().top <= HANDLE_ZONE ? sheet : null;
+    };
+    const onPointerDown = (event) => {
+      if (event.button !== 0) return;
+      const target = event.target;
+      if (!target || !target.closest) return;
+      const sheet = target.closest(SHEET_SELECTOR);
+      if (!sheet) return;
+      if (target.closest('button, a, input, textarea, select, [contenteditable="true"]')) return;
+      const rect = sheet.getBoundingClientRect();
+      if (event.clientY - rect.top > HANDLE_ZONE) return; // 仅顶部抓取条区域
+      sheet.classList.add('miuix-handle-active');
+      drag = { sheet, startY: event.clientY, baseHeight: rect.height };
+      sheet.style.transition = 'none';
+      try {
+        sheet.setPointerCapture(event.pointerId);
+      } catch {}
+      event.preventDefault();
+    };
+    const onPointerMove = (event) => {
+      if (drag) {
+        // 弹层底部锚定：上拉就是往上撑高度（×0.6 阻尼），底部始终贴底不会露空
+        const raw = event.clientY - drag.startY;
+        const grow = raw < 0 ? -raw * 0.6 : 0;
+        drag.sheet.style.height = `${drag.baseHeight + grow}px`;
+        return;
+      }
+      setHovered(sheetHandleAt(event.clientX, event.clientY));
+    };
+    const onPointerUp = () => {
+      if (!drag) return;
+      const sheet = drag.sheet;
+      const baseHeight = drag.baseHeight;
+      drag = null;
+      sheet.classList.remove('miuix-handle-active');
+      let cleaned = false;
+      const cleanup = () => {
+        if (cleaned) return;
+        cleaned = true;
+        sheet.removeEventListener('transitionend', cleanup);
+        sheet.style.removeProperty('height');
+        sheet.style.transition = '';
+      };
+      sheet.style.transition = 'height 0.34s cubic-bezier(0.22, 1, 0.36, 1)';
+      sheet.style.height = `${baseHeight}px`;
+      sheet.addEventListener('transitionend', cleanup);
+      window.setTimeout(cleanup, 480);
+    };
+    const onPointerLeave = () => {
+      if (!drag) setHovered(null);
+    };
+    document.addEventListener('pointerdown', onPointerDown, true);
+    document.addEventListener('pointermove', onPointerMove, true);
+    document.addEventListener('pointerup', onPointerUp, true);
+    document.addEventListener('pointercancel', onPointerUp, true);
+    document.addEventListener('pointerleave', onPointerLeave, true);
+    ctx.dispose(() => {
+      document.removeEventListener('pointerdown', onPointerDown, true);
+      document.removeEventListener('pointermove', onPointerMove, true);
+      document.removeEventListener('pointerup', onPointerUp, true);
+      document.removeEventListener('pointercancel', onPointerUp, true);
+      document.removeEventListener('pointerleave', onPointerLeave, true);
+    });
+  })();
+
   const { defineComponent, defineAsyncComponent, h, reactive } = ctx.vue;
   const Switch = defineAsyncComponent(ctx.ui.components.Switch);
   const Slider = defineAsyncComponent(ctx.ui.components.Slider);

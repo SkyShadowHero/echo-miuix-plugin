@@ -843,7 +843,6 @@ html.dark .sidebar-settings-btn:hover {
 .sidebar-playlist-divider {
   background: color-mix(in srgb, var(--miuix-on-background) 8%, transparent) !important;
   height: 1px !important;
-  /* 水平居中：显式宽度 + 自动外边距，flex 容器下再 align-self 兜底 */
   display: block !important;
   flex: none !important;
   align-self: center !important;
@@ -1150,7 +1149,7 @@ html.dark .dialog-overlay {
 }
 
 .dialog-content.plugin-settings-dialog[data-state='open'] {
-  animation: miuix-sheet-in 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+  animation: miuix-sheet-in 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
 
 .dialog-content.plugin-settings-dialog[data-state='closed'] {
@@ -1890,25 +1889,44 @@ body.echo-surface-translucent
 }
 
 .settings-sidebar {
-  background: transparent !important;
+  background: var(--miuix-background) !important;
   border: none !important;
+  border-radius: 16px !important;
+  padding: 0 !important;
+  gap: 0 !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+}
+
+.settings-layout {
+  gap: 12px !important;
 }
 
 .settings-nav-item {
-  border-radius: 10px !important;
+  border-radius: 0 !important;
+  margin: 0 !important;
+  padding: 9px 14px !important;
+  gap: 10px !important;
+  min-height: 40px !important;
   font-weight: 500 !important;
   color: color-mix(in srgb, var(--miuix-on-background) 60%, transparent) !important;
   background: transparent !important;
+  transition: background-color 0.16s cubic-bezier(0.2, 0, 0, 1),
+    color 0.16s cubic-bezier(0.2, 0, 0, 1) !important;
 }
 
 .settings-nav-item:hover {
-  background: color-mix(in srgb, var(--miuix-on-background) 7%, transparent) !important;
+  background: color-mix(in srgb, var(--miuix-on-background) 8%, transparent) !important;
   color: var(--miuix-on-background) !important;
 }
 
+.settings-nav-item:active {
+  background: color-mix(in srgb, var(--miuix-on-background) 13%, transparent) !important;
+}
+
 .settings-nav-item.is-active {
-  background: var(--miuix-background) !important;
-  color: var(--miuix-on-background) !important;
+  background: color-mix(in srgb, var(--miuix-primary) 12%, transparent) !important;
+  color: var(--miuix-primary) !important;
   font-weight: 700 !important;
 }
 
@@ -1931,6 +1949,12 @@ body.echo-surface-translucent
 
 .settings-search-input::placeholder {
   color: color-mix(in srgb, var(--miuix-on-background) 45%, transparent) !important;
+}
+
+/* 设置页搜索栏展开后的聚焦描边用 MIUIX 主题色 */
+.settings-search:focus-within {
+  border-color: var(--miuix-primary) !important;
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--miuix-primary) 12%, transparent) !important;
 }
 
 .settings-search-icon,
@@ -1975,8 +1999,7 @@ body.echo-surface-translucent
 .settings-notice:active {
   background: color-mix(in srgb, var(--miuix-primary) 12%, transparent) !important;
   border: none !important;
-  /* 与所在设置卡片（rounded-2xl）同圆角，避免提示条圆角与卡片对不上 */
-  border-radius: var(--radius-2xl, var(--radius-card, 12px)) !important;
+  border-radius: 0 !important;
 }
 
 /* 提示条不参与 hover/active 遮罩 */
@@ -2150,22 +2173,25 @@ body.echo-surface-translucent
   animation: miuix-picker-in 0.3s cubic-bezier(0.05, 0.7, 0.1, 1) both !important;
 }
 .dialog-content.shortcut-picker[data-state='closed'] {
-  opacity: 1 !important;
   animation: miuix-picker-out 0.22s cubic-bezier(0.4, 0, 1, 1) forwards !important;
 }
 @keyframes miuix-picker-in {
   from {
+    opacity: 0;
     clip-path: inset(-80px calc(100% + 80px) -80px -80px);
   }
   to {
+    opacity: 1;
     clip-path: inset(-80px -80px -80px -80px);
   }
 }
 @keyframes miuix-picker-out {
   from {
+    opacity: 1;
     clip-path: inset(-80px -80px -80px -80px);
   }
   to {
+    opacity: 0;
     clip-path: inset(-80px calc(100% + 80px) -80px -80px);
   }
 }
@@ -2388,17 +2414,21 @@ body.echo-surface-translucent
 }
 @keyframes miuix-account-drop-in {
   from {
+    opacity: 0;
     clip-path: inset(-80px -80px calc(100% + 80px) -80px);
   }
   to {
+    opacity: 1;
     clip-path: inset(-80px -80px -80px -80px);
   }
 }
 @keyframes miuix-account-drop-out {
   from {
+    opacity: 1;
     clip-path: inset(-80px -80px -80px -80px);
   }
   to {
+    opacity: 0;
     clip-path: inset(-80px -80px calc(100% + 80px) -80px);
   }
 }
@@ -2752,13 +2782,13 @@ body.echo-surface-translucent
 }
 
 @keyframes miuix-tb-search-drop {
-  from { clip-path: inset(-80px -80px calc(100% + 80px) -80px); }
-  to   { clip-path: inset(-80px -80px -80px -80px); }
+  from { opacity: 0; clip-path: inset(-80px -80px calc(100% + 80px) -80px); }
+  to   { opacity: 1; clip-path: inset(-80px -80px -80px -80px); }
 }
 
 @keyframes miuix-tb-search-fold {
-  from { clip-path: inset(-80px -80px -80px -80px); }
-  to   { clip-path: inset(-80px -80px calc(100% + 80px) -80px); }
+  from { opacity: 1; clip-path: inset(-80px -80px -80px -80px); }
+  to   { opacity: 0; clip-path: inset(-80px -80px calc(100% + 80px) -80px); }
 }
 
 .tb-search-chip {
@@ -2827,17 +2857,20 @@ body.echo-surface-translucent
 /* ── 抽屉面板（播放队列 / 批量操作 / 评论 / 主题调整等）与弹层统一：clip-path 揭示 ── */
 /* 右侧抽屉：从右边缘向左揭示 */
 .drawer-panel {
-  opacity: 1 !important;
+  opacity: 0 !important;
   transform: none !important;
   clip-path: inset(-80px -80px -80px calc(100% + 80px));
   transition:
     clip-path 0.3s cubic-bezier(0.05, 0.7, 0.1, 1),
-    visibility 0s linear 0.24s !important;
+    opacity 0.3s cubic-bezier(0.05, 0.7, 0.1, 1),
+    visibility 0s linear 0.28s !important;
 }
 .drawer-panel[data-state='open'] {
+  opacity: 1 !important;
   clip-path: inset(-80px -80px -80px -80px);
   transition:
     clip-path 0.3s cubic-bezier(0.05, 0.7, 0.1, 1),
+    opacity 0.3s cubic-bezier(0.05, 0.7, 0.1, 1),
     visibility 0s linear 0s !important;
 }
 /* 底部抽屉：从下边缘向上揭示 */
@@ -2845,12 +2878,14 @@ body.echo-surface-translucent
   clip-path: inset(calc(100% + 80px) -80px -80px -80px);
   transition:
     clip-path 0.3s cubic-bezier(0.05, 0.7, 0.1, 1),
-    visibility 0s linear 0.24s !important;
+    opacity 0.3s cubic-bezier(0.05, 0.7, 0.1, 1),
+    visibility 0s linear 0.28s !important;
 }
 .drawer-bottom[data-state='open'] {
   clip-path: inset(-80px -80px -80px -80px);
   transition:
     clip-path 0.3s cubic-bezier(0.05, 0.7, 0.1, 1),
+    opacity 0.3s cubic-bezier(0.05, 0.7, 0.1, 1),
     visibility 0s linear 0s !important;
 }
 @media (prefers-reduced-motion: reduce) {
@@ -3197,7 +3232,7 @@ body.echo-surface-translucent
   letter-spacing: 0.2px !important;
 }
 
-/* ── 编辑侧边栏弹层：clip-path 从下往上揭示（自底向上展开） ── */
+/* ── 编辑侧边栏弹层：clip-path 从左下角向右上展开 ── */
 .echo-popover-content.sidebar-layout-popover[data-state='open'] {
   animation: miuix-panel-rise-in 0.26s cubic-bezier(0.05, 0.7, 0.1, 1) both !important;
 }
@@ -3205,12 +3240,12 @@ body.echo-surface-translucent
   animation: miuix-panel-rise-out 0.2s cubic-bezier(0.4, 0, 1, 1) forwards !important;
 }
 @keyframes miuix-panel-rise-in {
-  from { clip-path: inset(calc(100% + 80px) -80px -80px -80px); }
-  to   { clip-path: inset(-80px -80px -80px -80px); }
+  from { opacity: 0; clip-path: inset(calc(100% + 80px) calc(100% + 80px) -80px -80px); }
+  to   { opacity: 1; clip-path: inset(-80px -80px -80px -80px); }
 }
 @keyframes miuix-panel-rise-out {
-  from { clip-path: inset(-80px -80px -80px -80px); }
-  to   { clip-path: inset(calc(100% + 80px) -80px -80px -80px); }
+  from { opacity: 1; clip-path: inset(-80px -80px -80px -80px); }
+  to   { opacity: 0; clip-path: inset(calc(100% + 80px) calc(100% + 80px) -80px -80px); }
 }
 
 /* ══════════════════════════════════════════════════════════════════════
@@ -3229,8 +3264,8 @@ body.echo-surface-translucent
   animation: miuix-menu-drop-in 0.22s cubic-bezier(0.05, 0.7, 0.1, 1) both !important;
 }
 @keyframes miuix-menu-drop-in {
-  from { clip-path: inset(-80px -80px calc(100% + 80px) -80px); }
-  to   { clip-path: inset(-80px -80px -80px -80px); }
+  from { opacity: 0; clip-path: inset(-80px -80px calc(100% + 80px) -80px); }
+  to   { opacity: 1; clip-path: inset(-80px -80px -80px -80px); }
 }
 .titlebar-more-heading {
   border-bottom-color: color-mix(in srgb, var(--miuix-on-background) 12%, transparent) !important;
@@ -3265,4 +3300,392 @@ body.echo-surface-translucent
 }
 .titlebar-more-empty {
   color: color-mix(in srgb, var(--miuix-on-background) 55%, transparent) !important;
+}
+
+/* ── 歌曲列表右侧小标签（.song-tag / Tag 组件）MIUIX ── */
+.song-tag {
+  border-radius: 6px !important;
+  box-shadow: none !important;
+  padding: 0 6px !important;
+  font-weight: 600 !important;
+}
+
+/* ── 详情页操作按钮行（播放 / 批量 / 分享 / 收藏 等）MIUIX ── */
+.action-btn {
+  border-radius: 12px !important;
+}
+.action-btn.primary {
+  background: var(--miuix-primary) !important;
+  color: var(--miuix-on-primary, #ffffff) !important;
+  box-shadow: none !important;
+}
+.action-btn.primary:hover {
+  background: color-mix(in srgb, var(--miuix-primary) 88%, #000000) !important;
+}
+.action-btn.secondary {
+  background: color-mix(in srgb, var(--miuix-on-background) 6%, transparent) !important;
+  box-shadow: none !important;
+  color: var(--miuix-on-background) !important;
+}
+.action-btn.secondary:hover {
+  background: color-mix(in srgb, var(--miuix-on-background) 10%, transparent) !important;
+}
+.action-btn.secondary.favorite {
+  color: var(--miuix-error) !important;
+  background: color-mix(in srgb, var(--miuix-error) 8%, transparent) !important;
+}
+.action-btn.secondary.favorite:hover {
+  background: color-mix(in srgb, var(--miuix-error) 12%, transparent) !important;
+}
+.action-btn.secondary.emphasized {
+  color: var(--miuix-error) !important;
+  background: color-mix(in srgb, var(--miuix-error) 12%, transparent) !important;
+}
+
+/* ── 插件管理页头部（安全模式 / 打开文件夹 / 刷新等）MIUIX ── */
+.plugin-header {
+  border-bottom-color: color-mix(in srgb, var(--miuix-on-background) 12%, transparent) !important;
+}
+.plugin-header-icon {
+  border-radius: 10px !important;
+  background: var(--miuix-primary) !important;
+  color: var(--miuix-on-primary, #ffffff) !important;
+}
+.plugin-safe-mode-control {
+  background: var(--miuix-background) !important;
+  border: none !important;
+  border-radius: 12px !important;
+  color: var(--miuix-on-background) !important;
+}
+.plugin-header .action-icon {
+  border-radius: 12px !important;
+  color: color-mix(in srgb, var(--miuix-on-background) 70%, transparent) !important;
+}
+.plugin-header .action-icon:hover {
+  background: color-mix(in srgb, var(--miuix-on-background) 8%, transparent) !important;
+  color: var(--miuix-on-background) !important;
+}
+
+/* ── 快捷键设置（.shortcut-*）MIUIX ── */
+.shortcut-col-title {
+  color: color-mix(in srgb, var(--miuix-on-background) 55%, transparent) !important;
+}
+.shortcut-input {
+  background: var(--miuix-surface-elevated) !important;
+  border: none !important;
+  border-radius: 12px !important;
+  color: var(--miuix-on-background) !important;
+}
+.shortcut-input:hover {
+  background: color-mix(in srgb, var(--miuix-on-background) 8%, transparent) !important;
+  border: none !important;
+}
+.shortcut-input.recording {
+  background: color-mix(in srgb, var(--miuix-primary) 12%, transparent) !important;
+  color: var(--miuix-primary) !important;
+  box-shadow: inset 0 0 0 1.5px var(--miuix-primary) !important;
+}
+.shortcut-input-clear {
+  border-radius: 8px !important;
+  color: color-mix(in srgb, var(--miuix-on-background) 55%, transparent) !important;
+}
+.shortcut-input-clear:hover {
+  background: color-mix(in srgb, var(--miuix-on-background) 10%, transparent) !important;
+  color: var(--miuix-on-background) !important;
+}
+.shortcut-input-disabled {
+  color: color-mix(in srgb, var(--miuix-on-background) 50%, transparent) !important;
+}
+
+/* ── 数值 / 时间调节控件（InputNumber）MIUIX ── */
+.input-number {
+  background: var(--miuix-surface-elevated) !important;
+  border: none !important;
+  border-radius: 12px !important;
+}
+.input-number:focus-within {
+  border: none !important;
+  box-shadow: inset 0 0 0 1.5px var(--miuix-primary) !important;
+}
+.input-number-field {
+  color: var(--miuix-on-background) !important;
+}
+.input-number-field::placeholder {
+  color: color-mix(in srgb, var(--miuix-on-background) 45%, transparent) !important;
+}
+.input-number-suffix {
+  color: color-mix(in srgb, var(--miuix-on-background) 55%, transparent) !important;
+}
+.input-number-controls {
+  border-left: none !important;
+}
+.input-number-btn {
+  color: color-mix(in srgb, var(--miuix-on-background) 55%, transparent) !important;
+}
+.input-number-btn:hover:not(.is-disabled) {
+  background: color-mix(in srgb, var(--miuix-on-background) 8%, transparent) !important;
+  color: var(--miuix-on-background) !important;
+}
+.input-number-btn:active:not(.is-disabled) {
+  background: color-mix(in srgb, var(--miuix-on-background) 13%, transparent) !important;
+}
+.input-number-btn + .input-number-btn {
+  box-shadow: none !important;
+}
+
+/* ── Switch：关闭态去掉描边 + MIUIX ── */
+.switch-root {
+  border: none !important;
+  background: color-mix(in srgb, var(--miuix-on-background) 20%, transparent) !important;
+}
+.switch-root[data-state='checked'] {
+  border: none !important;
+  background: var(--miuix-primary) !important;
+}
+.switch-root:not([data-state='checked']):not([data-disabled]):hover {
+  background: color-mix(in srgb, var(--miuix-on-background) 28%, transparent) !important;
+}
+.switch-root:focus-visible {
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--miuix-primary) 22%, transparent) !important;
+}
+.switch-thumb {
+  background: #ffffff !important;
+  box-shadow: none !important;
+}
+
+/* ── 投放面板（CastPanel）MIUIX ── */
+.cast-panel,
+.cast-panel-title strong,
+.cast-section-title span,
+.cast-device-row,
+.cast-pin-input-control {
+  color: var(--miuix-on-background) !important;
+}
+.cast-panel-title span,
+.cast-section-title small,
+.cast-device-meta,
+.cast-empty,
+.cast-panel-status {
+  color: color-mix(in srgb, var(--miuix-on-background) 55%, transparent) !important;
+}
+.cast-panel-icon {
+  border-radius: 10px !important;
+  background: color-mix(in srgb, var(--miuix-primary) 12%, transparent) !important;
+  color: var(--miuix-primary) !important;
+}
+.cast-panel-status {
+  background: var(--miuix-surface-elevated) !important;
+  border-radius: 12px !important;
+}
+.cast-panel-status.warning {
+  color: var(--miuix-error) !important;
+  background: color-mix(in srgb, var(--miuix-error) 10%, transparent) !important;
+}
+.cast-panel-icon-button {
+  border-radius: 10px !important;
+  color: color-mix(in srgb, var(--miuix-on-background) 65%, transparent) !important;
+}
+.cast-panel-icon-button:hover:not(:disabled) {
+  color: var(--miuix-on-background) !important;
+  background: color-mix(in srgb, var(--miuix-on-background) 8%, transparent) !important;
+}
+.cast-current {
+  border: none !important;
+  border-radius: 12px !important;
+  background: color-mix(in srgb, var(--miuix-primary) 10%, transparent) !important;
+}
+.cast-stop-button {
+  border-radius: 12px !important;
+}
+.cast-device-row {
+  border: none !important;
+  border-radius: 12px !important;
+}
+.cast-device-row:hover:not(:disabled),
+.cast-device-row.connecting {
+  background: color-mix(in srgb, var(--miuix-on-background) 8%, transparent) !important;
+}
+.cast-device-row.active {
+  background: color-mix(in srgb, var(--miuix-primary) 12%, transparent) !important;
+}
+.cast-device-row.active::before {
+  background: var(--miuix-primary) !important;
+}
+.cast-device-row-expanded {
+  background: color-mix(in srgb, var(--miuix-primary) 8%, transparent) !important;
+}
+.cast-device-meta.is-connecting {
+  color: var(--miuix-primary) !important;
+}
+.cast-pin-input-control {
+  border: none !important;
+  border-radius: 10px !important;
+  background: var(--miuix-surface-elevated) !important;
+}
+.cast-pin-submit {
+  border-radius: 10px !important;
+}
+
+/* 投放面板间距：与 MIUIX 列表/弹层一致 */
+.cast-popover.echo-popover-content {
+  padding: 12px !important;
+}
+.cast-panel {
+  gap: 8px !important;
+}
+.cast-panel-header {
+  padding: 0 2px 2px !important;
+}
+.cast-panel-status {
+  min-height: 32px !important;
+  padding: 0 4px 0 10px !important;
+}
+.cast-device-list {
+  gap: 10px !important;
+}
+.cast-device-list section {
+  gap: 6px !important;
+}
+.cast-section-title {
+  padding: 2px 4px !important;
+}
+.cast-device-scroll .scrollbar-view {
+  gap: 4px !important;
+}
+.cast-device-row {
+  min-height: 38px !important;
+  padding: 0 12px !important;
+  gap: 10px !important;
+}
+.cast-device-row-expanded {
+  padding: 10px 12px !important;
+  gap: 8px !important;
+}
+
+/* ── 设置页 · 投放设置（CastSettingsSection）MIUIX ── */
+.cast-status {
+  border-radius: 8px !important;
+  background: var(--miuix-surface-elevated) !important;
+  color: color-mix(in srgb, var(--miuix-on-background) 55%, transparent) !important;
+}
+.cast-status.warning {
+  color: var(--miuix-error) !important;
+  background: color-mix(in srgb, var(--miuix-error) 10%, transparent) !important;
+}
+.cast-toolbar strong,
+.cast-group-title h3,
+.cast-records h3 {
+  color: var(--miuix-on-background) !important;
+}
+.cast-toolbar {
+  margin: 2px 16px 8px !important;
+  padding: 0 !important;
+}
+.cast-groups {
+  gap: 12px !important;
+  margin: 0 16px !important;
+}
+.cast-records {
+  margin: 0 16px !important;
+  padding: 8px 0 !important;
+}
+.cast-toolbar span,
+.cast-group-title span,
+.cast-records p,
+.cast-device-meta,
+.cast-pin,
+.cast-empty {
+  color: color-mix(in srgb, var(--miuix-on-background) 55%, transparent) !important;
+}
+.cast-group {
+  border: none !important;
+  border-radius: 14px !important;
+  background: color-mix(in srgb, var(--miuix-on-background) 5%, transparent) !important;
+}
+.cast-device-scroll .scrollbar-view {
+  gap: 4px !important;
+}
+.cast-device {
+  border: none !important;
+  border-radius: 12px !important;
+  background: var(--miuix-background) !important;
+  color: var(--miuix-on-background) !important;
+}
+.cast-device:hover:not(:disabled),
+.cast-device.connecting {
+  background: color-mix(in srgb, var(--miuix-on-background) 8%, transparent) !important;
+}
+.cast-device.active {
+  background: color-mix(in srgb, var(--miuix-primary) 12%, transparent) !important;
+}
+.cast-device.active::before {
+  background: var(--miuix-primary) !important;
+}
+.cast-device-meta.is-connecting {
+  color: var(--miuix-primary) !important;
+}
+.cast-pin input {
+  border: none !important;
+  border-radius: 10px !important;
+  background: var(--miuix-surface-elevated) !important;
+  color: var(--miuix-on-background) !important;
+}
+
+/* ── 设置面板（global-settings-dialog）：与插件设置一致的底部弹层布局 + 动画 ── */
+.dialog-content.global-settings-dialog {
+  left: 12px !important;
+  right: 12px !important;
+  top: auto !important;
+  bottom: 0 !important;
+  max-height: 90vh !important;
+  min-height: 60vh !important;
+  border-radius: 28px 28px 0 0 !important;
+  border: none !important;
+  padding: 16px 6px 24px 24px !important;
+  margin: 0 auto !important;
+  box-shadow: none !important;
+}
+.dialog-content.global-settings-dialog[data-state='open'] {
+  animation: miuix-sheet-in 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+.dialog-content.global-settings-dialog[data-state='closed'] {
+  animation: miuix-sheet-out 0.25s cubic-bezier(0.4, 0, 0.6, 1) forwards !important;
+}
+.dialog-content.global-settings-dialog::before {
+  content: '' !important;
+  position: absolute !important;
+  top: 14px !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  width: 32px !important;
+  height: 4px !important;
+  border-radius: 2px !important;
+  background: rgba(128, 128, 128, 0.3) !important;
+  z-index: 1 !important;
+}
+.dialog-content.global-settings-dialog .dialog-header {
+  padding-right: 8px !important;
+}
+.dialog-content.global-settings-dialog .dialog-close {
+  top: 12px !important;
+  border-radius: 9999px !important;
+  right: 12px !important;
+}
+
+/* ── 底部弹层抓取条：hover 变长变深，active 更长更深 ── */
+.dialog-content.global-settings-dialog::before,
+.dialog-content.plugin-settings-dialog::before {
+  transition: width 0.18s cubic-bezier(0.2, 0, 0, 1),
+    background-color 0.18s cubic-bezier(0.2, 0, 0, 1) !important;
+}
+.dialog-content.global-settings-dialog.miuix-handle-hover::before,
+.dialog-content.plugin-settings-dialog.miuix-handle-hover::before {
+  width: 36px !important;
+  height: 4px !important;
+  background: rgba(128, 128, 128, 0.5) !important;
+}
+.dialog-content.global-settings-dialog.miuix-handle-active::before,
+.dialog-content.plugin-settings-dialog.miuix-handle-active::before {
+  height: 4px !important;
+  background: rgba(128, 128, 128, 0.72) !important;
 }
