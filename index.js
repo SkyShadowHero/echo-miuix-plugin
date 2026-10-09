@@ -178,7 +178,7 @@ export function activate(ctx) {
   // ── 底部弹层（设置 / 插件设置）抓取条：上拉增高回弹 + hover/active 高亮 ──
   (() => {
     const SHEET_SELECTOR =
-      '.dialog-content.global-settings-dialog, .dialog-content.plugin-settings-dialog';
+      '.dialog-content.global-settings-dialog, .dialog-content.plugin-settings-dialog, .dialog-content.custom-picker-dialog';
     const HANDLE_ZONE = 28;
     let drag = null;
     let hovered = null;
@@ -204,7 +204,7 @@ export function activate(ctx) {
       const rect = sheet.getBoundingClientRect();
       if (event.clientY - rect.top > HANDLE_ZONE) return; // 仅顶部抓取条区域
       sheet.classList.add('miuix-handle-active');
-      drag = { sheet, startY: event.clientY, baseHeight: rect.height };
+      drag = { sheet, startY: event.clientY, baseHeight: rect.height, mode: null, down: 0 };
       sheet.style.transition = 'none';
       try {
         sheet.setPointerCapture(event.pointerId);
@@ -213,10 +213,22 @@ export function activate(ctx) {
     };
     const onPointerMove = (event) => {
       if (drag) {
-        // 弹层底部锚定：上拉就是往上撑高度（×0.6 阻尼），底部始终贴底不会露空
-        const raw = event.clientY - drag.startY;
-        const grow = raw < 0 ? -raw * 0.6 : 0;
-        drag.sheet.style.height = `${drag.baseHeight + grow}px`;
+        const dy = drag.startY - event.clientY; // >0 up, <0 down
+        const sheet = drag.sheet;
+        if (dy < -8) {
+          // drag down: move the whole sheet down; releasing near the bottom closes it
+          const down = (-dy - 8) * 0.9;
+          drag.mode = 'down';
+          drag.down = down;
+          sheet.style.height = `${drag.baseHeight}px`;
+          sheet.style.setProperty('transform', `translateY(${down}px)`, 'important');
+        } else if (dy > 8) {
+          // drag up: grow height (stiff start, harder the more you pull)
+          drag.mode = 'up';
+          drag.down = 0;
+          sheet.style.setProperty('transform', 'translateY(0)', 'important');
+          sheet.style.height = `${drag.baseHeight + 80 * (1 - Math.exp(-(dy - 8) / 220))}px`;
+        }
         return;
       }
       setHovered(sheetHandleAt(event.clientX, event.clientY));
@@ -224,18 +236,37 @@ export function activate(ctx) {
     const onPointerUp = () => {
       if (!drag) return;
       const sheet = drag.sheet;
-      const baseHeight = drag.baseHeight;
+      const { mode, down, baseHeight } = drag;
       drag = null;
       sheet.classList.remove('miuix-handle-active');
+      const clearInline = () => {
+        sheet.style.removeProperty('transform');
+        sheet.style.removeProperty('height');
+        sheet.style.transition = '';
+      };
+      if (mode === 'down' && down > 140) {
+        // keep sliding out from where the finger left it; suppress the built-in close animation
+        // (otherwise the sheet snaps back to y=0 first and replays the close from the top)
+        sheet.style.setProperty('animation', 'none', 'important');
+        sheet.style.transition = 'transform 0.24s cubic-bezier(0.4, 0, 1, 1)';
+        sheet.style.setProperty('transform', 'translateY(100%)', 'important');
+        window.setTimeout(() => {
+          const closeBtn = sheet.querySelector('.dialog-close');
+          if (closeBtn) closeBtn.click();
+          else sheet.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+        }, 220);
+        return;
+      }
       let cleaned = false;
       const cleanup = () => {
         if (cleaned) return;
         cleaned = true;
         sheet.removeEventListener('transitionend', cleanup);
-        sheet.style.removeProperty('height');
-        sheet.style.transition = '';
+        clearInline();
       };
-      sheet.style.transition = 'height 0.34s cubic-bezier(0.22, 1, 0.36, 1)';
+      sheet.style.transition =
+        'transform 0.34s cubic-bezier(0.22, 1, 0.36, 1), height 0.34s cubic-bezier(0.22, 1, 0.36, 1)';
+      sheet.style.setProperty('transform', 'translateY(0)', 'important');
       sheet.style.height = `${baseHeight}px`;
       sheet.addEventListener('transitionend', cleanup);
       window.setTimeout(cleanup, 480);
@@ -255,6 +286,34 @@ export function activate(ctx) {
       document.removeEventListener('pointercancel', onPointerUp, true);
       document.removeEventListener('pointerleave', onPointerLeave, true);
     });
+  })();
+
+  // ── 右键歌曲菜单出现时：在背后加一层浅色遮罩 ──
+  (() => {
+    let scrim = null;
+    const ensureScrim = () => {
+      if (scrim && scrim.isConnected) return;
+      scrim = document.createElement('div');
+      scrim.className = 'miuix-menu-scrim';
+      document.body.appendChild(scrim);
+    };
+    const removeScrim = () => {
+      if (scrim) {
+        scrim.remove();
+        scrim = null;
+      }
+    };
+    const syncScrim = () => {
+      if (document.querySelector('.song-context-menu')) ensureScrim();
+      else removeScrim();
+    };
+    const obs = new MutationObserver(syncScrim);
+    obs.observe(document.body, { childList: true, subtree: true });
+    ctx.dispose(() => {
+      obs.disconnect();
+      removeScrim();
+    });
+    syncScrim();
   })();
 
   const { defineComponent, defineAsyncComponent, h, reactive } = ctx.vue;
@@ -443,6 +502,7 @@ function setupSelectBackdrop() {
       if (mutation.type !== 'attributes' || mutation.attributeName !== 'data-state') continue;
       const el = mutation.target;
       if (el.classList.contains('echo-select-trigger') && el.dataset.state === 'closed') {
+        hideBackdrop();
         const content = document.querySelector('.echo-select-content');
         if (content && document.body.contains(content)) {
           content.classList.add('miuix-closing');
