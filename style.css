@@ -618,10 +618,16 @@ html.dark .sidebar-nav-item:active {
   bottom: 0;
   left: 0;
   right: 0;
-  height: 60px;
-  background: linear-gradient(to bottom, transparent, var(--miuix-surface) 90%);
+  height: 88px;
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    color-mix(in srgb, var(--miuix-surface) 50%, transparent) 20%,
+    color-mix(in srgb, var(--miuix-surface) 96%, var(--miuix-on-background) 4%) 55%,
+    color-mix(in srgb, var(--miuix-surface) 90%, var(--miuix-on-background) 10%) 100%
+  );
   pointer-events: none;
-  z-index: 100;
+  z-index: 1;
 }
 
 /* .miuix-main-blur */
@@ -630,15 +636,21 @@ html.dark .sidebar-nav-item:active {
   bottom: 0 !important;
   left: var(--layout-sidebar-width, 230px) !important;
   right: 0 !important;
-  height: 60px;
-  background: linear-gradient(to bottom, transparent, var(--miuix-surface) 90%);
+  height: 88px;
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    color-mix(in srgb, var(--miuix-surface) 50%, transparent) 20%,
+    color-mix(in srgb, var(--miuix-surface) 96%, var(--miuix-on-background) 4%) 55%,
+    color-mix(in srgb, var(--miuix-surface) 90%, var(--miuix-on-background) 10%) 100%
+  );
   pointer-events: none;
-  z-index: 100;
+  z-index: 1;
 }
 
 /* .miuix-page-spacer */
 .miuix-page-spacer {
-  height: 100px;
+  height: 120px;
   flex-shrink: 0;
   pointer-events: none;
 }
@@ -4797,4 +4809,16 @@ html .custom-tab-item.active,
 html .local-tab-item.active {
   color: var(--miuix-on-background) !important;
   font-weight: 700 !important;
+}
+
+/* 侧栏里不允许有页面留白占位，避免内容没超出也能滚动 */
+.sidebar .miuix-page-spacer,
+.settings-sidebar .miuix-page-spacer {
+  display: none !important;
+}
+
+/* 关掉「底部渐变遮罩」开关时隐藏两层遮罩 */
+html.miuix-bottom-mask-off .miuix-sidebar-blur,
+html.miuix-bottom-mask-off .miuix-main-blur {
+  display: none !important;
 }

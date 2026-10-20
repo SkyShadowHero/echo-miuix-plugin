@@ -115,11 +115,26 @@ export function activate(ctx) {
   // 背景色始终启用
   document.documentElement.classList.add('miuix-bg-active');
 
+  // ── 底部渐变遮罩开关（默认开启） ──
+  const BOTTOM_MASK_KEY = 'echo-miuix-bottom-mask';
+  const applyBottomMask = (enabled) => {
+    document.documentElement.classList.toggle('miuix-bottom-mask-off', !enabled);
+  };
+  try {
+    Promise.resolve(ctx.storage.get(BOTTOM_MASK_KEY))
+      .then((saved) => applyBottomMask(saved !== false))
+      .catch(() => applyBottomMask(true));
+  } catch {
+    applyBottomMask(true);
+  }
+
   // ── 全局内容末尾留白 ──
   function addContentSpacers() {
     const views = document.querySelectorAll('.scrollbar-view:not(.miuix-padded)');
     views.forEach((view) => {
       view.classList.add('miuix-padded');
+      // 侧栏不需要为悬浮播放栏留白，加了反而内容没超出也能滚
+      if (view.closest('.sidebar') || view.closest('.settings-sidebar')) return;
       const spacer = document.createElement('div');
       spacer.className = 'miuix-page-spacer';
       view.appendChild(spacer);
@@ -323,8 +338,34 @@ export function activate(ctx) {
 
   const SettingsPanel = defineComponent({
     setup() {
+      const state = reactive({ bottomMask: !document.documentElement.classList.contains('miuix-bottom-mask-off') });
+      Promise.resolve(ctx.storage.get(BOTTOM_MASK_KEY)).then((value) => {
+        state.bottomMask = value !== false;
+      }).catch(() => {});      const setBottomMask = async (value) => {
+        state.bottomMask = value;
+        applyBottomMask(value);
+        try {
+          await ctx.storage.set(BOTTOM_MASK_KEY, value);
+        } catch {}
+      };
       return () =>
         h('div', { style: 'display: flex; flex-direction: column; align-items: center; gap: 8px;' }, [
+          h('div', { class: 'settings-card', style: 'border-radius: 16px; overflow: hidden; width: 100%;' }, [
+            h('div', {
+              class: 'settings-item',
+              style: 'display: flex; justify-content: space-between; align-items: center; gap: 12px;',
+            }, [
+              h('div', { style: 'flex: 1; min-width: 0;' }, [
+                h('div', { style: 'font-weight: 600; font-size: 14px; color: var(--miuix-on-background); line-height: 1.4;' }, '底部渐变遮罩'),
+                h('div', { style: 'font-size: 12px; color: var(--miuix-on-background); opacity: 0.6; margin-top: 2px; line-height: 1.5;' }, '页面底部渐隐到背景色，让悬浮播放栏更突出'),
+              ]),
+              h(Switch, {
+                modelValue: state.bottomMask,
+                'onUpdate:modelValue': setBottomMask,
+                'aria-label': '底部渐变遮罩',
+              }),
+            ]),
+          ]),
           h('div', { class: 'settings-card', style: 'border-radius: 16px; overflow: hidden; width: 100%;' }, [
             h('div', {
               class: 'settings-item',
