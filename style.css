@@ -1,4 +1,4 @@
-/* 棰滆壊 */
+/* 颜色 */
 /* 琛ㄩ潰鑹叉媶鎴愩€屽簳鑹?+ 閫忔槑搴︺€嶏細鏅€氭ā寮忛€忔槑搴?100%锛堝瑙備笌鍘熸潵瀹屽叏涓€鑷达級锛?
    妯＄硦鑳屾櫙 / 鍗婇€忔槑鏍峰紡涓嬬敱鏂囦欢鏈熬鐨勩€岃〃闈㈤€忔槑搴﹂€傞厤銆嶆寜妯″紡璋冧綆锛?
    閬垮厤妯＄硦鑳屾櫙涓婂嚭鐜版垚鐗囩殑绾壊鐧?榛戙€?*/
@@ -27,7 +27,7 @@ html.miuix-bg-active {
   --surface-dialog-base: var(--miuix-background-base);
   --surface-player-base: var(--miuix-background-base);
   /* 杈撳叆妗嗭紙瀹夸富 .song-search-input 绛夌敤 !important + @layer 寮曠敤杩欎簺鍙橀噺锛?
-     瑕嗙洊鍙橀噺鍗冲彲缁曡繃鍒嗗眰浼樺厛绾э級 */
+     覆盖变量即可绕过分层优先级） */
   --field-bg: var(--miuix-background);
   --field-focus-bg: var(--miuix-background);
   --field-hover-bg: var(--miuix-surface-elevated);
@@ -85,7 +85,7 @@ html.dark.miuix-bg-active {
   border-radius: 9999px;
 }
 
-/* 鈹€鈹€ 璁剧疆椤甸潰 -  鈹€鈹€ */
+/* ── 设置页面 -  ── */
 
 /* 椤堕儴瀵艰埅鏍?*/
 .settings-anchor-bar {
@@ -132,7 +132,7 @@ html.dark.miuix-bg-active {
   z-index: 0 !important;
 }
 
-/* 閫変腑 tab 鍘绘帀鑳屾櫙锛寊-index 淇濊瘉鏂囧瓧鍦ㄦ寚绀哄櫒涓婃柟 */
+/* 选中 tab 去掉背景，z-index 保证文字在指示器上方 */
 .settings-anchor-item.is-active {
   background: transparent !important;
   color: var(--miuix-on-background) !important;
@@ -141,7 +141,7 @@ html.dark.miuix-bg-active {
   z-index: 1 !important;
 }
 
-/* 鏈€変腑 tab 鏂囧瓧鍦ㄦ寚绀哄櫒涓婃柟 */
+/* 未选中 tab 文字在指示器上方 */
 .settings-anchor-item {
   position: relative !important;
   z-index: 1 !important;
@@ -176,7 +176,7 @@ html.dark.miuix-bg-active {
   overflow: hidden !important;
 }
 
-/* 鍘绘帀 Tailwind space-y 闂磋窛 */
+/* 去掉 Tailwind space-y 间距 */
 .settings-card > * {
   margin-top: 0 !important;
   margin-bottom: 0 !important;
@@ -264,7 +264,7 @@ html.dark .settings-item .settings-button:active::after {
   background: var(--miuix-error) !important;
 }
 
-/* 鈹€鈹€ Select 涓嬫媺鑿滃崟 鈹€鈹€ */
+/* ── Select 下拉菜单 ── */
 
 .echo-select-trigger {
   background: none !important;
@@ -290,7 +290,7 @@ html.dark .settings-item .settings-button:active::after {
   opacity: 0.5 !important;
 }
 
-/* 涓嬫媺闈㈡澘 */
+/* 下拉面板 */
 .echo-select-content {
   min-width: max-content !important;
   width: auto !important;
@@ -329,7 +329,7 @@ html.dark .settings-item .settings-button:active::after {
   to   { opacity: 0; scale: 0.1; }
 }
 
-/* 閫夐」 */
+/* 选项 */
 .echo-select-item {
   display: grid !important;
   grid-template-columns: max-content 1fr !important;
@@ -378,7 +378,7 @@ html.dark .echo-select-item:active {
 
 /* 涓嬫媺鑿滃崟鎵撳紑鏃剁殑鍏ㄥ眬娴呰壊閬僵銆?
    z-index 闇€楂樹簬瀹夸富寮圭獥灞傜骇锛圖ialog 鏍堝熀鍑?1600銆佸唴瀹?+10锛?
-   Drawer 1400/1410锛汣ommentDrawer 1500/1510锛夛紝
+   Drawer 1400/1410；CommentDrawer 1500/1510），
    鍙堣浣庝簬涓嬫媺闈㈡澘鑷韩锛?echo-popover-content = 9999锛夛紝鏁呭彇 9990銆?
    瀹夸富寮圭獥灞傜骇璋冩暣鏃跺悓姝ユ洿鏂版鍊笺€?*/
 .miuix-select-backdrop {
@@ -393,12 +393,12 @@ html.dark .echo-select-item:active {
 .miuix-select-backdrop.is-visible {
   opacity: 1 !important;
 }
-/* 娣辫壊妯″紡涓嬫敼涓轰寒鑹查伄缃╋紙鎻愪寒鑳屾櫙锛岀獊鍑轰笅鎷夎彍鍗曪級
+/* 深色模式下改为亮色遮罩（提亮背景，突出下拉菜单）
 html.dark .miuix-select-backdrop {
   background: rgba(255, 255, 255, 0.18) !important;
 } */
 
-/* 鎺ㄨ崘姝屽崟鍗＄墖  */
+/* 推荐歌单卡片  */
 .playlist-card-grid .card-container {
   background: var(--miuix-background) !important;
   border-radius: 16px !important;
@@ -438,7 +438,7 @@ html.dark .miuix-select-backdrop {
   pointer-events: none;
   transition: background 0.2s ease;
 }
-/* 鈹€鈹€ 鎻掍欢鍗＄墖  鈹€鈹€ */
+/* ── 插件卡片  ── */
 
 .plugin-card {
   background: var(--miuix-background) !important;
@@ -483,7 +483,7 @@ html.dark .plugin-card:hover::after {
   background: rgba(255, 255, 255, 0.04);
 }
 
-/* 鈹€鈹€ CustomTabBar 鈹€鈹€ */
+/* ── CustomTabBar ── */
 
 .custom-tab-root {
   background: var(--miuix-surface-elevated) !important;
@@ -510,7 +510,7 @@ html.dark .plugin-card:hover::after {
 }
 
 
-/* 鈹€鈹€ 鎻掍欢 TabRow 鈹€鈹€
+/* ── 插件 TabRow ──
    鎻掍欢瑙嗗浘 / 椋庢牸鍒嗙被 Tab 鐜板凡缁熶竴浣跨敤瀹夸富 CustomTabBar锛?custom-tab-root锛夛紝
    婊戝潡鐢?CustomTabBar 鑷韩娓叉煋锛?custom-tab-slider锛夛紝鎻掍欢涓嶅啀娉ㄥ叆鎸囩ず鍣ㄣ€?
    杩欓噷鍙繚鐣欏鍣ㄧ毊鑲よ鐩栥€?*/
@@ -550,7 +550,7 @@ html.dark .plugin-card:hover::after {
   padding-right: 0 !important;
 }
 
-/* 鈹€鈹€ 涓婚〉鍗＄墖 -  鈹€鈹€ */
+/* ── 主页卡片 -  ── */
 
 .home-feature-card {
   background: var(--miuix-background) !important;
@@ -594,7 +594,7 @@ html.dark .home-feature-card:hover::after {
 
 
 
-/* 鈹€鈹€ 渚ф爮瀵艰埅鍗＄墖 -  鈹€鈹€ */
+/* ── 侧栏导航卡片 -  ── */
 
 .sidebar-section-body {
   background: var(--miuix-background) !important;
@@ -700,7 +700,7 @@ html.dark .sidebar-library-item:active {
 }
 
 /* 鈹€鈹€ 渚ф爮鏈€椤堕儴鐢ㄦ埛鍗＄墖锛氬崱鐗囨湰浣撲笉鍋?hover/active 閬僵
-   锛堝唴閮ㄥご鍍忓尯 / 绠ご鍚勮嚜鏈夐伄缃╋紝閬垮厤澶氬眰閬僵鍙犲姞锛夆攢鈹€ */
+   （内部头像区 / 箭头各自有遮罩，避免多层遮罩叠加）── */
 
 .user-info-card,
 .user-info-card:hover,
@@ -708,7 +708,7 @@ html.dark .sidebar-library-item:active {
   background: var(--miuix-background) !important;
   border: none !important;
   border-radius: 16px !important;
-  /* 宸﹀唴杈硅窛涓庝笂涓嬩竴鑷达紙0.4 rem锛夛紝璁╁乏渚у彲鐐归伄缃╃暀鐧藉潎鍖€ */
+  /* 左内边距与上下一致（0.4 rem），让左侧可点遮罩留白均匀 */
   padding: 4px !important;
 }
 
@@ -799,7 +799,7 @@ html.dark .sidebar-settings-btn:hover {
   background: color-mix(in srgb, var(--miuix-on-background) 7%, transparent) !important;
 }
 
-/* 鐢ㄦ埛鍗＄墖鏂囧瓧 / 浼氬憳寰界珷 */
+/* 用户卡片文字 / 会员徽章 */
 .sidebar-profile-name {
   color: var(--miuix-on-background) !important;
 }
@@ -850,13 +850,13 @@ html.dark .sidebar-settings-btn:hover {
   margin: 0 auto !important;
 }
 
-/* 鍘绘帀 space-y 闂撮殧锛岄伩鍏嶅垎鍓茬嚎涓婁笅鍑虹幇绌洪殭 */
+/* 去掉 space-y 间隔，避免分割线上下出现空隙 */
 .sidebar-scroll-inner > * + * {
   margin-top: 0 !important;
   margin-block-start: 0 !important;
 }
 
-/* 鍒涘缓姝屽崟涓嬫媺鑿滃崟 */
+/* 创建歌单下拉菜单 */
 .sidebar-create-menu {
   background: var(--miuix-background) !important;
   border: none !important;
@@ -911,9 +911,9 @@ html.dark .sidebar-settings-btn:hover {
   color: color-mix(in srgb, var(--miuix-on-background) 60%, transparent) !important;
 }
 
-/* 鎺ㄨ崘姝屽崟鍜岀紪杈戠簿閫夌殑鍗＄墖宸茶 playlist-card-grid 瑕嗙洊 */
+/* 推荐歌单和编辑精选的卡片已被 playlist-card-grid 覆盖 */
 
-/* 鈹€鈹€ 鏂扮涓婃灦 & 姝屾墜鍗＄墖 -  鈹€鈹€ */
+/* ── 新碟上架 & 歌手卡片 -  ── */
 
 .album-card .card-container,
 .artist-card .card-container {
@@ -985,11 +985,11 @@ html.dark .playlist-card-grid:hover .card-container::after {
   background: rgba(255, 255, 255, 0.04);
 }
 
-/* 鈹€鈹€ 搴曢儴闊充箰鎺т欢 鈹€鈹€ */
+/* ── 底部音乐控件 ── */
 
 .player-bar {
   border-radius: 9999px !important;
-  /* 绾壊锛氫笉閫忔槑銆佷笉妯＄硦銆傜敤瀛楅潰鑹蹭互闃插彉閲忔湭瑙ｆ瀽瀵艰嚧閫忔槑 */
+  /* 纯色：不透明、不模糊。用字面色以防变量未解析导致透明 */
   background: #ffffff !important;
   background-color: #ffffff !important;
   backdrop-filter: none !important;
@@ -1053,7 +1053,7 @@ html.dark .playlist-card-grid:hover .card-container::after {
   padding: 8px 8px !important;
 }
 
-/* 鈹€鈹€ Tabs 鈹€鈹€ */
+/* ── Tabs ── */
 
 /* 瀹瑰櫒鑳屾櫙鏉?鈥?瀵瑰簲 .settings-anchor-bar */
 .miuix-tabs-list {
@@ -1093,7 +1093,7 @@ html.dark .playlist-card-grid:hover .card-container::after {
   display: none !important;
 }
 
-/* 鈹€鈹€ 鎻掍欢璁剧疆寮圭獥 鈹€鈹€ */
+/* ── 插件设置弹窗 ── */
 
 @keyframes miuix-overlay-in {
   from { opacity: 0; }
@@ -1131,7 +1131,7 @@ html.dark .dialog-overlay {
   to   { opacity: 0; }
 }
 
-/* 鈹€鈹€ Miuix 搴曢儴寮圭獥 鈹€鈹€ */
+/* ── Miuix 底部弹窗 ── */
 .dialog-content.plugin-settings-dialog {
   left: 12px !important;
   right: 12px !important;
@@ -1227,7 +1227,7 @@ html.dark .dialog-overlay {
   background: rgba(128, 128, 128, 0.15) !important;
 }
 
-/* 鈹€鈹€ CustomPicker 寮圭獥锛堟帰绱㈤〉閫夋嫨鍣級- Miuix 搴曢儴鏍峰紡 鈹€鈹€ */
+/* ── CustomPicker 弹窗（探索页选择器）- Miuix 底部样式 ── */
 .custom-picker-dialog {
   left: 12px !important;
   right: 12px !important;
@@ -1275,7 +1275,7 @@ html.dark .dialog-overlay {
   background: rgba(128, 128, 128, 0.15) !important;
 }
 
-/* 鈹€鈹€ 閫夋嫨鍣ㄦ寜閽紙鎵撳紑寮圭獥鐨勶級鈹€ Miuix 鍗＄墖鏍峰紡 鈹€鈹€ */
+/* ── 选择器按钮（打开弹窗的）─ Miuix 卡片样式 ── */
 .rank-selector,
 .custom-selector {
   background: var(--miuix-background) !important;
@@ -1303,7 +1303,7 @@ html.dark .custom-selector:active {
   background: linear-gradient(rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.07)), var(--miuix-background) !important;
 }
 
-/* 鈹€鈹€ 姝屾洸璇勮鍗＄墖 鈹€鈹€ */
+/* ── 歌曲评论卡片 ── */
 .comment-item {
   background: var(--miuix-background) !important;
   border-radius: 16px !important;
@@ -1378,7 +1378,7 @@ html.dark .custom-selector:active {
   background: color-mix(in srgb, var(--color-primary) 18%, transparent) !important;
 }
 
-/* 鈹€鈹€ 鎼滅储椤垫悳绱㈡爮 鈹€鈹€ */
+/* ── 搜索页搜索栏 ── */
 .search-input-wrap {
   background: var(--miuix-background) !important;
   border: 1px solid transparent !important;
@@ -1449,7 +1449,7 @@ html.dark .custom-selector:active {
 
 /* 鈹€鈹€ 鎼滅储椤靛崱鐗?鈹€鈹€ */
 
-/* 鐑瘝 / 鍘嗗彶鏍囩 */
+/* 热词 / 历史标签 */
 .hot-chip,
 .history-chip {
   background: var(--miuix-background) !important;
@@ -1490,7 +1490,7 @@ html.dark .history-chip:active {
   background: rgba(255, 255, 255, 0.07) !important;
 }
 
-/* 鎼滅储鍒嗙被鏍囩 */
+/* 搜索分类标签 */
 .search-hot-tab {
   background: var(--miuix-background) !important;
   border-radius: 10px !important;
@@ -1518,7 +1518,7 @@ html.dark .search-hot-tab:active {
   background: rgba(255, 255, 255, 0.07) !important;
 }
 
-/* 婵€娲荤殑鍒嗙被鏍囩鐢ㄤ富棰樿壊 */
+/* 激活的分类标签用主题色 */
 .search-hot-tab.active {
   background: var(--color-primary) !important;
   color: #fff !important;
@@ -1529,7 +1529,7 @@ html.dark .search-hot-tab:active {
   opacity: 0.9 !important;
 }
 
-/* 鎼滅储寤鸿闈㈡澘 */
+/* 搜索建议面板 */
 .search-suggestions-panel {
   background: var(--miuix-background) !important;
   border: none !important;
@@ -1560,7 +1560,7 @@ html.dark .search-suggestion-item:hover {
   background: rgba(255, 255, 255, 0.04) !important;
 }
 
-/* 鈹€鈹€ Miuix Slider 鈹€鈹€ */
+/* ── Miuix Slider ── */
 
 /* 杞ㄩ亾锛?0px 楂橈紝鍏ㄥ渾瑙?*/
 .echo-slider-track {
@@ -1643,9 +1643,9 @@ html.dark .echo-slider-thumb:focus-visible {
   bottom: 100px !important;
 }
 
-/* 鈹€鈹€ 椋庢牸鎺ㄨ崘闈㈡澘 - 鈹€鈹€ */
+/* ── 风格推荐面板 - ── */
 
-/* 闈㈡澘鍗＄墖 */
+/* 面板卡片 */
 .style-recommend-panel {
   background: var(--miuix-background) !important;
   border: none !important;
@@ -1661,7 +1661,7 @@ html.dark .echo-slider-thumb:focus-visible {
 /* 鍒嗙被鏍囩瀹瑰櫒鐜颁负瀹夸富 CustomTabBar锛?custom-tab-root锛夛紝
    婊戝潡锛?custom-tab-slider锛夌敱缁勪欢鑷娓叉煋锛屾彃浠朵笉鍐嶆敞鍏ユ寚绀哄櫒銆?*/
 
-/* 闈㈡澘鏍囩 */
+/* 面板标签 */
 .style-panel-label {
   color: var(--miuix-on-background) !important;
   opacity: 0.55 !important;
@@ -1673,7 +1673,7 @@ html.dark .echo-slider-thumb:focus-visible {
   gap: 8px !important;
 }
 
-/* 椋庢牸鏍囩鎸夐挳 & 榛樿鎸夐挳 */
+/* 风格标签按钮 & 默认按钮 */
 .style-tag-btn,
 .style-tag-clear {
   height: 30px !important;
@@ -1744,7 +1744,7 @@ html.dark .style-tag-clear:active::after {
   opacity: 0.9 !important;
 }
 
-/* 鎾斁鍏ㄩ儴鎸夐挳 */
+/* 播放全部按钮 */
 .style-play-btn {
   height: 34px !important;
   padding: 0 14px !important;
@@ -1783,7 +1783,7 @@ html.dark .style-play-btn:active::after {
   background: rgba(255, 255, 255, 0.12) !important;
 }
 
-/* 姝屾洸鍗＄墖缃戞牸 */
+/* 歌曲卡片网格 */
 .style-song-grid {
   margin-top: 12px !important;
   gap: 4px 8px !important;
@@ -1822,20 +1822,20 @@ html.dark .style-song-grid .song-card:active::after {
   background: rgba(255, 255, 255, 0.05) !important;
 }
 
-/* 鍗犱綅鏂囧瓧 */
+/* 占位文字 */
 .style-song-placeholder {
   color: var(--miuix-on-background) !important;
   opacity: 0.45 !important;
 }
 
-/* 鈹€鈹€ 琛ㄩ潰閫忔槑搴﹂€傞厤锛圗cho 鏂扮増妯＄硦鑳屾櫙 / 鍗婇€忔槑鏍峰紡锛夆攢鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€
-   Echo 鍦ㄣ€岀獥鍙ｈ儗鏅€嶆ā寮忎笅浼氭妸涓荤敾甯冦€佷晶鏍忋€佹挱鏀炬爮銆佸惛椤舵潯寮哄埗閫忔槑锛屽彧鐣欎竴灞傝儗鏅紱
+/* ── 表面透明度适配（Echo 新版模糊背景 / 半透明样式）────────────────────────
+   Echo 在「窗口背景」模式下会把主画布、侧栏、播放栏、吸顶条强制透明，只留一层背景；
    鑻ユ湁鎻掍欢閫氳繃 ctx.theme.surface.set() 璐＄尞閫忔槑搴︼紝杩樹細缁?body 鍔犱笂
    echo-surface-translucent 骞惰缃?--surface-*-opacity銆?
    姝ゆ椂濡傛灉 miuix 鐨勫崱鐗?闈㈡澘浠嶆槸涓嶉€忔槑绾壊锛屾ā绯婅儗鏅笂灏变細鍑虹幇鎴愮墖鐨勭櫧/榛戯紝
    鎵€浠ヨ繖閲岃 miuix 鐨勮〃闈㈡寜鍚屾牱鐨勬ā寮忛檷閫忔槑搴︼紱鏅€氭ā寮忎笅閫忔槑搴︿粛鏄?100%锛屽瑙備笉鍙樸€?*/
 
-/* 琛ㄩ潰鑹茬殑鍚堟垚鏀惧湪 body 涓婏細閫忔槑搴﹀彉閲忓彲浠ュ氨杩戣В鏋愶紝
+/* 表面色的合成放在 body 上：透明度变量可以就近解析，
    涔熻 body 涓婄敱鎻掍欢璐＄尞鐨?--surface-*-opacity 鑳界敓鏁?*/
 html.miuix-bg-active body {
   /* 璺熼殢瀹夸富涓婚/绐楀彛閫忔槑搴﹀彂甯冪殑琛ㄩ潰涓嶉€忔槑搴?*/
@@ -1868,7 +1868,7 @@ body.echo-surface-translucent
   --miuix-background: color-mix(in srgb, var(--miuix-background-base) 88%, transparent);
 }
 
-/* 4) 閫変腑鎸囩ず鍧楋紙鍒嗘鎺т欢/鏍囩琛岄噷鐨勫皬婊戝潡锛夛細姣旀墍鍦ㄥ鍣ㄦ洿瀹炰竴浜涳紝
+/* 4) 选中指示块（分段控件/标签行里的小滑块）：比所在容器更实一些，
       鍗婇€忔槑鍚庝粛鑳界湅鍑恒€屽綋鍓嶉€変腑銆?*/
 html.miuix-bg-active.app-background-transparent
   :is(.settings-anchor-indicator, .custom-tab-slider),
@@ -1883,7 +1883,7 @@ body.echo-surface-translucent
    杩欓噷缁熶竴鎹㈡垚 MIUIX 鐨勮〃闈笌鍦嗚锛屼繚鎸佹暣浣撻鏍间竴鑷淬€?
    鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺?*/
 
-/* 鈹€鈹€ 鏂扮増璁剧疆闈㈡澘 鈹€鈹€ */
+/* ── 新版设置面板 ── */
 .settings-section {
   background: transparent !important;
 }
@@ -1964,7 +1964,7 @@ body.echo-surface-translucent
   color: color-mix(in srgb, var(--miuix-on-background) 55%, transparent) !important;
 }
 
-/* 璁剧疆椤甸《閮ㄦ悳绱㈡寜閽細MIUIX hover / active 閬僵 */
+/* 设置页顶部搜索按钮：MIUIX hover / active 遮罩 */
 .settings-search-icon-button {
   transition: background-color 0.18s ease, color 0.18s ease !important;
 }
@@ -2002,7 +2002,7 @@ body.echo-surface-translucent
   border-radius: 0 !important;
 }
 
-/* 鎻愮ず鏉′笉鍙備笌 hover/active 閬僵 */
+/* 提示条不参与 hover/active 遮罩 */
 .settings-notice::before,
 .settings-notice::after {
   content: none !important;
@@ -2022,7 +2022,7 @@ body.echo-surface-translucent
   box-shadow: none !important;
 }
 
-/* MIUIX 涓€т富棰樺崱鐗囷細涓嶅仛鎮诞/浣嶇Щ锛沨over/active 鐨勯伄缃╁彉鍖栧甫杩囨浮鏃堕暱 */
+/* MIUIX 个性主题卡片：不做悬浮/位移；hover/active 的遮罩变化带过渡时长 */
 .theme-select-card,
 .theme-select-card:hover,
 .theme-select-card:active {
@@ -2125,7 +2125,7 @@ body.echo-surface-translucent
 }
 
 /* 鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺?
-   渚ф爮銆屾坊鍔犲崱鐗囥€嶅姛鑳斤紙+ 鎸夐挳 / 娣诲姞鍗＄墖寮瑰眰锛塎IUIX 瑕嗙洊
+   侧栏「添加卡片」功能（+ 按钮 / 添加卡片弹层）MIUIX 覆盖
    鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺?*/
 
 .shortcut-add {
@@ -2159,7 +2159,7 @@ body.echo-surface-translucent
   transition: opacity 0.18s cubic-bezier(0.2, 0, 0, 1);
 }
 
-/* 娣诲姞鍗＄墖寮瑰眰 */
+/* 添加卡片弹层 */
 .dialog-content.shortcut-picker,
 .shortcut-picker {
   background: var(--miuix-background) !important;
@@ -2168,7 +2168,7 @@ body.echo-surface-translucent
 }
 
 /* 娣诲姞鍗＄墖鑿滃崟锛氫互宸﹁竟涓鸿酱鍚戝彸銆屾彮绀恒€嶅睍寮€ / 鏀跺洖锛堝唴瀹规湰韬笉缂╂斁銆佷笉骞崇Щ锛?
-   瑁佸壀鍖哄煙鍚戝鐣欏嚭闃村奖浣欓噺锛岄伩鍏嶉槾褰卞湪鍔ㄧ敾缁撴潫鍚庢墠绐佺劧闂幇 */
+   裁剪区域向外留出阴影余量，避免阴影在动画结束后才突然闪现 */
 .dialog-content.shortcut-picker[data-state='open'] {
   animation: miuix-picker-in 0.3s cubic-bezier(0.22, 1, 0.36, 1) both !important;
 }
@@ -2212,7 +2212,7 @@ body.echo-surface-translucent
   color: var(--miuix-on-background) !important;
 }
 
-/* 甯哥敤鍔熻兘 / 甯稿惉鑹轰汉 鍗＄墖鎸夐挳 */
+/* 常用功能 / 常听艺人 卡片按钮 */
 .shortcut-candidates button,
 .shortcut-artists button {
   background: var(--miuix-surface-elevated) !important;
@@ -2285,7 +2285,7 @@ body.echo-surface-translucent
   color: color-mix(in srgb, var(--miuix-on-background) 55%, transparent) !important;
 }
 
-/* 鈹€鈹€ 寮圭獥鍏抽棴鎸夐挳锛歁IUIX 鍦嗗舰锛堣鐩栦换鍔′腑蹇冦€佹坊鍔犲崱鐗囩瓑鎵€鏈夊脊绐楋級 鈹€鈹€ */
+/* ── 弹窗关闭按钮：MIUIX 圆形（覆盖任务中心、添加卡片等所有弹窗） ── */
 .dialog-close {
   border-radius: 9999px !important;
   width: 30px !important;
@@ -2301,7 +2301,7 @@ body.echo-surface-translucent
   color: var(--miuix-on-background) !important;
 }
 
-/* 鈹€鈹€ 鎻掍欢鏍囩锛堟彃浠剁鐞嗛〉 Tab锛塎IUIX 鈹€鈹€ */
+/* ── 插件标签（插件管理页 Tab）MIUIX ── */
 .plugin-view-tabs,
 .plugin-view-tabs.custom-tab-root {
   background: var(--miuix-surface-elevated) !important;
@@ -2356,7 +2356,7 @@ body.echo-surface-translucent
   border-radius: 12px !important;
 }
 
-/* 鈹€鈹€ 娑堟伅鎻愮ず锛圱oast锛塎IUIX 鈹€鈹€ */
+/* ── 消息提示（Toast）MIUIX ── */
 .toast-card {
   background: var(--miuix-background) !important;
   border: none !important;
@@ -2387,7 +2387,7 @@ body.echo-surface-translucent
   border-radius: 10px !important;
 }
 
-/* 鈹€鈹€ 渚ф爮璐﹀彿寮瑰眰锛堜晶鏍忛《閮ㄥご鍍忓崱鐗囩澶村脊鍑猴級MIUIX 鈹€鈹€ */
+/* ── 侧栏账号弹层（侧栏顶部头像卡片箭头弹出）MIUIX ── */
 .echo-popover-content {
   background: var(--miuix-background) !important;
   border: none !important;
@@ -2456,7 +2456,7 @@ body.echo-surface-translucent
 }
 
 /* 鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺?
-   涓汉涓婚〉锛堢偣鍑讳晶鏍忓ご鍍忓崱鐗囪繘鍏ワ級MIUIX 瑕嗙洊
+   个人主页（点击侧栏头像卡片进入）MIUIX 覆盖
    鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺?*/
 .profile-overview,
 .profile-details {
@@ -2492,7 +2492,7 @@ body.echo-surface-translucent
   border-color: color-mix(in srgb, var(--miuix-on-background) 12%, transparent) !important;
 }
 
-/* 鈹€鈹€ 鎵€鏈夊洖椤舵寜閽紙瀹夸富 BackToTop / 鏈湴闊充箰 .local-back-top 绛夛級MIUIX 鈹€鈹€ */
+/* ── 所有回顶按钮（宿主 BackToTop / 本地音乐 .local-back-top 等）MIUIX ── */
 .back-to-top-btn {
   background: var(--miuix-background) !important;
   color: var(--miuix-on-background) !important;
@@ -2514,7 +2514,7 @@ body.echo-surface-translucent
 }
 
 /* 鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺?
-   鎵归噺鎿嶄綔闈㈡澘锛堝彸渚ф娊灞夛級MIUIX 瑕嗙洊
+   批量操作面板（右侧抽屉）MIUIX 覆盖
    鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺?*/
 .drawer-panel.batch-drawer {
   background: var(--miuix-background) !important;
@@ -2597,7 +2597,7 @@ body.echo-surface-translucent
 
 .checkbox-indicator {
   color: var(--miuix-on-primary, #ffffff) !important;
-  /* 鍕句粠宸﹀線鍙崇敾鍑烘潵锛堝嬀鍦ㄩ€変腑鏃舵墠鎸傝浇锛宎nimation 鍦ㄦ寕杞芥椂鎾斁涓€娆★級 */
+  /* 勾从左往右画出来（勾在选中时才挂载，animation 在挂载时播放一次） */
   animation: miuix-check-draw 0.22s cubic-bezier(0.2, 0, 0, 1) both;
 }
 
@@ -2855,7 +2855,7 @@ body.echo-surface-translucent
   border-radius: 12px !important;
 }
 
-/* 鎮诞鎻愮ず锛坱ooltip锛塎IUIX */
+/* 悬浮提示（tooltip）MIUIX */
 .app-tooltip-surface {
   background: var(--miuix-background) !important;
   color: var(--miuix-on-background) !important;
@@ -2932,9 +2932,9 @@ body.echo-surface-translucent
   border-radius: 12px !important;
 }
 
-/* 鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲
-   mini 鎾斁鍣ㄧ獥鍙ｏ紙.mini-*锛塎IUIX
-   鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲 */
+/* ══════════════════════════════════════════════════════════════════════
+   mini 播放器窗口（.mini-*）MIUIX
+   ══════════════════════════════════════════════════════════════════════ */
 .mini-card {
   background: var(--miuix-background) !important;
   border-radius: 16px !important;
@@ -2950,7 +2950,7 @@ body.echo-surface-translucent
   color: color-mix(in srgb, var(--miuix-on-background) 55%, transparent) !important;
 }
 
-/* 椤堕儴绐楀彛 / 鎿嶄綔鎸夐挳 */
+/* 顶部窗口 / 操作按钮 */
 .mini-window-btn,
 .mini-action-btn,
 .mini-center-btn {
@@ -2974,14 +2974,14 @@ body.echo-surface-translucent
   color: var(--miuix-error) !important;
 }
 
-/* 灏侀潰 */
+/* 封面 */
 .mini-cover,
 .mini-cover-placeholder,
 .mini-queue-cover {
   border-radius: 10px !important;
 }
 
-/* 鎾斁鎸夐挳 */
+/* 播放按钮 */
 .mini-center-play {
   background: var(--miuix-surface-elevated) !important;
   color: var(--miuix-on-background) !important;
@@ -2991,14 +2991,14 @@ body.echo-surface-translucent
   color: var(--miuix-primary) !important;
 }
 
-/* 闊抽噺娴眰 */
+/* 音量浮层 */
 .mini-volume-slider {
   background: var(--miuix-background) !important;
   border-radius: 12px !important;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.16) !important;
 }
 
-/* 鎾斁闃熷垪 */
+/* 播放队列 */
 .mini-shell.is-expanded .mini-queue {
   border-top-color: color-mix(in srgb, var(--miuix-on-background) 12%, transparent) !important;
 }
@@ -3025,9 +3025,9 @@ body.echo-surface-translucent
   color: color-mix(in srgb, var(--miuix-on-background) 55%, transparent) !important;
 }
 
-/* 鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲
+/* ══════════════════════════════════════════════════════════════════════
    姝屾洸璇︽儏 路 姒滃崟鎴愬氨锛?detail-* / .ranking-*锛塎IUIX
-   鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲 */
+   ══════════════════════════════════════════════════════════════════════ */
 .detail-section {
   background: var(--miuix-background) !important;
   border: none !important;
@@ -3124,9 +3124,9 @@ body.echo-surface-translucent
   border-radius: 12px !important;
 }
 
-/* 鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲
+/* ══════════════════════════════════════════════════════════════════════
    閫夌敾璐ㄥ脊灞傦紙QualityPopover锛?quality-popover / .pm-*锛塎IUIX
-   鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲 */
+   ══════════════════════════════════════════════════════════════════════ */
 .quality-popover.echo-popover-content {
   border: none !important;
   box-shadow: 0 12px 32px rgba(0, 0, 0, 0.16) !important;
@@ -3171,9 +3171,9 @@ body.echo-surface-translucent
   color: var(--miuix-primary) !important;
 }
 
-/* 鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲
+/* ══════════════════════════════════════════════════════════════════════
    MV 璇︽儏 路 瑙嗛鐗囨簮锛?mv-* / .card-block锛塎IUIX
-   鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲 */
+   ══════════════════════════════════════════════════════════════════════ */
 .card-block {
   background: var(--miuix-background) !important;
   border: none !important;
@@ -3216,7 +3216,7 @@ body.echo-surface-translucent
   color: var(--miuix-primary) !important;
 }
 
-/* 鐗囨簮鍒楄〃 */
+/* 片源列表 */
 .mv-source-list {
   gap: 10px !important;
 }
@@ -3254,7 +3254,7 @@ body.echo-surface-translucent
   letter-spacing: 0.2px !important;
 }
 
-/* 鈹€鈹€ 缂栬緫渚ц竟鏍忓脊灞傦細clip-path 浠庡乏涓嬭鍚戝彸涓婂睍寮€ 鈹€鈹€ */
+/* ── 编辑侧边栏弹层：clip-path 从左下角向右上展开 ── */
 .echo-popover-content.sidebar-layout-popover[data-state='open'] {
   animation: miuix-panel-rise-in 0.26s cubic-bezier(0.22, 1, 0.36, 1) both !important;
 }
@@ -3270,9 +3270,9 @@ body.echo-surface-translucent
   to   { opacity: 0; clip-path: inset(calc(100% + 80px) calc(100% + 80px) -80px -80px); }
 }
 
-/* 鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲
-   椤舵爮銆屾洿澶氥€嶈彍鍗曪紙TitleBarMoreMenu锛塎IUIX
-   鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲 */
+/* ══════════════════════════════════════════════════════════════════════
+   顶栏「更多」菜单（TitleBarMoreMenu）MIUIX
+   ══════════════════════════════════════════════════════════════════════ */
 .titlebar-more-menu {
   background: var(--miuix-background) !important;
   border: none !important;
@@ -3324,7 +3324,7 @@ body.echo-surface-translucent
   color: color-mix(in srgb, var(--miuix-on-background) 55%, transparent) !important;
 }
 
-/* 鈹€鈹€ 姝屾洸鍒楄〃鍙充晶灏忔爣绛撅紙.song-tag / Tag 缁勪欢锛塎IUIX 鈹€鈹€ */
+/* ── 歌曲列表右侧小标签（.song-tag / Tag 组件）MIUIX ── */
 .song-tag {
   border-radius: 6px !important;
   box-shadow: none !important;
@@ -3388,7 +3388,7 @@ body.echo-surface-translucent
   color: var(--miuix-on-background) !important;
 }
 
-/* 鈹€鈹€ 蹇嵎閿缃紙.shortcut-*锛塎IUIX 鈹€鈹€ */
+/* ── 快捷键设置（.shortcut-*）MIUIX ── */
 .shortcut-col-title {
   color: color-mix(in srgb, var(--miuix-on-background) 55%, transparent) !important;
 }
@@ -3475,7 +3475,7 @@ body.echo-surface-translucent
   box-shadow: none !important;
 }
 
-/* 鈹€鈹€ 鎶曟斁闈㈡澘锛圕astPanel锛塎IUIX 鈹€鈹€ */
+/* ── 投放面板（CastPanel）MIUIX ── */
 .cast-panel,
 .cast-panel-title strong,
 .cast-section-title span,
@@ -3653,7 +3653,7 @@ body.echo-surface-translucent
   color: var(--miuix-on-background) !important;
 }
 
-/* 鈹€鈹€ 璁剧疆闈㈡澘锛坓lobal-settings-dialog锛夛細涓庢彃浠惰缃竴鑷寸殑搴曢儴寮瑰眰甯冨眬 + 鍔ㄧ敾 鈹€鈹€ */
+/* ── 设置面板（global-settings-dialog）：与插件设置一致的底部弹层布局 + 动画 ── */
 .dialog-content.global-settings-dialog {
   left: 12px !important;
   right: 12px !important;
@@ -3707,7 +3707,7 @@ body.echo-surface-translucent
   right: 12px !important;
 }
 
-/* 鈹€鈹€ 搴曢儴寮瑰眰鎶撳彇鏉★細hover 鍙橀暱鍙樻繁锛宎ctive 鏇撮暱鏇存繁 鈹€鈹€ */
+/* ── 底部弹层抓取条：hover 变长变深，active 更长更深 ── */
 .dialog-content.global-settings-dialog::before,
 .dialog-content.plugin-settings-dialog::before,
 .dialog-content.custom-picker-dialog::before {
@@ -3763,7 +3763,7 @@ body.echo-surface-translucent
   outline-offset: 1px !important;
 }
 
-/* 鈹€鈹€ 銆屾坊鍔犲埌銆嶉潰鏉垮唴瀹癸紙.add-to-*锛塎IUIX 鈹€鈹€ */
+/* ── 「添加到」面板内容（.add-to-*）MIUIX ── */
 .add-to-item {
   border: none !important;
   border-radius: 12px !important;
@@ -3786,7 +3786,7 @@ body.echo-surface-translucent
   color: color-mix(in srgb, var(--miuix-on-background) 55%, transparent) !important;
 }
 
-/* 鈹€鈹€ 涓婚椤甸€夋嫨涓婚鍚庡彸涓婅鐨勯€変腑鏍囪锛圫electionBadge锛塎IUIX 鈹€鈹€ */
+/* ── 主题页选择主题后右上角的选中标记（SelectionBadge）MIUIX ── */
 .selection-badge,
 .selection-mark-surface {
   width: 20px !important;
@@ -3798,7 +3798,7 @@ body.echo-surface-translucent
   box-shadow: none !important;
 }
 
-/* 鈹€鈹€ 杈撳叆妗嗭紙Input 缁勪欢 .echo-input-control锛屽浠ｇ悊璁よ瘉绛夛級MIUIX 鈹€鈹€ */
+/* ── 输入框（Input 组件 .echo-input-control，如代理认证等）MIUIX ── */
 .echo-input-control {
   border-radius: 10px !important;
   color: var(--miuix-on-background) !important;
@@ -3916,7 +3916,7 @@ html.dark .miuix-menu-scrim {
   color: var(--miuix-error) !important;
 }
 
-/* 鈹€鈹€ 鏇存柊寮圭獥锛圲pdateDialog锛塎IUIX 鈹€鈹€ */
+/* ── 更新弹窗（UpdateDialog）MIUIX ── */
 .update-changelog {
   background: var(--miuix-surface-elevated) !important;
   border-radius: 12px !important;
@@ -3948,7 +3948,7 @@ html.dark .miuix-menu-scrim {
   color: color-mix(in srgb, var(--miuix-on-background) 55%, transparent) !important;
 }
 
-/* 鈹€鈹€ 閫氱敤寮圭獥锛堝惈銆屽彂鐜版柊鐗堟湰銆嶆洿鏂板脊绐楋級MIUIX 鈹€鈹€ */
+/* ── 通用弹窗（含「发现新版本」更新弹窗）MIUIX ── */
 .dialog-content {
   border: none !important;
   border-radius: 16px !important;
@@ -3966,7 +3966,7 @@ html.dark .miuix-menu-scrim {
   border-radius: 12px !important;
 }
 
-/* 鈹€鈹€ 瀹氭椂鍏抽棴闈㈡澘锛圫leepTimerPopover锛塎IUIX 鈹€鈹€ */
+/* ── 定时关闭面板（SleepTimerPopover）MIUIX ── */
 .sleep-timer-popover.echo-popover-content {
   background: var(--miuix-background) !important;
   border: none !important;
@@ -4022,7 +4022,7 @@ html.dark .miuix-menu-scrim {
   background: var(--miuix-primary) !important;
 }
 
-/* 鈹€鈹€ 瀹氭椂鍏抽棴 / 闊宠川閫夋嫨 / 姝屾洸闊虫晥锛氫笌鍏跺畠寮瑰眰涓€鑷寸殑銆屼粠搴曢儴寰€涓娿€峜lip-path 鎻ず 鈹€鈹€ */
+/* ── 定时关闭 / 音质选择 / 歌曲音效：与其它弹层一致的「从底部往上」clip-path 揭示 ── */
 .miuix-reveal-in,
 .sleep-timer-popover[data-state='open'],
 .echo-popover-content.quality-popover[data-state='open'],
@@ -4053,7 +4053,7 @@ html.dark .miuix-menu-scrim {
   display: none !important;
 }
 
-/* 鈹€鈹€ 鏇村鍔熻兘闈㈡澘锛圥layerBarMoreMenu锛塎IUIX 鈹€鈹€ */
+/* ── 更多功能面板（PlayerBarMoreMenu）MIUIX ── */
 .playerbar-more-menu,
 .playerbar-use-item {
   color: var(--miuix-on-background) !important;
@@ -4111,7 +4111,7 @@ html.dark .miuix-menu-scrim {
   animation: miuix-rise-up-out 0.2s cubic-bezier(0.4, 0, 1, 1) forwards !important;
 }
 
-/* 鈹€鈹€ 閫夋嫨鍣ㄨ彍鍗曞唴瀹癸紙CustomPicker锛氭帓琛屾閫夋嫨 / 姝屽崟鍒嗙被 / 绫诲瀷绛涢€夌瓑锛塎IUIX 鈹€鈹€ */
+/* ── 选择器菜单内容（CustomPicker：排行榜选择 / 歌单分类 / 类型筛选等）MIUIX ── */
 .custom-picker-options .custom-picker-option {
   border-radius: 12px !important;
   background: var(--miuix-surface) !important;
@@ -4255,7 +4255,7 @@ html.dark:not(.floating-surfaces-frosted) :is(.echo-popover-content, .echo-selec
   color: var(--miuix-primary) !important;
 }
 
-/* 鈹€鈹€ 姝屾洸璇勮鍗＄墖 鈹€鈹€ */
+/* ── 歌曲评论卡片 ── */
 .comment-item {
   background: var(--miuix-surface) !important;
   border-radius: 16px !important;
