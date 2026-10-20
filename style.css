@@ -4136,7 +4136,7 @@ html.dark:not(.floating-surfaces-frosted) :is(.echo-popover-content, .echo-selec
 /* .page-sticky-placeholder + .pb-12 */
 .song-list-sticky + .pb-12,
 .page-sticky-placeholder + .pb-12 {
-  background: var(--miuix-surface) !important;
+  background: var(--miuix-background) !important;
   border-radius: 16px !important;
   padding: 0 !important;
   margin: 12px 20px !important;
@@ -4607,15 +4607,15 @@ html.dark:not(.floating-surfaces-frosted) :is(.echo-popover-content, .echo-selec
 .song-list-container,
 .song-list-inner,
 .song-list-row {
-  background: var(--miuix-surface) !important;
+  background: var(--miuix-background) !important;
 }
 
 .song-list-row:hover {
-  background: color-mix(in srgb, var(--miuix-on-background) 5%, var(--miuix-surface)) !important;
+  background: color-mix(in srgb, var(--miuix-on-background) 5%, var(--miuix-background)) !important;
 }
 
 .song-list-row.is-active {
-  background: color-mix(in srgb, var(--miuix-primary) 10%, var(--miuix-surface)) !important;
+  background: color-mix(in srgb, var(--miuix-primary) 10%, var(--miuix-background)) !important;
 }
 
 /* 自定义主题页：只调间距与圆角，不动颜色 */
