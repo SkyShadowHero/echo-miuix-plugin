@@ -177,8 +177,8 @@ export function activate(ctx) {
 
   // ── 底部弹层（设置 / 插件设置）抓取条：上拉增高回弹 + hover/active 高亮 ──
   (() => {
-    const SHEET_SELECTOR =
-      '.dialog-content.global-settings-dialog, .dialog-content.plugin-settings-dialog, .dialog-content.custom-picker-dialog';
+    // 所有弹层都能拉动：设置 / 插件设置 / CustomPicker 之外，通用弹窗也接入同一套手势。
+    const SHEET_SELECTOR = '.dialog-content';
     const HANDLE_ZONE = 28;
     let drag = null;
     let hovered = null;
@@ -473,6 +473,10 @@ function setupTiltEffect() {
 function setupSelectBackdrop() {
   const cleanups = [];
   let backdrop = null;
+  let frame = 0;
+
+  // 以触发器状态为准。content 在退出动画、缓存页面里都可能残留，不能当作“下拉已打开”。
+  const hasOpenSelect = () => !!document.querySelector('.echo-select-trigger[data-state="open"]');
 
   const showBackdrop = () => {
     if (!backdrop) {
@@ -480,42 +484,40 @@ function setupSelectBackdrop() {
       backdrop.className = 'miuix-select-backdrop';
       document.body.appendChild(backdrop);
     }
-    requestAnimationFrame(() => backdrop.classList.add('is-visible'));
+    if (frame) cancelAnimationFrame(frame);
+    frame = requestAnimationFrame(() => {
+      frame = 0;
+      if (!hasOpenSelect()) return;
+      backdrop.classList.add('is-visible');
+    });
   };
 
   const hideBackdrop = () => {
+    if (frame) {
+      cancelAnimationFrame(frame);
+      frame = 0;
+    }
     if (backdrop) backdrop.classList.remove('is-visible');
   };
 
-  const observer = new MutationObserver(() => {
-    const content = document.querySelector('.echo-select-content');
-    if (content && document.body.contains(content)) {
-      showBackdrop();
-    } else {
-      hideBackdrop();
-    }
-  });
-  observer.observe(document.body, { childList: true, subtree: true });
+  const sync = () => {
+    if (hasOpenSelect()) showBackdrop();
+    else hideBackdrop();
+  };
 
-  const closeObserver = new MutationObserver((mutations) => {
-    for (const mutation of mutations) {
-      if (mutation.type !== 'attributes' || mutation.attributeName !== 'data-state') continue;
-      const el = mutation.target;
-      if (el.classList.contains('echo-select-trigger') && el.dataset.state === 'closed') {
-        hideBackdrop();
-        const content = document.querySelector('.echo-select-content');
-        if (content && document.body.contains(content)) {
-          content.classList.add('miuix-closing');
-        }
-        break;
-      }
-    }
+  const observer = new MutationObserver(sync);
+  observer.observe(document.body, {
+    childList: true,
+    subtree: true,
+    attributes: true,
+    attributeFilter: ['data-state'],
   });
-  closeObserver.observe(document.body, { subtree: true, attributeFilter: ['data-state'] });
+  sync();
 
   cleanups.push(() => {
     observer.disconnect();
-    closeObserver.disconnect();
+    if (frame) cancelAnimationFrame(frame);
+    frame = 0;
     if (backdrop) {
       backdrop.remove();
       backdrop = null;
