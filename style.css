@@ -1,7 +1,5 @@
 /* 颜色 */
-/* 琛ㄩ潰鑹叉媶鎴愩€屽簳鑹?+ 閫忔槑搴︺€嶏細鏅€氭ā寮忛€忔槑搴?100%锛堝瑙備笌鍘熸潵瀹屽叏涓€鑷达級锛?
-   妯＄硦鑳屾櫙 / 鍗婇€忔槑鏍峰紡涓嬬敱鏂囦欢鏈熬鐨勩€岃〃闈㈤€忔槑搴﹂€傞厤銆嶆寜妯″紡璋冧綆锛?
-   閬垮厤妯＄硦鑳屾櫙涓婂嚭鐜版垚鐗囩殑绾壊鐧?榛戙€?*/
+/* html.miuix-bg-active */
 html.miuix-bg-active {
   --miuix-surface-base: #f7f7f7;
   --miuix-surface-elevated-base: #e8e8e8;
@@ -17,17 +15,12 @@ html.miuix-bg-active {
   --miuix-on-primary: #ffffff;
   --miuix-error: #e94634;
   --miuix-slider-background: rgba(0, 0, 0, 0.06);
-  /* 涓荤敾甯冧繚鎸佷笉閫忔槑搴曡壊锛氭暣浣撹儗鏅€忔槑搴︿氦缁?Echo銆岀獥鍙ｈ儗鏅€嶈嚜宸辨帶鍒躲€?
-     閫傞厤 Echo 尾8 鏂板瑙傜郴缁燂細鐨偆灞?闈㈡澘鍙栬壊璺熼殢 MIUIX 璋冭壊鏉匡紝
-     鐢诲竷鐢?surface-base锛屽崱鐗?娴眰/鎾斁闈㈡澘鐢?background-base銆?*/
   --surface-main-base: var(--miuix-surface-base);
   --surface-sidebar-base: var(--miuix-surface-base);
   --surface-card-base: var(--miuix-background-base);
   --surface-elevated-base: var(--miuix-background-base);
   --surface-dialog-base: var(--miuix-background-base);
   --surface-player-base: var(--miuix-background-base);
-  /* 杈撳叆妗嗭紙瀹夸富 .song-search-input 绛夌敤 !important + @layer 寮曠敤杩欎簺鍙橀噺锛?
-     覆盖变量即可绕过分层优先级） */
   --field-bg: var(--miuix-background);
   --field-focus-bg: var(--miuix-background);
   --field-hover-bg: var(--miuix-surface-elevated);
@@ -87,7 +80,7 @@ html.dark.miuix-bg-active {
 
 /* ── 设置页面 -  ── */
 
-/* 椤堕儴瀵艰埅鏍?*/
+/* .settings-anchor-bar */
 .settings-anchor-bar {
   background: var(--miuix-surface-elevated) !important;
   border-bottom: none !important;
@@ -117,7 +110,7 @@ html.dark.miuix-bg-active {
   font-weight: 700 !important;
 }
 
-/* 婊戝姩鎸囩ず鍣?*/
+/* .settings-anchor-indicator */
 .settings-anchor-indicator {
   position: absolute !important;
   top: 0 !important;
@@ -166,12 +159,12 @@ html.dark.miuix-bg-active {
   color: var(--miuix-on-background) !important;
 }
 
-/* 闅愯棌鍒嗗壊绾?*/
+/* .settings-divider */
 .settings-divider {
   display: none !important;
 }
 
-/* 閫夐」琛?hover 閬僵锛堝彧閬綋鍓嶉€夐」锛屼笉閬暣涓崱鐗囷級 */
+/* .settings-card */
 .settings-card {
   overflow: hidden !important;
 }
@@ -218,7 +211,7 @@ html.dark .settings-item:hover::after {
   z-index: 1;
 }
 
-/* 鈹€鈹€ 璁剧疆鍐呮寜閽?鈹€鈹€ */
+/* .settings-item .settings-button */
 
 .settings-item .settings-button {
   background: var(--color-primary) !important;
@@ -369,18 +362,14 @@ html.dark .echo-select-item:active {
   justify-self: end !important;
 }
 
-/* 鍘绘帀鏂囧瓧鐪佺暐鍙凤紙EchoMusic 榛樿缁欐枃瀛楀姞浜?text-overflow: ellipsis锛?*/
+/* .echo-select-item > :not(.echo-select-item-check) */
 .echo-select-item > :not(.echo-select-item-check) {
   overflow: visible !important;
   text-overflow: clip !important;
   white-space: nowrap !important;
 }
 
-/* 涓嬫媺鑿滃崟鎵撳紑鏃剁殑鍏ㄥ眬娴呰壊閬僵銆?
-   z-index 闇€楂樹簬瀹夸富寮圭獥灞傜骇锛圖ialog 鏍堝熀鍑?1600銆佸唴瀹?+10锛?
-   Drawer 1400/1410；CommentDrawer 1500/1510），
-   鍙堣浣庝簬涓嬫媺闈㈡澘鑷韩锛?echo-popover-content = 9999锛夛紝鏁呭彇 9990銆?
-   瀹夸富寮圭獥灞傜骇璋冩暣鏃跺悓姝ユ洿鏂版鍊笺€?*/
+/* .miuix-select-backdrop */
 .miuix-select-backdrop {
   position: fixed !important;
   inset: 0 !important;
@@ -510,10 +499,7 @@ html.dark .plugin-card:hover::after {
 }
 
 
-/* ── 插件 TabRow ──
-   鎻掍欢瑙嗗浘 / 椋庢牸鍒嗙被 Tab 鐜板凡缁熶竴浣跨敤瀹夸富 CustomTabBar锛?custom-tab-root锛夛紝
-   婊戝潡鐢?CustomTabBar 鑷韩娓叉煋锛?custom-tab-slider锛夛紝鎻掍欢涓嶅啀娉ㄥ叆鎸囩ず鍣ㄣ€?
-   杩欓噷鍙繚鐣欏鍣ㄧ毊鑲よ鐩栥€?*/
+/* .plugin-view-tabs */
 
 .plugin-view-tabs {
   background: var(--miuix-surface-elevated) !important;
@@ -524,10 +510,9 @@ html.dark .plugin-card:hover::after {
   position: relative !important;
 }
 
-/* 鈹€鈹€ 鎺掕姒?& 鏂版瓕閫熼€?姝屾洸鍒楄〃瀹瑰櫒 - Miuix 鍗＄墖 鈹€鈹€ */
+/* .page-sticky-placeholder + .pb-12 */
 
-/* 姝屾洸鍒楄〃瀹瑰櫒锛氭柊鐗?PageStickyHeader 浼氭妸鏍囬 teleport 鍒扮嫭绔嬪眰锛?
-   椤甸潰閲岀暀涓?.page-sticky-placeholder 鍗犱綅锛屽洜姝ゅ鍣ㄦ敼鐢ㄨ鍗犱綅鍏冪礌鐨勭浉閭婚€夋嫨鍣?*/
+/* .page-sticky-placeholder + .pb-12 */
 .song-list-sticky + .pb-12,
 .page-sticky-placeholder + .pb-12 {
   background: var(--miuix-background) !important;
@@ -570,7 +555,6 @@ html.dark .plugin-card:hover::after {
   content: '';
   position: absolute;
   inset: 0;
-  /* 涓庡崱鐗囨湰浣撳悓鍦嗚锛岄伩鍏?hover 閬僵鍦嗚涓庡崱鐗囧疄闄呭渾瑙掍笉涓€鑷?*/
   border-radius: inherit !important;
   background: transparent;
   pointer-events: none;
@@ -622,7 +606,7 @@ html.dark .sidebar-nav-item:active {
   margin-top: 0 !important;
 }
 
-/* 鈹€鈹€ 渚ц竟鏍忚儗鏅?& 姝屽崟鍒楄〃 -  鈹€鈹€ */
+/* .sidebar */
 
 .sidebar {
   background: var(--miuix-surface) !important;
@@ -640,10 +624,7 @@ html.dark .sidebar-nav-item:active {
   z-index: 100;
 }
 
-/* 涓诲唴瀹瑰簳閮ㄦ笎鍙橀伄缃┿€?
-   尾8 涓诲唴瀹瑰尯姣旂獥鍙ｅ唴缂?8px锛?main-workspace 鐨?padding-right锛夛紝
-   缁濆瀹氫綅鍦?.main-content 鍐呬細璁╅伄缃╁彸渚х己涓€鏉★紱鏀逛负鐩稿绐楀彛瀹氫綅骞堕摵婊″埌
-   绐楀彛鍙充晶锛堝眰绾т粛浣嶄簬 .main-content 鏍堝唴锛屼綆浜庢挱鏀鹃潰鏉匡紝涓嶄細鐩栦綇搴曟爮锛夈€?*/
+/* .miuix-main-blur */
 .miuix-main-blur {
   position: fixed !important;
   bottom: 0 !important;
@@ -655,7 +636,7 @@ html.dark .sidebar-nav-item:active {
   z-index: 100;
 }
 
-/* 鎻掍欢娉ㄥ叆鐨勫崰浣?/ 婊戝潡鍏冪礌锛氭牱寮忛泦涓湪姝わ紝渚夸簬闅忔彃浠舵牱寮忔暣浣撳惎鍋?*/
+/* .miuix-page-spacer */
 .miuix-page-spacer {
   height: 100px;
   flex-shrink: 0;
@@ -699,8 +680,7 @@ html.dark .sidebar-library-item:active {
   color: var(--color-primary) !important;
 }
 
-/* 鈹€鈹€ 渚ф爮鏈€椤堕儴鐢ㄦ埛鍗＄墖锛氬崱鐗囨湰浣撲笉鍋?hover/active 閬僵
-   （内部头像区 / 箭头各自有遮罩，避免多层遮罩叠加）── */
+/* .user-info-card:active */
 
 .user-info-card,
 .user-info-card:hover,
@@ -712,7 +692,7 @@ html.dark .sidebar-library-item:active {
   padding: 4px !important;
 }
 
-/* 鍗＄墖鍐呯殑鍙偣鍖哄煙锛堝ご鍍?鏄电О锛塰over/active 閬僵锛屼笌鍗＄墖鍚屽渾瑙掞紱閬僵鍔犲唴杈硅窛 */
+/* .sidebar-user-link */
 .sidebar-user-link {
   padding: 4px 8px !important;
   border-radius: 12px !important;
@@ -750,9 +730,9 @@ html.dark .sidebar-settings-btn:hover {
   background-color: rgba(255, 255, 255, 0.04) !important;
 }
 
-/* 鈹€鈹€ 尾8 鏂板渚ф爮鍏冪礌锛堝揩鎹峰叆鍙?/ 宸ュ叿 / 浼氬憳寰界珷 / 姝屽崟宸ュ叿琛?/ 鍒涘缓鑿滃崟 / 鎶樺彔鏍忥級閫傞厤 MIUIX 鈹€鈹€ */
+/* .shortcut-add */
 
-/* 蹇嵎鍏ュ彛鍗＄墖缃戞牸锛堟敹钘?/ 鏈€杩?/ 鈥︼級 */
+/* .shortcut-add */
 .shortcut-card,
 .shortcut-add {
   background: var(--miuix-background) !important;
@@ -790,7 +770,7 @@ html.dark .sidebar-settings-btn:hover {
   background: color-mix(in srgb, var(--miuix-on-background) 10%, transparent) !important;
 }
 
-/* 渚ф爮搴曢儴宸ュ叿鎸夐挳锛堝巻鍙?/ 鈥?/ 璁剧疆 / 涓婚锛?*/
+/* .sidebar-app-tool */
 .sidebar-app-tool {
   border-radius: 12px !important;
   color: var(--miuix-on-background) !important;
@@ -820,7 +800,7 @@ html.dark .sidebar-settings-btn:hover {
   color: var(--miuix-primary) !important;
 }
 
-/* 姝屽崟鍒嗙粍鏍囬 & 宸ュ叿琛岋紙鑷缓 / 鏀惰棌 / 鎺掑簭 / 鍒锋柊 / 娣诲姞锛?*/
+/* .sidebar-tab-divider */
 .sidebar-section-header,
 .sidebar-tab-divider {
   color: color-mix(in srgb, var(--miuix-on-background) 55%, transparent) !important;
@@ -881,7 +861,7 @@ html.dark .sidebar-settings-btn:hover {
   color: var(--miuix-primary) !important;
 }
 
-/* 鎶樺彔鏍忥紙rail锛?*/
+/* .sidebar-rail-avatar-btn */
 .sidebar-rail-avatar-btn {
   background: var(--miuix-background) !important;
   border-radius: 12px !important;
@@ -1007,9 +987,7 @@ html.dark .playlist-card-grid:hover .card-container::after {
   padding-bottom: 0 !important;
 }
 
-/* Echo 尾8 缁?.main-player-panel 鍔犱簡 overflow:hidden锛堢敤浜庤鍓毊鑲ゅ渾瑙掞級銆?
-   鏈彃浠舵妸 .player-bar-container 璁句负 absolute 鍚庤闈㈡澘楂樺害濉屾垚 0锛?
-   娴姩搴曟爮浼氳瑁佸壀娑堝け銆傛斁寮€瑁佸壀锛岃娴姩搴曟爮閲嶆柊鍙銆?*/
+/* .main-player-panel */
 .main-player-panel {
   overflow: visible !important;
 }
@@ -1019,9 +997,7 @@ html.dark .playlist-card-grid:hover .card-container::after {
   padding-bottom: 0px !important;
 }
 
-/* 娌夋蹈搴曟爮锛毼? 鐨?.main-workspace 鍦ㄥ簳閮ㄧ暀浜?gap 鍜屽唴杈硅窛锛?
-   浣?.main-content 鍒颁笉浜嗙獥鍙ｅ簳閮紝搴曢儴娌夋蹈娓愬彉閬僵锛?miuix-main-blur锛夋暣浣撳亸楂樸€?
-   鍘绘帀搴曢儴 gap 涓庡唴杈硅窛锛岃鍐呭寤朵几鍒扮獥鍙ｅ簳閮紝閬僵涓庢诞鍔ㄥ簳鏍忓榻愩€?*/
+/* .main-workspace */
 .main-workspace {
   gap: 0 !important;
   padding-bottom: 0 !important;
@@ -1033,13 +1009,7 @@ html.dark .playlist-card-grid:hover .card-container::after {
   box-shadow: inset 0 1px 0 0 rgba(255,255,255,0.15), inset 0 -1px 0 0 rgba(255,255,255,0.15) !important;
 }
 
-/* 鈹€鈹€ 璇勮鍖?/ 璇︽儏椤靛彂閫佽瘎璁烘 鈹€鈹€
-   鍙戦€佹锛?comment-composer-bottom / .detail-comment-composer锛夋槸 position: sticky锛?
-   鑰屾偓娴簳鏍忓鍣ㄦ槸 z-index:1000 涓斾綅浜?.main-content 涔嬪锛堜富鍐呭 isolation:isolate锛夛紝
-   浼氱洊浣忚创鍦ㄦ粴鍔ㄥ尯搴曢儴鐨勫彂閫佹銆傝繖閲屾妸鍙戦€佹鐨?sticky 搴曢儴鎶崌鍒板簳鏍忎箣涓娿€?
-   --drawer-bottom-offset 鐢卞涓?PlayerBar 鍙戝竷锛? 搴曟爮楂樺害 + 8锛夛紱
-   --miuix-player-bar-offset 鐢便€屽簳閮ㄩ煶涔愭帶浠舵姮鍗囥€嶈缃彂甯冿紙榛樿 8锛夈€?
-   搴曟爮椤堕儴 = --drawer-bottom-offset + (offset - 8)锛屽啀琛?12px 闂磋窛銆?*/
+/* .detail-comment-composer */
 .comment-composer-bottom,
 .detail-comment-composer {
   bottom: calc(var(--drawer-bottom-offset, 96px) + 12px) !important;
@@ -1055,7 +1025,7 @@ html.dark .playlist-card-grid:hover .card-container::after {
 
 /* ── Tabs ── */
 
-/* 瀹瑰櫒鑳屾櫙鏉?鈥?瀵瑰簲 .settings-anchor-bar */
+/* .miuix-tabs-list */
 .miuix-tabs-list {
   position: relative !important;
   background: var(--miuix-surface-elevated) !important;
@@ -1065,7 +1035,7 @@ html.dark .playlist-card-grid:hover .card-container::after {
   gap: 4px !important;
 }
 
-/* tab 閫夐」 鈥?瀵瑰簲 .settings-anchor-item */
+/* .tab-trigger */
 .tab-trigger {
   position: relative !important;
   z-index: 1 !important;
@@ -1088,7 +1058,7 @@ html.dark .playlist-card-grid:hover .card-container::after {
   font-weight: 700 !important;
 }
 
-/* 闅愯棌搴曢儴钃濊壊鎸囩ず绾?*/
+/* .active-line */
 .active-line {
   display: none !important;
 }
@@ -1107,10 +1077,7 @@ html.dark .playlist-card-grid:hover .card-container::after {
 .dialog-overlay {
   background: rgba(0, 0, 0, 0.15) !important;
 }
-/* 娣辫壊妯″紡涓嬫彃浠惰缃伄缃╂敼涓轰寒鑹查伄缃?
-html.dark .dialog-overlay {
-  background: rgba(255, 255, 255, 0.18) !important;
-} */
+/* .dialog-overlay[data-state='open'] */
 .dialog-overlay[data-state='open'] {
   animation: miuix-overlay-in 0.1s ease forwards !important;
 }
@@ -1179,7 +1146,7 @@ html.dark .dialog-overlay {
   right: 12px !important;
 }
 
-/* 鈹€鈹€ 娣诲姞鍒板脊绐?- Miuix 搴曢儴鏍峰紡 鈹€鈹€ */
+/* .dialog-content:has(.add-to-playlist-body) */
 .dialog-content:has(.add-to-playlist-body) {
   left: 12px !important;
   right: 12px !important;
@@ -1310,13 +1277,13 @@ html.dark .custom-selector:active {
   box-shadow: none !important;
 }
 
-/* 鈹€鈹€ 椤舵爮鎸夐挳鍦嗚缁熶竴涓?MIUIX锛堟寜閽彧鏈?32~34px锛?6px 浼氬彉鎴愯兌鍥?鍦嗭紝鏁呭彇 12px锛?鈹€鈹€ */
+/* .title-bar .action-icon */
 .title-bar button,
 .title-bar .action-icon {
   border-radius: 12px !important;
 }
 
-/* 鈹€鈹€ 椤堕儴鍏ㄥ眬鎼滅储鏍?鈹€鈹€ */
+/* .tb-search-input-wrap */
 .tb-search-input-wrap {
   background: var(--miuix-background) !important;
   border: 1px solid transparent !important;
@@ -1447,7 +1414,7 @@ html.dark .custom-selector:active {
   opacity: 0.9 !important;
 }
 
-/* 鈹€鈹€ 鎼滅储椤靛崱鐗?鈹€鈹€ */
+/* .history-chip */
 
 /* 热词 / 历史标签 */
 .hot-chip,
@@ -1562,7 +1529,7 @@ html.dark .search-suggestion-item:hover {
 
 /* ── Miuix Slider ── */
 
-/* 杞ㄩ亾锛?0px 楂橈紝鍏ㄥ渾瑙?*/
+/* .echo-slider-track */
 .echo-slider-track {
   height: 10px !important;
   border-radius: 999px !important;
@@ -1570,7 +1537,7 @@ html.dark .search-suggestion-item:hover {
   overflow: hidden !important;
 }
 
-/* 宸插～鍏呴儴鍒?*/
+/* .echo-slider-range */
 .echo-slider-range {
   height: 100% !important;
   border-bottom-right-radius: 999px !important;
@@ -1578,7 +1545,7 @@ html.dark .search-suggestion-item:hover {
   background: var(--color-primary) !important;
 }
 
-/* 鎷栨嫿鐞?*/
+/* .echo-slider-thumb */
 .echo-slider-thumb {
   width: 14px !important;
   height: 14px !important;
@@ -1625,7 +1592,7 @@ html.dark .echo-slider-thumb:focus-visible {
   background: rgba(128, 128, 128, 0.4) !important;
 }
 
-/* 鏁板€兼爣绛?*/
+/* .slider-value-label */
 .slider-value-label {
   font-size: 11px !important;
   font-weight: 600 !important;
@@ -1633,9 +1600,7 @@ html.dark .echo-slider-thumb:focus-visible {
   opacity: 0.6 !important;
 }
 
-/* 鈹€鈹€ 蹇€熷洖椤舵寜閽?鈹€鈹€
-   鏂扮増 BackToTop 鐨勫畾浣嶅湪鍖呰９灞傦紙Tailwind .bottom-4锛夛紝鎸夐挳鑷韩鐨?bottom 鏃犳晥锛?
-   杩欓噷鐢?:has 閫変腑鍖呰９灞傦紝鎶婃寜閽姮鍒版偓娴簳鏍忎箣涓娿€?*/
+/* .absolute:has(> .back-to-top-btn) */
 .absolute:has(> .back-to-top-btn) {
   bottom: 100px !important;
 }
@@ -1653,13 +1618,12 @@ html.dark .echo-slider-thumb:focus-visible {
   padding: 14px !important;
 }
 
-/* 鍒嗙被鏍囩琛?*/
+/* .style-category-row */
 .style-category-row {
   gap: 12px !important;
 }
 
-/* 鍒嗙被鏍囩瀹瑰櫒鐜颁负瀹夸富 CustomTabBar锛?custom-tab-root锛夛紝
-   婊戝潡锛?custom-tab-slider锛夌敱缁勪欢鑷娓叉煋锛屾彃浠朵笉鍐嶆敞鍏ユ寚绀哄櫒銆?*/
+/* .style-panel-label */
 
 /* 面板标签 */
 .style-panel-label {
@@ -1667,7 +1631,7 @@ html.dark .echo-slider-thumb:focus-visible {
   opacity: 0.55 !important;
 }
 
-/* 椋庢牸鏍囩琛?*/
+/* .style-tag-row */
 .style-tag-row {
   margin-top: 12px !important;
   gap: 8px !important;
@@ -1828,17 +1792,10 @@ html.dark .style-song-grid .song-card:active::after {
   opacity: 0.45 !important;
 }
 
-/* ── 表面透明度适配（Echo 新版模糊背景 / 半透明样式）────────────────────────
-   Echo 在「窗口背景」模式下会把主画布、侧栏、播放栏、吸顶条强制透明，只留一层背景；
-   鑻ユ湁鎻掍欢閫氳繃 ctx.theme.surface.set() 璐＄尞閫忔槑搴︼紝杩樹細缁?body 鍔犱笂
-   echo-surface-translucent 骞惰缃?--surface-*-opacity銆?
-   姝ゆ椂濡傛灉 miuix 鐨勫崱鐗?闈㈡澘浠嶆槸涓嶉€忔槑绾壊锛屾ā绯婅儗鏅笂灏变細鍑虹幇鎴愮墖鐨勭櫧/榛戯紝
-   鎵€浠ヨ繖閲岃 miuix 鐨勮〃闈㈡寜鍚屾牱鐨勬ā寮忛檷閫忔槑搴︼紱鏅€氭ā寮忎笅閫忔槑搴︿粛鏄?100%锛屽瑙備笉鍙樸€?*/
+/* html.miuix-bg-active body */
 
-/* 表面色的合成放在 body 上：透明度变量可以就近解析，
-   涔熻 body 涓婄敱鎻掍欢璐＄尞鐨?--surface-*-opacity 鑳界敓鏁?*/
+/* html.miuix-bg-active body */
 html.miuix-bg-active body {
-  /* 璺熼殢瀹夸富涓婚/绐楀彛閫忔槑搴﹀彂甯冪殑琛ㄩ潰涓嶉€忔槑搴?*/
   --miuix-surface-alpha: var(--surface-main-opacity, 100%);
   --miuix-elevated-alpha: var(--surface-elevated-opacity, 100%);
   --miuix-background-alpha: var(--surface-card-opacity, 100%);
@@ -1847,20 +1804,14 @@ html.miuix-bg-active body {
   --miuix-background: color-mix(in srgb, var(--miuix-background-base) var(--miuix-background-alpha), transparent);
 }
 
-/* 1) 閫忔槑绐楀彛 / 妯＄硦鑳屾櫙锛歮iuix 鐨勬墍鏈夎〃闈紙鐢诲竷 / 鍗＄墖 / 娴眰锛変竴璧烽檷涓哄崐閫忔槑锛?
-      闇插嚭绐楀彛鑳屾櫙锛岄伩鍏嶆ā绯婅儗鏅笂鍑虹幇鎴愮墖绾壊鐧?榛戙€?
-      娉細瀹夸富鐨?--surface-card-opacity 鍦ㄩ€忔槑鎬佷粛鏄?100%锛屾晠姝ゅ鐢ㄥ浐瀹氬崐閫忔槑鍊硷紱
-      鐩存帴浣滅敤浜庡悎鎴愭墍鍦ㄧ殑 body锛岀‘淇濊鐩栦笂闈㈢殑榛樿鍊笺€?*/
+/* html.miuix-bg-active.app-background-transparent body */
 html.miuix-bg-active.app-background-transparent body {
   --miuix-surface-alpha: 45%;
   --miuix-background-alpha: 55%;
   --miuix-elevated-alpha: 70%;
 }
 
-/* 3) 娴眰绫昏〃闈紙涓嬫媺銆佹悳绱㈠缓璁瓑锛変繚鎸佽緝楂樼殑涓嶉€忔槑搴︼紝淇濊瘉鍙鎬р€斺€?
-      涓?Echo 鑷韩銆屽唴瀹硅〃闈㈤€忓嚭鑳屾櫙銆佸脊绐楁诞灞備粛鐢ㄤ笉閫忔槑鑳屾櫙銆嶇殑绾﹀畾涓€鑷淬€?
-      娉ㄦ剰锛氶鏍兼帹鑽愰潰鏉匡紙.style-recommend-panel锛夋槸椤甸潰鍐呯殑鍗＄墖锛?
-      涓庡叾瀹冨崱鐗囩敤鍚屼竴濂楅€忔槑搴︼紝涓嶈鏀捐繘杩欓噷銆?*/
+/* :is(.echo-select-content, .search-suggestions-panel, .custom-selector) */
 html.miuix-bg-active.app-background-transparent
   :is(.echo-select-content, .search-suggestions-panel, .custom-selector),
 body.echo-surface-translucent
@@ -1868,8 +1819,7 @@ body.echo-surface-translucent
   --miuix-background: color-mix(in srgb, var(--miuix-background-base) 88%, transparent);
 }
 
-/* 4) 选中指示块（分段控件/标签行里的小滑块）：比所在容器更实一些，
-      鍗婇€忔槑鍚庝粛鑳界湅鍑恒€屽綋鍓嶉€変腑銆?*/
+/* :is(.settings-anchor-indicator, .custom-tab-slider) */
 html.miuix-bg-active.app-background-transparent
   :is(.settings-anchor-indicator, .custom-tab-slider),
 body.echo-surface-translucent
@@ -1877,11 +1827,7 @@ body.echo-surface-translucent
   --miuix-background: color-mix(in srgb, var(--miuix-background-base) 88%, transparent);
 }
 
-/* 鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺?
-   尾8 鏂扮晫闈?MIUIX 瑕嗙洊锛堣缃潰鏉?/ 涓€т富棰?/ 鎻掍欢鏍囩绛夛級
-   瀹夸富鐨勮繖浜涙柊缁勪欢浣跨敤 --content-panel-bg / --control-* 绛変腑鎬?token锛?
-   杩欓噷缁熶竴鎹㈡垚 MIUIX 鐨勮〃闈笌鍦嗚锛屼繚鎸佹暣浣撻鏍间竴鑷淬€?
-   鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺?*/
+/* .settings-section */
 
 /* ── 新版设置面板 ── */
 .settings-section {
@@ -1939,7 +1885,7 @@ body.echo-surface-translucent
 .settings-search {
   background: var(--miuix-background) !important;
   border: none !important;
-  /* 涓庡唴閮ㄦ悳绱㈡寜閽紙hover 閬僵锛夊悓鍦嗚锛岄伩鍏嶁€滃疄闄呭渾瑙?/ 閬僵鍦嗚鈥濅笉涓€鑷?*/
+/* .settings-search-input */
   border-radius: 9999px !important;
 }
 
@@ -1951,7 +1897,7 @@ body.echo-surface-translucent
   color: color-mix(in srgb, var(--miuix-on-background) 45%, transparent) !important;
 }
 
-/* 璁剧疆椤垫悳绱㈡爮灞曞紑鍚庣殑鑱氱劍鎻忚竟鐢?MIUIX 涓婚鑹?*/
+/* .settings-search:focus-within */
 .settings-search:focus-within {
   border-color: var(--miuix-primary) !important;
   box-shadow: 0 0 0 2px color-mix(in srgb, var(--miuix-primary) 12%, transparent) !important;
@@ -2014,7 +1960,7 @@ body.echo-surface-translucent
   color: var(--miuix-on-background) !important;
 }
 
-/* 鈹€鈹€ 涓€т富棰橈紙涓婚涓績锛夊崱鐗?鈹€鈹€ */
+/* .theme-select-card */
 .theme-select-card {
   background: var(--miuix-background) !important;
   border: none !important;
@@ -2104,7 +2050,7 @@ body.echo-surface-translucent
   border: none !important;
 }
 
-/* 鈹€鈹€ 鎻掍欢绠＄悊鏍囩鐨勬枃鏈?鈹€鈹€ */
+/* .plugin-view-tab-label */
 .plugin-view-tab-label {
   color: inherit !important;
   font-weight: inherit !important;
@@ -2115,7 +2061,7 @@ body.echo-surface-translucent
   opacity: 0.55 !important;
 }
 
-/* 鈹€鈹€ 閫氱敤锛氳缃?涓婚闈㈡澘閲岀殑鍒嗘鎺т欢锛圕ustomTabBar锛夊湪 MIUIX 涓嬬粺涓€澶栬 鈹€鈹€ */
+/* .theme-center .custom-tab-root */
 .settings-page .custom-tab-root,
 .theme-center .custom-tab-root {
   background: var(--miuix-surface-elevated) !important;
@@ -2124,9 +2070,7 @@ body.echo-surface-translucent
   padding: 5px !important;
 }
 
-/* 鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺?
-   侧栏「添加卡片」功能（+ 按钮 / 添加卡片弹层）MIUIX 覆盖
-   鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺?*/
+/* .shortcut-add */
 
 .shortcut-add {
   background: var(--miuix-background) !important;
@@ -2144,8 +2088,7 @@ body.echo-surface-translucent
   height: 30px !important;
 }
 
-/* 蹇嵎鍏ュ彛鍗＄墖锛堜负浣犳帹鑽?/ 鎺㈢储鍙戠幇鈥︼級涓庢坊鍔犲崱鐗囨寜閽細
-   hover 鏃惰儗鏅?鎻忚竟/鏂囧瓧涓庡浘鏍団啍鏂囧瓧鍒囨崲閮藉姞杩囨浮鏃堕暱锛岄伩鍏嶇洿鎺ヨ烦鍙?*/
+/* .shortcut-add */
 .shortcut-card,
 .shortcut-add {
   transition:
@@ -2167,8 +2110,7 @@ body.echo-surface-translucent
   border-radius: 20px !important;
 }
 
-/* 娣诲姞鍗＄墖鑿滃崟锛氫互宸﹁竟涓鸿酱鍚戝彸銆屾彮绀恒€嶅睍寮€ / 鏀跺洖锛堝唴瀹规湰韬笉缂╂斁銆佷笉骞崇Щ锛?
-   裁剪区域向外留出阴影余量，避免阴影在动画结束后才突然闪现 */
+/* .dialog-content.shortcut-picker[data-state='open'] */
 .dialog-content.shortcut-picker[data-state='open'] {
   animation: miuix-picker-in 0.3s cubic-bezier(0.22, 1, 0.36, 1) both !important;
 }
@@ -2220,15 +2162,13 @@ body.echo-surface-translucent
   color: var(--miuix-on-background) !important;
 }
 
-/* 鏈€杩戝父鍚?鍒楄〃鎸夐挳 */
+/* .shortcut-playlists button */
 .shortcut-playlists button {
   border-radius: 12px !important;
   color: var(--miuix-on-background) !important;
 }
 
-/* 鈺愨晲鈺?鍙鐢細hover/active 閬僵锛?miuix-mask锛夆晲鈺愨晲
-   鍦ㄥ厓绱犲簳鑹蹭箣涓婂彔涓€灞?on-background 鍗婇€忔槑閬僵锛堜笉鏇挎崲搴曡壊锛夛紝hover 6% / active 13%锛屽甫 0.15s 杩囨浮銆?
-   闇€瑕侀伄缃╂椂锛氱粰鍏冪礌鍔?.miuix-mask锛堝厓绱犺嚜甯?::after 閬僵鐨勪笉瑕佸姞锛夈€?*/
+/* :is(.shortcut-candidates button, .shortcut-artists button, .shortcut-playlists button) */
 .miuix-mask,
 :is(.shortcut-candidates button, .shortcut-artists button, .shortcut-playlists button) {
   position: relative;
@@ -2253,7 +2193,7 @@ body.echo-surface-translucent
   opacity: 0.13;
 }
 
-/* hover-only 閬僵锛堟棤 active锛夛細缁欎笉闇€瑕佹寜鍘嬫€佺殑鍏冪礌鐢?*/
+/* .miuix-mask-hover */
 .miuix-mask-hover {
   position: relative;
 }
@@ -2326,7 +2266,7 @@ body.echo-surface-translucent
   font-weight: 700 !important;
 }
 
-/* 鈹€鈹€ 鎻掍欢鍗＄墖鏍囩锛堟弿杩?鐘舵€侊級鏀逛负 MIUIX锛氬幓鎺?inset 鎻忚竟锛屾敼娴呰壊濉厖鍦嗚 鈹€鈹€ */
+/* .marketplace-tags .ui-tag */
 .plugin-feature-tags span,
 .plugin-feature-tags .ui-tag,
 .marketplace-tags span,
@@ -2338,14 +2278,14 @@ body.echo-surface-translucent
   color: color-mix(in srgb, var(--miuix-on-background) 72%, transparent) !important;
 }
 
-/* 鐘舵€佸窘绔狅紙宸插惎鐢?/ 鏇存柊 / 璀﹀憡 / 閿欒锛変篃鍘绘弿杈癸紝淇濈暀鍚勮嚜鑹茶皟 */
+/* .plugin-status-badge */
 .plugin-status-badge {
   box-shadow: none !important;
   border: none !important;
   border-radius: 9px !important;
 }
 
-/* 鈹€鈹€ 璁剧疆闈㈡澘鎼滅储鎸夐挳锛氫笌椤舵爮缁熶竴 12px锛堝惈 hover 鎬侊紝閬垮厤 hover 鍙樺渾锛?鈹€鈹€ */
+/* .settings-search-clear:hover */
 .settings-search-icon-button,
 .settings-search-icon-button:hover,
 .settings-search-clear,
@@ -2422,12 +2362,12 @@ body.echo-surface-translucent
   background: var(--miuix-primary) !important;
 }
 
-/* 寮瑰眰鍑虹幇鍔ㄧ敾缁熶竴鐢ㄣ€屼笅鎷夎彍鍗曞悓娆俱€嶏紙閬垮厤鐢ㄥ埆鐨勫姩鐢昏鐩栧悗鎶婁笅鎷夎彍鍗曞姩鐢讳篃鏀瑰潖锛?*/
+/* .echo-popover-content[data-state='open'] */
 .echo-popover-content[data-state='open'] {
   animation: miuix-dropdown-in 0.22s cubic-bezier(0.05, 0.7, 0.1, 1) !important;
 }
 
-/* 渚ф爮璐﹀彿寮瑰眰锛歝lip-path 浠庝笂寰€涓嬫彮绀?/ 鍚戜笂鏀惰捣锛堣鍓尯鐣欓槾褰变綑閲忥級 */
+/* .echo-popover-content:has(.account-panel)[data-state='open'] */
 .echo-popover-content:has(.account-panel)[data-state='open'] {
   animation: miuix-account-drop-in 0.24s cubic-bezier(0.22, 1, 0.36, 1) both !important;
 }
@@ -2455,9 +2395,7 @@ body.echo-surface-translucent
   }
 }
 
-/* 鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺?
-   个人主页（点击侧栏头像卡片进入）MIUIX 覆盖
-   鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺?*/
+/* .profile-details */
 .profile-overview,
 .profile-details {
   background: var(--miuix-background) !important;
@@ -2513,9 +2451,7 @@ body.echo-surface-translucent
   background: color-mix(in srgb, var(--miuix-background) 78%, var(--miuix-on-background) 22%) !important;
 }
 
-/* 鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺?
-   批量操作面板（右侧抽屉）MIUIX 覆盖
-   鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺?*/
+/* .drawer-panel.batch-drawer */
 .drawer-panel.batch-drawer {
   background: var(--miuix-background) !important;
   border: none !important;
@@ -2561,10 +2497,7 @@ body.echo-surface-translucent
   background: color-mix(in srgb, var(--miuix-primary) 12%, transparent) !important;
 }
 
-/* 鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺?
-   澶嶉€夋锛歁iuix 椋庢牸锛堝渾褰級鈥斺€旀湭閫?= 涓€х伆搴曞渾锛岄€変腑 = 涓昏壊搴?+ 鐧借壊瀵瑰嬀
-   锛堝弬鑰?Miuix Checkbox锛欳ircleShape锛屾湭閫?secondary锛岄€変腑 primary + onPrimary 鍕撅級
-   鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺?*/
+/* .checkbox */
 .checkbox {
   box-sizing: border-box;
   width: 22px !important;
@@ -2606,11 +2539,8 @@ body.echo-surface-translucent
   to   { clip-path: inset(0 0 0 0); }
 }
 
-/* 鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺?
-   姝屾洸鍒楄〃椤碉細鎼滅储妗?+ 鎺掑簭/瀹氫綅鎸夐挳 MIUIX
-   鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺?*/
-/* 鎼滅储妗嗭細瀹夸富鐨?.song-search-input 鍐欏湪 @layer utilities 涓斿甫 !important锛?
-   鍒嗗眰 !important 浼氬帇杩囨湭鍒嗗眰鐨?!important锛屾晠瀛楁瑕嗙洊鏀捐繘 @layer base锛堝眰绾ф洿鏃?鈫?important 鏇翠紭鍏堬級 */
+/* @layer base */
+/* @layer base */
 @layer base {
   .song-search-input {
     background: var(--miuix-background) !important;
@@ -2619,7 +2549,6 @@ body.echo-surface-translucent
     border-radius: 10px !important;
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
-    /* 鍙繃娓¤儗鏅壊锛涢伩鍏?outline-color 浠庨粯璁?currentColor(榛? 杩囨浮鍒颁富棰樿壊鏃跺厛闂竴鍦堥粦杈?*/
     outline-color: transparent !important;
     transition: background-color 0.15s cubic-bezier(0.2, 0, 0, 1) !important;
   }
@@ -2667,9 +2596,7 @@ body.echo-surface-translucent
   color: var(--miuix-primary) !important;
 }
 
-/* 鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺?
-   闊充箰缁熻椤?MIUIX锛堝崱鐗?闈㈡澘搴曡壊銆佸渾瑙掋€侀棿璺濄€佹枃瀛楄壊锛?
-   鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺?*/
+/* .history-album-highlight */
 .history-stat-card,
 .history-panel,
 .history-album-highlight {
@@ -2712,7 +2639,7 @@ body.echo-surface-translucent
   color: color-mix(in srgb, var(--miuix-on-background) 55%, transparent) !important;
 }
 
-/* 鈺愨晲鈺?璇勮鍙戦€佹帶浠讹紙CommentComposer锛塎IUIX 鈺愨晲鈺?*/
+/* .comment-composer:not(.is-barrage) */
 .comment-composer:not(.is-barrage) {
   background: var(--miuix-background) !important;
   border: none !important;
@@ -2737,7 +2664,7 @@ body.echo-surface-translucent
   border-radius: 10px !important;
 }
 
-/* 寮瑰箷鍙戦€佹锛坆arrage锛?*/
+/* .comment-composer.is-barrage textarea */
 .comment-composer.is-barrage textarea {
   background: var(--miuix-surface-elevated) !important;
   border: none !important;
@@ -2745,7 +2672,7 @@ body.echo-surface-translucent
   color: var(--miuix-on-background) !important;
 }
 
-/* 鈺愨晲鈺?鎾斁闃熷垪鎶藉眽锛圥layerQueueDrawer锛塎IUIX 鈺愨晲鈺?*/
+/* .drawer-panel.queue-drawer */
 .drawer-panel.queue-drawer {
   background: var(--miuix-background) !important;
   border: none !important;
@@ -2783,7 +2710,7 @@ body.echo-surface-translucent
   background: var(--miuix-primary) !important;
 }
 
-/* 鈺愨晲鈺?椤舵爮鎼滅储鎸夐挳寮瑰嚭鐨勯潰鏉匡紙.tb-search-panel锛塎IUIX + 浠庝笂寰€涓嬪脊鍑?鈺愨晲鈺?*/
+/* .tb-search-panel */
 .tb-search-panel {
   background: var(--miuix-background) !important;
   border: none !important;
@@ -2848,7 +2775,7 @@ body.echo-surface-translucent
   color: var(--miuix-primary) !important;
 }
 
-/* 鈺愨晲鈺?鏀剁缉鎬佷晶鏍忥紙rail锛塎IUIX锛氭寜閽?hover 鍦嗚 + 鎮仠鎻愮ず tip 鈺愨晲鈺?*/
+/* .sidebar-rail-avatar-btn */
 .sidebar-rail-item,
 .sidebar-rail-cover-btn,
 .sidebar-rail-avatar-btn {
@@ -2871,13 +2798,13 @@ body.echo-surface-translucent
   backdrop-filter: none !important;
 }
 
-/* 鎮仠鏂囧瓧鎻愮ず涓嶈灏忕澶达紙鍘绘帀閭ｄ釜灏栬锛?*/
+/* .app-tooltip-arrow */
 .app-tooltip-arrow {
   display: none !important;
 }
 
-/* 鈹€鈹€ 鎶藉眽闈㈡澘锛堟挱鏀鹃槦鍒?/ 鎵归噺鎿嶄綔 / 璇勮 / 涓婚璋冩暣绛夛級涓庡脊灞傜粺涓€锛歝lip-path 鎻ず 鈹€鈹€ */
-/* 鍙充晶鎶藉眽锛氫粠鍙宠竟缂樺悜宸︽彮绀?*/
+/* .drawer-panel */
+/* .drawer-panel */
 .drawer-panel {
   opacity: 0 !important;
   transform: none !important;
@@ -2895,7 +2822,7 @@ body.echo-surface-translucent
     opacity 0.3s cubic-bezier(0.22, 1, 0.36, 1),
     visibility 0s linear 0s !important;
 }
-/* 搴曢儴鎶藉眽锛氫粠涓嬭竟缂樺悜涓婃彮绀?*/
+/* .drawer-bottom */
 .drawer-bottom {
   clip-path: inset(calc(100% + 80px) -80px -80px -80px);
   transition:
@@ -2917,7 +2844,7 @@ body.echo-surface-translucent
   }
 }
 
-/* 鈹€鈹€ 璁剧疆椤?/ 姝岃瘝锛堟挱鏀撅級椤?椤堕儴鎸夐挳涓庨《鏍忕粺涓€涓?12px 鈹€鈹€ */
+/* .settings-search-shell, .settings-search, .settings-search-icon-button, .settings-search-c */
 .settings-search-shell,
 .settings-search,
 .settings-search-icon-button,
@@ -3025,9 +2952,7 @@ body.echo-surface-translucent
   color: color-mix(in srgb, var(--miuix-on-background) 55%, transparent) !important;
 }
 
-/* ══════════════════════════════════════════════════════════════════════
-   姝屾洸璇︽儏 路 姒滃崟鎴愬氨锛?detail-* / .ranking-*锛塎IUIX
-   ══════════════════════════════════════════════════════════════════════ */
+/* .detail-section */
 .detail-section {
   background: var(--miuix-background) !important;
   border: none !important;
@@ -3124,9 +3049,7 @@ body.echo-surface-translucent
   border-radius: 12px !important;
 }
 
-/* ══════════════════════════════════════════════════════════════════════
-   閫夌敾璐ㄥ脊灞傦紙QualityPopover锛?quality-popover / .pm-*锛塎IUIX
-   ══════════════════════════════════════════════════════════════════════ */
+/* .quality-popover.echo-popover-content */
 .quality-popover.echo-popover-content {
   border: none !important;
   box-shadow: 0 12px 32px rgba(0, 0, 0, 0.16) !important;
@@ -3171,9 +3094,7 @@ body.echo-surface-translucent
   color: var(--miuix-primary) !important;
 }
 
-/* ══════════════════════════════════════════════════════════════════════
-   MV 璇︽儏 路 瑙嗛鐗囨簮锛?mv-* / .card-block锛塎IUIX
-   ══════════════════════════════════════════════════════════════════════ */
+/* .card-block */
 .card-block {
   background: var(--miuix-background) !important;
   border: none !important;
@@ -3241,7 +3162,7 @@ body.echo-surface-translucent
   color: color-mix(in srgb, var(--miuix-on-background) 72%, transparent) !important;
 }
 
-/* 鈹€鈹€ 璇︽儏椤靛彸涓婅璧勬簮绫诲瀷鏍囩锛?type-badge锛歠avorite / cloud / song 绛夛級MIUIX 鈹€鈹€ */
+/* .type-badge */
 .type-badge {
   height: 20px !important;
   padding: 0 8px !important;
@@ -3332,7 +3253,7 @@ body.echo-surface-translucent
   font-weight: 600 !important;
 }
 
-/* 鈹€鈹€ 璇︽儏椤垫搷浣滄寜閽锛堟挱鏀?/ 鎵归噺 / 鍒嗕韩 / 鏀惰棌 绛夛級MIUIX 鈹€鈹€ */
+/* .action-btn */
 .action-btn {
   border-radius: 12px !important;
 }
@@ -3364,7 +3285,7 @@ body.echo-surface-translucent
   background: color-mix(in srgb, var(--miuix-error) 12%, transparent) !important;
 }
 
-/* 鈹€鈹€ 鎻掍欢绠＄悊椤靛ご閮紙瀹夊叏妯″紡 / 鎵撳紑鏂囦欢澶?/ 鍒锋柊绛夛級MIUIX 鈹€鈹€ */
+/* .plugin-header */
 .plugin-header {
   border-bottom-color: color-mix(in srgb, var(--miuix-on-background) 12%, transparent) !important;
 }
@@ -3455,7 +3376,7 @@ body.echo-surface-translucent
   box-shadow: none !important;
 }
 
-/* 鈹€鈹€ Switch锛氬叧闂€佸幓鎺夋弿杈?+ MIUIX 鈹€鈹€ */
+/* .switch-root */
 .switch-root {
   border: none !important;
   background: color-mix(in srgb, var(--miuix-on-background) 20%, transparent) !important;
@@ -3548,7 +3469,7 @@ body.echo-surface-translucent
   border-radius: 10px !important;
 }
 
-/* 鎶曟斁闈㈡澘闂磋窛锛氫笌 MIUIX 鍒楄〃/寮瑰眰涓€鑷?*/
+/* .cast-popover.echo-popover-content */
 .cast-popover.echo-popover-content {
   padding: 12px !important;
 }
@@ -3584,7 +3505,7 @@ body.echo-surface-translucent
   gap: 8px !important;
 }
 
-/* 鈹€鈹€ 璁剧疆椤?路 鎶曟斁璁剧疆锛圕astSettingsSection锛塎IUIX 鈹€鈹€ */
+/* .cast-status */
 .cast-status {
   border-radius: 8px !important;
   background: var(--miuix-surface-elevated) !important;
@@ -3667,7 +3588,7 @@ body.echo-surface-translucent
   margin: 0 auto !important;
   box-shadow: none !important;
 }
-/* 鐢ㄥ簳閮ㄦ笎鍙橀伄缃╂浛浠ｇ‖搴曢儴鍐呰窛锛堜笌涓婚〉闈竴鑷寸殑娣″嚭锛?*/
+/* .dialog-content.plugin-settings-dialog::after */
 .dialog-content.global-settings-dialog::after,
 .dialog-content.plugin-settings-dialog::after {
   content: '' !important;
@@ -3728,7 +3649,7 @@ body.echo-surface-translucent
   background: rgba(128, 128, 128, 0.72) !important;
 }
 
-/* 鈹€鈹€ 鎵归噺鎿嶄綔闈㈡澘搴曢儴鎸夐挳锛堟挱鏀?/ 娣诲姞鍒?/ 鍒犻櫎 绛夛級MIUIX 鈹€鈹€ */
+/* .batch-footer */
 .batch-footer {
   border-top-color: color-mix(in srgb, var(--miuix-on-background) 12%, transparent) !important;
 }
@@ -3754,7 +3675,7 @@ body.echo-surface-translucent
   background: color-mix(in srgb, var(--miuix-error) 16%, transparent) !important;
 }
 
-/* 鈹€鈹€ 璁剧疆椤佃緭鍏ユ锛?settings-input锛塎IUIX 鈹€鈹€ */
+/* .settings-input */
 .settings-input {
   border-radius: 10px !important;
 }
@@ -3816,7 +3737,7 @@ body.echo-surface-translucent
   box-shadow: 0 0 0 2px color-mix(in srgb, var(--miuix-primary) 12%, transparent) !important;
 }
 
-/* 鈹€鈹€ 姝屾洸鍙抽敭鑿滃崟锛?song-context-*锛塎IUIX锛氫笌涓嬫媺鑿滃崟鍚屾鏍峰紡涓庡脊鍑哄姩鐢?鈹€鈹€ */
+/* .song-context-menu */
 .song-context-menu {
   background: var(--miuix-background) !important;
   border: none !important;
@@ -3858,7 +3779,7 @@ html.dark .song-context-item:not(:disabled):active {
   margin: 0 12px !important;
 }
 
-/* 鈹€鈹€ 鍙抽敭鑿滃崟鍑虹幇鏃剁殑娴呰壊閬僵锛圝S 娉ㄥ叆 .miuix-menu-scrim锛?鈹€鈹€ */
+/* .miuix-menu-scrim */
 .miuix-menu-scrim {
   position: fixed;
   inset: 0;
@@ -3875,7 +3796,7 @@ html.dark .miuix-menu-scrim {
   to   { opacity: 1; }
 }
 
-/* 鈹€鈹€ 浠诲姟涓績闈㈡澘锛?task-panel-dialog锛塎IUIX 鈹€鈹€ */
+/* .task-panel-dialog */
 .task-panel-dialog {
   background: var(--miuix-background) !important;
   border: none !important;
@@ -4046,7 +3967,7 @@ html.dark .miuix-menu-scrim {
   to   { opacity: 0; clip-path: inset(calc(100% + 80px) -80px -80px -80px); }
 }
 
-/* 鈹€鈹€ 鍒犳帀鎵€鏈夊脊灞?鎻愮ず鐨勫皬绠ご 鈹€鈹€ */
+/* .app-tooltip-arrow */
 .floating-surface-arrow,
 .echo-popover-arrow,
 .app-tooltip-arrow {
@@ -4138,7 +4059,7 @@ html.dark .miuix-menu-scrim {
   color: var(--miuix-on-background) !important;
 }
 
-/* 鈹€鈹€ 鎺掕姒滈€夋嫨寮瑰眰锛圧anking 椤?.rank-selector-dialog锛塎IUIX 鈹€鈹€ */
+/* .rank-selector-dialog .custom-tab-root */
 .rank-selector-dialog .custom-tab-root {
   background: var(--miuix-surface-elevated) !important;
 }
@@ -4210,10 +4131,9 @@ html.dark:not(.floating-surfaces-frosted) :is(.echo-popover-content, .echo-selec
 
 /* ═════ 个人中心 / 偏好 / 设备 / 授权 等页面样式（从备份恢复） ═════ */
 
-/* 鈹€鈹€ 鎺掕姒?& 鏂版瓕閫熼€?姝屾洸鍒楄〃瀹瑰櫒 - Miuix 鍗＄墖 鈹€鈹€ */
+/* .page-sticky-placeholder + .pb-12 */
 
-/* 姝屾洸鍒楄〃瀹瑰櫒锛氭柊鐗?PageStickyHeader 浼氭妸鏍囬 teleport 鍒扮嫭绔嬪眰锛?
-   椤甸潰閲岀暀涓?.page-sticky-placeholder 鍗犱綅锛屽洜姝ゅ鍣ㄦ敼鐢ㄨ鍗犱綅鍏冪礌鐨勭浉閭婚€夋嫨鍣?*/
+/* .page-sticky-placeholder + .pb-12 */
 .song-list-sticky + .pb-12,
 .page-sticky-placeholder + .pb-12 {
   background: var(--miuix-surface) !important;
