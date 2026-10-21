@@ -1,539 +1,274 @@
-// ── 插件入口 ──
+// ══════════════════════════════════════════════════════════════════════════
+// Echo Miuix —— 插件入口
+//
+// 这个文件只做四件事，样式全部在 style.css：
+//   1. 门控：一个类（html.miuix-theme-active）+ manifest style 的 media 开关
+//   2. 注册主题：tokens 供宿主取色，decorations 作为「主题被选中」的信号
+//   3. 交互效果：每个效果是一个 () => cleanup 的工厂，统一由 runEffects 回收
+//   4. 设置面板：底部渐隐开关 + 仓库入口
+//
+// 约定：不要在 JS 里拼 CSS 字符串。需要运行时状态类时，样式写在 style.css §16，
+// 这里只负责挂 class / 改 CSS 变量。
+// ══════════════════════════════════════════════════════════════════════════
+
+const PLUGIN_ID = 'echo-miuix-plugin';
+const MANIFEST_STYLE_ID = `echo-plugin-style-${PLUGIN_ID}-manifest`;
+const ACTIVE_CLASS = 'miuix-theme-active';
+/**
+ * 兼容标记：早期 miuix 皮肤在挂载时就往 <html> 上打 `miuix-bg-active`，
+ * 其他插件（echo-liquid-glass 的设置面板等）用它判断「要不要跟 Miuix 联动」。
+ * 它表示「装了 miuix 插件」，与主题开关无关，所以不跟 ACTIVE_CLASS 一起切。
+ */
+const COMPAT_CLASS = 'miuix-bg-active';
+const BOTTOM_MASK_OFF_CLASS = 'miuix-bottom-mask-off';
+const STORAGE_KEY = 'echo-miuix-bottom-mask';
+const REPO_URL = 'https://github.com/SkyShadowHero/echo-miuix-plugin';
+
+/** 主题色板：与 style.css §0 的 token 一一对应，供宿主解析表面与强调色 */
+const THEME = {
+  id: 'miuix',
+  title: 'Miuix',
+  description: '小米澎湃 (HyperOS) 风格皮肤',
+  defaultMode: 'system',
+  variants: {
+    light: {
+      tokens: {
+        shell: '#f7f7f7',
+        sidebar: '#f7f7f7',
+        main: '#f7f7f7',
+        card: '#ffffff',
+        elevated: '#e8e8e8',
+        player: '#ffffff',
+        text: '#000000',
+        secondary: '#666666',
+        border: '#dedede',
+      },
+      accent: '#3482ff',
+    },
+    dark: {
+      tokens: {
+        shell: '#1a1a1a',
+        sidebar: '#1a1a1a',
+        main: '#1a1a1a',
+        card: '#2e2e2e',
+        elevated: '#1a1a1a',
+        player: '#2e2e2e',
+        text: '#ffffff',
+        secondary: '#bcbcbc',
+        border: '#444446',
+      },
+      accent: '#277af7',
+    },
+  },
+};
+
+/** 卡片倾斜：最大角度与过渡，写在这里而不是散在事件里 */
+const TILT = { maxDeg: 8, target: '.card-container' };
+const TILT_CARD_SELECTOR = '.playlist-card-grid, .album-card, .artist-card, .home-feature-card';
+
+/** 底部弹层抓取条：下拉关闭，上拉带着阻尼长高（松手立刻回到自然高度） */
+const SHEET = {
+  selector: '.dialog-content:not(.shortcut-picker)',
+  handleZone: 28,
+  closeThreshold: 140,
+  growMax: 80,
+  growTau: 220,
+  settleMs: 480,
+  closeMs: 220,
+  dragTransition: 'transform 0.24s cubic-bezier(0.4, 0, 1, 1)',
+  settleTransition:
+    'transform 0.34s cubic-bezier(0.22, 1, 0.36, 1), height 0.26s cubic-bezier(0.22, 1, 0.36, 1)',
+};
+
+// ── 入口 ──────────────────────────────────────────────────────────────────
+
 export function activate(ctx) {
-  // ── 插件样式开关：仅在「主题中心」启用 Miuix 主题时才生效 ──
-  // manifest 里的 style.css 注入为 <style id="echo-plugin-style-<id>-manifest">，
-  // 通过切换它的 media 来整体启用/停用 MIUIX 外观。
-  const MIUIX_MANIFEST_STYLE_ID = 'echo-plugin-style-echo-miuix-plugin-manifest';
-  const setMiuixTheme = (enabled) => {
-    document.documentElement.classList.toggle('miuix-theme-active', enabled);
-    const styleEl = document.getElementById(MIUIX_MANIFEST_STYLE_ID);
+  const root = document.documentElement;
+
+  // 旧插件的联动判断依赖这个类，挂载即打上（不随主题开关变化）
+  root.classList.add(COMPAT_CLASS);
+
+  const setStyleMedia = (enabled) => {
+    const styleEl = document.getElementById(MANIFEST_STYLE_ID);
     if (styleEl) styleEl.media = enabled ? '' : 'not all';
   };
 
-  // ── mini 播放器窗口：独立窗口，不受主题中心开关控制，固定启用 MIUIX 皮肤 ──
-  if (typeof location !== 'undefined' && location.hash.includes('mini-player')) {
-    document.documentElement.classList.add('miuix-bg-active');
-    setMiuixTheme(true);
+  const setActive = (enabled) => {
+    root.classList.toggle(ACTIVE_CLASS, enabled);
+    setStyleMedia(enabled);
+  };
+
+  const isActive = () => root.classList.contains(ACTIVE_CLASS);
+
+  // 迷你播放器是独立窗口：不参与主题中心开关，固定上电。
+  if (isMiniWindow()) {
+    setActive(true);
     return;
   }
 
-  ctx.css.inject(INTERACTIONS_CSS);
-  ctx.css.inject(TILT_CSS);
+  // 默认停用；但若主题装饰层已先挂载（类已存在）则保持，避免竞态把启用状态关掉。
+  if (!isActive()) setActive(false);
 
-  // 默认停用；若主题装饰层已先于插件挂载（类已存在）则保持其状态，避免竞态把已启用状态关掉
-  if (!document.documentElement.classList.contains('miuix-theme-active')) setMiuixTheme(false);
-
-  const ThemeMarker = {
+  // 1. 注册主题（装饰层 = 主题被选中的信号）
+  const Marker = {
     setup() {
-      ctx.vue.onMounted(() => setMiuixTheme(true));
-      ctx.vue.onUnmounted(() => setMiuixTheme(false));
+      ctx.vue.onMounted(() => setActive(true));
+      ctx.vue.onUnmounted(() => setActive(false));
       return () => null;
     },
   };
 
-  // ── 注册为宿主「主题中心」可选的 Miuix 主题（需要 manifest.capabilities.theme）──
-  // 主题 tokens 让宿主表面取色与插件皮肤一致；decorations 作为「主题已启用」的开关。
   try {
-    ctx.theme.register({
-      id: 'miuix',
-      title: 'Miuix',
-      description: '小米澎湃 (HyperOS) 风格皮肤',
-      defaultMode: 'system',
-      decorations: { background: ThemeMarker },
-      variants: {
-        light: {
-          tokens: {
-            shell: '#f7f7f7',
-            sidebar: '#f7f7f7',
-            main: '#f7f7f7',
-            card: '#ffffff',
-            elevated: '#e8e8e8',
-            player: '#ffffff',
-            text: '#000000',
-            secondary: '#666666',
-            border: '#dedede',
-          },
-          accent: '#3482ff',
-        },
-        dark: {
-          tokens: {
-            shell: '#1a1a1a',
-            sidebar: '#1a1a1a',
-            main: '#1a1a1a',
-            card: '#2e2e2e',
-            elevated: '#1a1a1a',
-            player: '#2e2e2e',
-            text: '#ffffff',
-            secondary: '#bcbcbc',
-            border: '#444446',
-          },
-          accent: '#277af7',
-        },
-      },
-    });
+    ctx.theme.register({ ...THEME, decorations: { background: Marker } });
   } catch (error) {
-    // 宿主不支持插件主题能力时回退为始终启用，避免插件完全失效
-    console.warn('[echo-miuix-plugin] 主题注册失败，回退为始终启用：', error);
-    setMiuixTheme(true);
+    // 宿主不支持插件主题能力时回退为始终启用，避免插件完全失效。
+    console.warn(`[${PLUGIN_ID}] 主题注册失败，回退为始终启用：`, error);
+    setActive(true);
   }
 
-  const tiltCleanups = setupTiltEffect();
-  tiltCleanups.forEach((fn) => ctx.dispose(fn));
+  // 2. 运行交互效果
+  const effects = [
+    effectTilt(isActive),
+    effectSelectBackdrop(),
+    effectTabsSlider(),
+    effectDecorations(ctx),
+    effectWheelScroll(),
+    effectPageSpacers(),
+    effectRankCollapse(),
+    effectSheetDrag(),
+    effectContextScrim(),
+  ];
 
-  const backdropCleanups = setupSelectBackdrop();
-  backdropCleanups.forEach((fn) => ctx.dispose(fn));
-
-  const rekaTabCleanups = setupRekaTabsSlider();
-  rekaTabCleanups.forEach((fn) => ctx.dispose(fn));
-
-  const sidebarBlurCleanups = setupSidebarBlur();
-  sidebarBlurCleanups.forEach((fn) => ctx.dispose(fn));
-
-  const mainBlurCleanups = setupMainBlur();
-  mainBlurCleanups.forEach((fn) => ctx.dispose(fn));
-
-  // ── 风格标签行鼠标滚轮水平滚动 ──
-  function bindTagRowScroll(row) {
-    if (row.dataset.miuixWheel) return;
-    row.dataset.miuixWheel = '1';
-    const onWheel = (e) => {
-      if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
-        e.preventDefault();
-        row.scrollLeft += e.deltaY;
-      }
-    };
-    row.addEventListener('wheel', onWheel, { passive: false });
+  for (const cleanup of effects) {
+    if (typeof cleanup === 'function') ctx.dispose(cleanup);
   }
 
-  document.querySelectorAll('.style-tag-row').forEach(bindTagRowScroll);
-  const tagRowObs = new MutationObserver(() => {
-    document.querySelectorAll('.style-tag-row:not([data-miuix-wheel])').forEach(bindTagRowScroll);
-  });
-  tagRowObs.observe(document.body, { childList: true, subtree: true });
-  ctx.dispose(() => tagRowObs.disconnect());
+  // 3. 设置面板
+  defineSettings(ctx);
+}
 
-  // 背景色始终启用
-  document.documentElement.classList.add('miuix-bg-active');
+export function deactivate() {
+  document.documentElement.classList.remove(ACTIVE_CLASS, COMPAT_CLASS);
+}
 
-  // ── 底部渐变遮罩开关（默认开启） ──
-  const BOTTOM_MASK_KEY = 'echo-miuix-bottom-mask';
-  const applyBottomMask = (enabled) => {
-    document.documentElement.classList.toggle('miuix-bottom-mask-off', !enabled);
+// ── 工具 ──────────────────────────────────────────────────────────────────
+
+function isMiniWindow() {
+  return typeof location !== 'undefined' && location.hash.includes('mini-player');
+}
+
+function createElement(className) {
+  const el = document.createElement('div');
+  el.className = className;
+  return el;
+}
+
+/**
+ * 统一的 DOM 同步器：一个 MutationObserver + rAF 节流，驱动若干幂等 mount 函数。
+ * 之前每个效果各自开一个 observer，四个 observer 同时观察整个 body，开销翻倍。
+ */
+function createDomSync(mounts) {
+  let frame = 0;
+  const run = () => {
+    frame = 0;
+    for (const mount of mounts) mount();
   };
-  try {
-    Promise.resolve(ctx.storage.get(BOTTOM_MASK_KEY))
-      .then((saved) => applyBottomMask(saved !== false))
-      .catch(() => applyBottomMask(true));
-  } catch {
-    applyBottomMask(true);
-  }
+  const schedule = () => {
+    if (!frame) frame = requestAnimationFrame(run);
+  };
 
-  // ── 全局内容末尾留白 ──
-  function addContentSpacers() {
-    const views = document.querySelectorAll('.scrollbar-view:not(.miuix-padded)');
-    views.forEach((view) => {
-      view.classList.add('miuix-padded');
-      // 侧栏不需要为悬浮播放栏留白，加了反而内容没超出也能滚
-      if (view.closest('.sidebar') || view.closest('.settings-sidebar')) return;
-      const spacer = document.createElement('div');
-      spacer.className = 'miuix-page-spacer';
-      view.appendChild(spacer);
-    });
-    // 众乐房房间页（.listen-session 撑满整页、没有 .scrollbar-view）：
-    // 底部会被悬浮底栏遮挡，同样补 100px 留白
-    const sessions = document.querySelectorAll('.listen-session:not(.miuix-padded)');
-    sessions.forEach((session) => {
-      session.classList.add('miuix-padded');
-      const spacer = document.createElement('div');
-      spacer.className = 'miuix-page-spacer';
-      session.appendChild(spacer);
-    });
-  }
-  addContentSpacers();
-  const viewObs = new MutationObserver(addContentSpacers);
-  viewObs.observe(document.body, { childList: true, subtree: true });
-  ctx.dispose(() => viewObs.disconnect());
+  run();
+  const observer = new MutationObserver(schedule);
+  observer.observe(document.body, { childList: true, subtree: true });
 
-  // ── 榜单成就卡片：宿主用 v-if 直接卸载面板，没有 leave 过渡，
-  //    这里拦截「收缩」点击，先播放收起动画，再放行宿主的折叠逻辑 ──
-  (() => {
-    let skip = false;
-    const DURATION = 240;
-    const onToggleClick = (event) => {
-      if (skip) return;
-      const toggle = event.target && event.target.closest && event.target.closest('.ranking-card-toggle');
-      if (!toggle) return;
-      const card = toggle.closest('.ranking-card');
-      if (!card || !card.classList.contains('is-expanded')) return;
-      const panel = card.querySelector('.ranking-filter-panel');
-      if (!panel) return;
-
-      // 阻止宿主 @click，先播放收起动画
-      event.stopPropagation();
-      // 进入动画是 !important，普通内联覆盖不了它；必须用 important 内联把它停掉，
-      // 否则 fill: both 会把 max-height 锁在 1000px，收不起来
-      panel.style.setProperty('animation', 'none', 'important');
-      panel.style.overflow = 'hidden';
-      panel.style.maxHeight = `${panel.scrollHeight}px`;
-      panel.style.transition = 'max-height 0.24s cubic-bezier(0.4, 0, 0.6, 1), opacity 0.2s ease';
-      void panel.offsetHeight; // 强制回流，让起始高度生效
-      panel.style.maxHeight = '0px';
-      panel.style.opacity = '0';
-
-      window.setTimeout(() => {
-        skip = true;
-        toggle.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
-        skip = false;
-      }, DURATION);
-    };
-    document.addEventListener('click', onToggleClick, true);
-    ctx.dispose(() => document.removeEventListener('click', onToggleClick, true));
-  })();
-
-  // ── 底部弹层（设置 / 插件设置）抓取条：上拉增高回弹 + hover/active 高亮 ──
-  (() => {
-    // 所有弹层都能拉动：设置 / 插件设置 / CustomPicker 之外，通用弹窗也接入同一套手势。
-    const SHEET_SELECTOR = '.dialog-content';
-    const HANDLE_ZONE = 28;
-    let drag = null;
-    let hovered = null;
-    const setHovered = (sheet) => {
-      if (hovered === sheet) return;
-      if (hovered) hovered.classList.remove('miuix-handle-hover');
-      hovered = sheet;
-      if (sheet) sheet.classList.add('miuix-handle-hover');
-    };
-    const sheetHandleAt = (x, y) => {
-      const el = document.elementFromPoint(x, y);
-      const sheet = el && el.closest ? el.closest(SHEET_SELECTOR) : null;
-      if (!sheet) return null;
-      return y - sheet.getBoundingClientRect().top <= HANDLE_ZONE ? sheet : null;
-    };
-    const onPointerDown = (event) => {
-      if (event.button !== 0) return;
-      const target = event.target;
-      if (!target || !target.closest) return;
-      const sheet = target.closest(SHEET_SELECTOR);
-      if (!sheet) return;
-      if (target.closest('button, a, input, textarea, select, [contenteditable="true"]')) return;
-      const rect = sheet.getBoundingClientRect();
-      if (event.clientY - rect.top > HANDLE_ZONE) return; // 仅顶部抓取条区域
-      sheet.classList.add('miuix-handle-active');
-      drag = { sheet, startY: event.clientY, baseHeight: rect.height, mode: null, down: 0 };
-      sheet.style.transition = 'none';
-      try {
-        sheet.setPointerCapture(event.pointerId);
-      } catch {}
-      event.preventDefault();
-    };
-    const onPointerMove = (event) => {
-      if (drag) {
-        const dy = drag.startY - event.clientY; // >0 up, <0 down
-        const sheet = drag.sheet;
-        if (dy < -8) {
-          // drag down: move the whole sheet down; releasing near the bottom closes it
-          const down = (-dy - 8) * 0.9;
-          drag.mode = 'down';
-          drag.down = down;
-          sheet.style.height = `${drag.baseHeight}px`;
-          sheet.style.setProperty('transform', `translateY(${down}px)`, 'important');
-        } else if (dy > 8) {
-          // drag up: grow height (stiff start, harder the more you pull)
-          drag.mode = 'up';
-          drag.down = 0;
-          sheet.style.setProperty('transform', 'translateY(0)', 'important');
-          sheet.style.height = `${drag.baseHeight + 80 * (1 - Math.exp(-(dy - 8) / 220))}px`;
-        }
-        return;
-      }
-      setHovered(sheetHandleAt(event.clientX, event.clientY));
-    };
-    const onPointerUp = () => {
-      if (!drag) return;
-      const sheet = drag.sheet;
-      const { mode, down, baseHeight } = drag;
-      drag = null;
-      sheet.classList.remove('miuix-handle-active');
-      const clearInline = () => {
-        sheet.style.removeProperty('transform');
-        sheet.style.removeProperty('height');
-        sheet.style.transition = '';
-      };
-      if (mode === 'down' && down > 140) {
-        // keep sliding out from where the finger left it; suppress the built-in close animation
-        // (otherwise the sheet snaps back to y=0 first and replays the close from the top)
-        sheet.style.setProperty('animation', 'none', 'important');
-        sheet.style.transition = 'transform 0.24s cubic-bezier(0.4, 0, 1, 1)';
-        sheet.style.setProperty('transform', 'translateY(100%)', 'important');
-        window.setTimeout(() => {
-          const closeBtn = sheet.querySelector('.dialog-close');
-          if (closeBtn) closeBtn.click();
-          else sheet.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
-        }, 220);
-        return;
-      }
-      let cleaned = false;
-      const cleanup = () => {
-        if (cleaned) return;
-        cleaned = true;
-        sheet.removeEventListener('transitionend', cleanup);
-        clearInline();
-      };
-      sheet.style.transition =
-        'transform 0.34s cubic-bezier(0.22, 1, 0.36, 1), height 0.34s cubic-bezier(0.22, 1, 0.36, 1)';
-      sheet.style.setProperty('transform', 'translateY(0)', 'important');
-      sheet.style.height = `${baseHeight}px`;
-      sheet.addEventListener('transitionend', cleanup);
-      window.setTimeout(cleanup, 480);
-    };
-    const onPointerLeave = () => {
-      if (!drag) setHovered(null);
-    };
-    document.addEventListener('pointerdown', onPointerDown, true);
-    document.addEventListener('pointermove', onPointerMove, true);
-    document.addEventListener('pointerup', onPointerUp, true);
-    document.addEventListener('pointercancel', onPointerUp, true);
-    document.addEventListener('pointerleave', onPointerLeave, true);
-    ctx.dispose(() => {
-      document.removeEventListener('pointerdown', onPointerDown, true);
-      document.removeEventListener('pointermove', onPointerMove, true);
-      document.removeEventListener('pointerup', onPointerUp, true);
-      document.removeEventListener('pointercancel', onPointerUp, true);
-      document.removeEventListener('pointerleave', onPointerLeave, true);
-    });
-  })();
-
-  // ── 右键歌曲菜单出现时：在背后加一层浅色遮罩 ──
-  (() => {
-    let scrim = null;
-    const ensureScrim = () => {
-      if (scrim && scrim.isConnected) return;
-      scrim = document.createElement('div');
-      scrim.className = 'miuix-menu-scrim';
-      document.body.appendChild(scrim);
-    };
-    const removeScrim = () => {
-      if (scrim) {
-        scrim.remove();
-        scrim = null;
-      }
-    };
-    const syncScrim = () => {
-      if (document.querySelector('.song-context-menu')) ensureScrim();
-      else removeScrim();
-    };
-    const obs = new MutationObserver(syncScrim);
-    obs.observe(document.body, { childList: true, subtree: true });
-    ctx.dispose(() => {
-      obs.disconnect();
-      removeScrim();
-    });
-    syncScrim();
-  })();
-
-  const { defineComponent, defineAsyncComponent, h, reactive } = ctx.vue;
-  const Switch = defineAsyncComponent(ctx.ui.components.Switch);
-  const Slider = defineAsyncComponent(ctx.ui.components.Slider);
-  const Button = defineAsyncComponent(ctx.ui.components.Button);
-
-  const SettingsPanel = defineComponent({
-    setup() {
-      const state = reactive({ bottomMask: !document.documentElement.classList.contains('miuix-bottom-mask-off') });
-      Promise.resolve(ctx.storage.get(BOTTOM_MASK_KEY)).then((value) => {
-        state.bottomMask = value !== false;
-      }).catch(() => {});      const setBottomMask = async (value) => {
-        state.bottomMask = value;
-        applyBottomMask(value);
-        try {
-          await ctx.storage.set(BOTTOM_MASK_KEY, value);
-        } catch {}
-      };
-      return () =>
-        h('div', { style: 'display: flex; flex-direction: column; align-items: center; gap: 8px;' }, [
-          h('div', { class: 'settings-card', style: 'border-radius: 16px; overflow: hidden; width: 100%;' }, [
-            h('div', {
-              class: 'settings-item',
-              style: 'display: flex; justify-content: space-between; align-items: center; gap: 12px;',
-            }, [
-              h('div', { style: 'flex: 1; min-width: 0;' }, [
-                h('div', { style: 'font-weight: 600; font-size: 14px; color: var(--miuix-on-background); line-height: 1.4;' }, '底部渐变遮罩'),
-                h('div', { style: 'font-size: 12px; color: var(--miuix-on-background); opacity: 0.6; margin-top: 2px; line-height: 1.5;' }, '页面底部渐隐到背景色，让悬浮播放栏更突出'),
-              ]),
-              h(Switch, {
-                modelValue: state.bottomMask,
-                'onUpdate:modelValue': setBottomMask,
-                'aria-label': '底部渐变遮罩',
-              }),
-            ]),
-          ]),
-          h('div', { class: 'settings-card', style: 'border-radius: 16px; overflow: hidden; width: 100%;' }, [
-            h('div', {
-              class: 'settings-item',
-              style: 'display: flex; justify-content: space-between; align-items: flex-start; gap: 12px;',
-            }, [
-              h('div', { style: 'flex: 1; min-width: 0;' }, [
-                h('div', { style: 'font-weight: 600; font-size: 14px; color: var(--miuix-on-background); line-height: 1.4;' }, 'GitHub'),
-                h('div', { style: 'font-size: 12px; color: var(--miuix-on-background); opacity: 0.6; margin-top: 2px; line-height: 1.5;' }, '点击跳转 GitHub 地址，欢迎 Star'),
-              ]),
-              h(Button, {
-                class: 'settings-button github-star',
-                onClick: () => window.open('https://github.com/SkyShadowHero/echo-miuix-plugin', '_blank'),
-              }, 'Github'),
-            ]),
-          ]),
-
-        ]);
-    },
-  });
-
-  ctx.ui.settings.define({
-    title: `${ctx.manifest.name} 设置`,
-    component: SettingsPanel,
-  });
+  return () => {
+    observer.disconnect();
+    if (frame) cancelAnimationFrame(frame);
+  };
 }
 
-// ── 插件停用 ──
-export function deactivate(ctx) {
-  document.documentElement.classList.remove('miuix-bg-active');
-}
+// ── 效果：卡片按压倾斜 ────────────────────────────────────────────────────
 
+function effectTilt(isActive) {
+  let activeEl = null;
+  let clearTimer = 0;
 
-// ── Sink 效果 CSS ──
-const INTERACTIONS_CSS = `
-.miuix-sink {
-  transition: scale 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-.miuix-sink:active {
-  scale: 0.94 !important;
-}
-`;
+  const findCard = (el) => (el.closest ? el.closest(TILT_CARD_SELECTOR) : null);
+  const tiltTarget = (card) => card.querySelector(TILT.target) || card;
 
-// ── Tilt 效果 CSS ──
-const TILT_CSS = `
-.miuix-tilt {
-  transition: transform 0.2s cubic-bezier(0.2, 0, 0.4, 1) !important;
-  transform-origin: var(--tilt-origin, center) !important;
-}
-.miuix-tilt.tilt-active {
-  transform: perspective(800px) rotateX(var(--tilt-rx, 0deg)) rotateY(var(--tilt-ry, 0deg)) !important;
-}
-`;
+  const point = (event) => {
+    const touch = event.changedTouches && event.changedTouches[0];
+    return touch ? { x: touch.clientX, y: touch.clientY } : { x: event.clientX, y: event.clientY };
+  };
 
-// ── 卡片 Tilt 按压效果 ──
-// 使用事件委托（document 级别）+ 延迟清除，确保动画可渲染
-// 自己管理 <style> 元素，避免被 ctx.css.inject 的 id 覆盖机制覆盖
-function setupTiltEffect() {
-  const cleanups = [];
+  const onDown = (event) => {
+    if (!isActive()) return;
+    if (event.type === 'touchstart' && activeEl) return;
 
-  // 自己注入 TILT_CSS，独立于 ctx.css.inject（后者同 id 会互相覆盖）
-  const styleEl = document.createElement('style');
-  styleEl.id = 'miuix-tilt-style';
-  styleEl.textContent = TILT_CSS;
-  document.head.appendChild(styleEl);
-  cleanups.push(() => styleEl.remove());
-
-  let activeTiltEl = null;
-  let clearTimer = null;
-
-  // 从事件目标向上找卡片根元素
-  function findCard(el) {
-    return el.closest(
-      '.playlist-card-grid, .album-card, .artist-card, .home-feature-card',
-    );
-  }
-
-  // 获取 tilt 目标（有 card-container 的用容器，否则用自身）
-  function getTarget(card) {
-    return card.querySelector('.card-container') || card;
-  }
-
-  // 提取事件坐标（兼容 mouse / touch）
-  function getClientXY(e) {
-    if (e.changedTouches && e.changedTouches.length > 0) {
-      return { x: e.changedTouches[0].clientX, y: e.changedTouches[0].clientY };
-    }
-    return { x: e.clientX, y: e.clientY };
-  }
-
-  function onDown(e) {
-    // 仅在主题中心启用 Miuix 主题时才生效
-    if (!document.documentElement.classList.contains('miuix-theme-active')) return;
-    // 如果是 touch 事件且已有一个激活的 tilt，先清除
-    if (e.type === 'touchstart' && activeTiltEl) return;
-
-    const card = findCard(e.target);
+    const card = findCard(event.target);
     if (!card) return;
 
-    const { x, y } = getClientXY(e);
+    const { x, y } = point(event);
     const rect = card.getBoundingClientRect();
-    const rx = x - rect.left;
-    const ry = y - rect.top;
-    const halfW = rect.width / 2;
-    const halfH = rect.height / 2;
+    const offsetX = x - rect.left;
+    const offsetY = y - rect.top;
+    const isLeft = offsetX < rect.width / 2;
+    const isTop = offsetY < rect.height / 2;
 
-    const tiltEl = getTarget(card);
-    tiltEl.classList.add('miuix-tilt');
-    tiltEl.style.setProperty('--tilt-rx', `${ry < halfH ? 8 : -8}deg`);
-    tiltEl.style.setProperty('--tilt-ry', `${rx < halfW ? -8 : 8}deg`);
-    tiltEl.style.setProperty(
-      '--tilt-origin',
-      `${rx < halfW ? '100%' : '0%'} ${ry < halfH ? '100%' : '0%'}`,
-    );
-    tiltEl.classList.add('tilt-active');
-    activeTiltEl = tiltEl;
-  }
+    const el = tiltTarget(card);
+    el.classList.add('miuix-tilt');
+    el.style.setProperty('--tilt-rx', `${isTop ? TILT.maxDeg : -TILT.maxDeg}deg`);
+    el.style.setProperty('--tilt-ry', `${isLeft ? -TILT.maxDeg : TILT.maxDeg}deg`);
+    el.style.setProperty('--tilt-origin', `${isLeft ? '100%' : '0%'} ${isTop ? '100%' : '0%'}`);
+    el.classList.add('tilt-active');
+    activeEl = el;
+  };
 
-  function onUp() {
-    clearTimeout(clearTimer);
-    clearTimer = setTimeout(() => {
-      if (activeTiltEl) {
-        activeTiltEl.classList.remove('tilt-active');
-        activeTiltEl = null;
-      }
+  const onUp = () => {
+    window.clearTimeout(clearTimer);
+    clearTimer = window.setTimeout(() => {
+      if (!activeEl) return;
+      activeEl.classList.remove('tilt-active');
+      activeEl = null;
     }, 120);
-  }
+  };
 
-  // 使用 mousedown + touchstart 替代 pointerdown（兼容性更好）
   document.addEventListener('mousedown', onDown);
   document.addEventListener('touchstart', onDown, { passive: true });
   document.addEventListener('mouseup', onUp);
   document.addEventListener('touchend', onUp);
 
-  cleanups.push(() => {
+  return () => {
     document.removeEventListener('mousedown', onDown);
     document.removeEventListener('touchstart', onDown);
     document.removeEventListener('mouseup', onUp);
     document.removeEventListener('touchend', onUp);
-    clearTimeout(clearTimer);
-  });
-
-  return cleanups;
+    window.clearTimeout(clearTimer);
+  };
 }
 
-// ── 下拉菜单遮罩 ──
-function setupSelectBackdrop() {
-  const cleanups = [];
+// ── 效果：下拉菜单遮罩 ────────────────────────────────────────────────────
+
+function effectSelectBackdrop() {
   let backdrop = null;
   let frame = 0;
 
-  // 以触发器状态为准。content 在退出动画、缓存页面里都可能残留，不能当作“下拉已打开”。
+  // 以触发器状态为准：content 在退出动画或缓存页里可能残留。
   const hasOpenSelect = () => !!document.querySelector('.echo-select-trigger[data-state="open"]');
 
-  const showBackdrop = () => {
+  const show = () => {
     if (!backdrop) {
-      backdrop = document.createElement('div');
-      backdrop.className = 'miuix-select-backdrop';
+      backdrop = createElement('miuix-select-backdrop');
       document.body.appendChild(backdrop);
     }
     if (frame) cancelAnimationFrame(frame);
     frame = requestAnimationFrame(() => {
       frame = 0;
-      if (!hasOpenSelect()) return;
-      backdrop.classList.add('is-visible');
+      if (hasOpenSelect() && backdrop) backdrop.classList.add('is-visible');
     });
   };
 
-  const hideBackdrop = () => {
+  const hide = () => {
     if (frame) {
       cancelAnimationFrame(frame);
       frame = 0;
@@ -541,10 +276,7 @@ function setupSelectBackdrop() {
     if (backdrop) backdrop.classList.remove('is-visible');
   };
 
-  const sync = () => {
-    if (hasOpenSelect()) showBackdrop();
-    else hideBackdrop();
-  };
+  const sync = () => (hasOpenSelect() ? show() : hide());
 
   const observer = new MutationObserver(sync);
   observer.observe(document.body, {
@@ -555,136 +287,443 @@ function setupSelectBackdrop() {
   });
   sync();
 
-  cleanups.push(() => {
+  return () => {
     observer.disconnect();
     if (frame) cancelAnimationFrame(frame);
+    backdrop?.remove();
+    backdrop = null;
     frame = 0;
-    if (backdrop) {
-      backdrop.remove();
-      backdrop = null;
-    }
-  });
-
-  return cleanups;
+  };
 }
 
-function setupRekaTabsSlider() {
-  const cleanups = [];
+// ── 效果：Tab 滑片 ────────────────────────────────────────────────────────
 
-  function findAllTabsLists() {
-    const found = new Set();
-    document.querySelectorAll('[data-reka-tabs-list]').forEach((el) => found.add(el));
-    document.querySelectorAll('.tab-trigger').forEach((el) => {
-      const parent = el.parentElement;
-      if (parent && parent.querySelector('.tab-trigger')) {
-        found.add(parent);
-      }
+function effectTabsSlider() {
+  const SLIDER = 'miuix-reka-slider';
+
+  const collect = () => {
+    const lists = new Set(document.querySelectorAll('[data-reka-tabs-list]'));
+    document.querySelectorAll('.tab-trigger').forEach((trigger) => {
+      const parent = trigger.parentElement;
+      if (parent && parent.querySelector('.tab-trigger')) lists.add(parent);
     });
-    return [...found];
-  }
+    return lists;
+  };
 
-  function attachList(list) {
-    if (list.querySelector('.miuix-reka-slider')) return;
+  const attach = (list) => {
+    if (list.querySelector(`.${SLIDER}`)) return null;
+
     list.classList.add('miuix-tabs-list');
-
-    const slider = document.createElement('div');
-    slider.className = 'miuix-reka-slider';
+    const slider = createElement(SLIDER);
     list.appendChild(slider);
 
-    function update() {
+    const update = () => {
       const active = list.querySelector('[data-state="active"]');
       if (!active) return;
-      const lr = list.getBoundingClientRect();
-      const ar = active.getBoundingClientRect();
-      slider.style.left = `${ar.left - lr.left}px`;
-      slider.style.width = `${ar.width}px`;
-    }
+      const listRect = list.getBoundingClientRect();
+      const activeRect = active.getBoundingClientRect();
+      slider.style.left = `${activeRect.left - listRect.left}px`;
+      slider.style.width = `${activeRect.width}px`;
+    };
 
-    // 初始定位
+    const onClick = () => requestAnimationFrame(update);
+    const observer = new MutationObserver(() => requestAnimationFrame(update));
+    observer.observe(list, { subtree: true, attributeFilter: ['data-state', 'class'] });
+    list.addEventListener('click', onClick);
+
     update();
     requestAnimationFrame(update);
 
-    // 点击时更新
-    const clickHandler = () => requestAnimationFrame(update);
-    list.addEventListener('click', clickHandler);
-
-    // 监听 data-state 变化
-    const obs = new MutationObserver(() => requestAnimationFrame(update));
-    obs.observe(list, { subtree: true, attributeFilter: ['data-state', 'class'] });
-
-    cleanups.push(() => {
-      list.removeEventListener('click', clickHandler);
-      obs.disconnect();
+    return () => {
+      list.removeEventListener('click', onClick);
+      observer.disconnect();
       slider.remove();
       list.classList.remove('miuix-tabs-list');
-    });
-  }
+    };
+  };
 
-  findAllTabsLists().forEach(attachList);
+  const cleanups = new Map();
+  const sync = () => {
+    for (const list of collect()) {
+      if (cleanups.has(list)) continue;
+      const cleanup = attach(list);
+      if (cleanup) cleanups.set(list, cleanup);
+    }
+  };
 
-  const observer = new MutationObserver(() => {
-    findAllTabsLists().forEach((list) => {
-      if (!list.querySelector('.miuix-reka-slider')) {
-        attachList(list);
+  const disposeSync = createDomSync([sync]);
+
+  return () => {
+    disposeSync();
+    for (const cleanup of cleanups.values()) cleanup();
+    cleanups.clear();
+  };
+}
+
+// ── 效果：底部渐隐装饰层 ──────────────────────────────────────────────────
+
+function effectDecorations(ctx) {
+  const stopSync = createDomSync([
+    () => {
+      const main = document.querySelector('.main-content');
+      if (main && !main.querySelector('.miuix-main-blur')) {
+        main.appendChild(createElement('miuix-main-blur'));
       }
-    });
-  });
-  observer.observe(document.body, { childList: true, subtree: true });
-  cleanups.push(() => observer.disconnect());
 
-  return cleanups;
-}
-function setupSidebarBlur() {
-  const cleanups = [];
+      // 侧栏的底部渐隐改由 §3 的 mask 实现（淡出滚动视口），
+      // 不再注入遮罩元素：遮罩要么盖住工具条，要么在面板中间留一条硬边。
+    },
+  ]);
 
-  const attach = () => {
-    const sidebar = document.querySelector('.sidebar');
-    if (!sidebar || sidebar.querySelector('.miuix-sidebar-blur')) return;
-
-    const overlay = document.createElement('div');
-    overlay.className = 'miuix-sidebar-blur';
-    sidebar.appendChild(overlay);
-    cleanups.push(() => overlay.remove());
+  const applyBottomMask = (enabled) => {
+    document.documentElement.classList.toggle(BOTTOM_MASK_OFF_CLASS, !enabled);
   };
 
-  attach();
+  Promise.resolve(ctx.storage.get(STORAGE_KEY))
+    .then((saved) => applyBottomMask(saved !== false))
+    .catch(() => applyBottomMask(true));
 
-  const observer = new MutationObserver(() => {
-    if (document.querySelector('.sidebar') && !document.querySelector('.miuix-sidebar-blur')) {
-      attach();
-    }
-  });
-  observer.observe(document.body, { childList: true, subtree: true });
-  cleanups.push(() => observer.disconnect());
-
-  return cleanups;
+  return stopSync;
 }
 
-// ── 主内容底部渐变遮罩 ──
-function setupMainBlur() {
-  const cleanups = [];
+// ── 效果：风格标签行横向滚轮 ──────────────────────────────────────────────
 
-  const attach = () => {
-    const main = document.querySelector('.main-content');
-    if (!main || main.querySelector('.miuix-main-blur')) return;
-
-    const overlay = document.createElement('div');
-    overlay.className = 'miuix-main-blur';
-    main.appendChild(overlay);
-    cleanups.push(() => overlay.remove());
+function effectWheelScroll() {
+  const bind = (row) => {
+    if (row.dataset.miuixWheel) return;
+    row.dataset.miuixWheel = '1';
+    row.addEventListener(
+      'wheel',
+      (event) => {
+        if (Math.abs(event.deltaY) <= Math.abs(event.deltaX)) return;
+        event.preventDefault();
+        row.scrollLeft += event.deltaY;
+      },
+      { passive: false },
+    );
   };
 
-  attach();
-
-  const observer = new MutationObserver(() => {
-    if (document.querySelector('.main-content') && !document.querySelector('.miuix-main-blur')) {
-      attach();
-    }
-  });
-  observer.observe(document.body, { childList: true, subtree: true });
-  cleanups.push(() => observer.disconnect());
-
-  return cleanups;
+  return createDomSync([
+    () => document.querySelectorAll('.style-tag-row:not([data-miuix-wheel])').forEach(bind),
+  ]);
 }
 
-// ── 本地音乐插件歌单 DOM 直接样式 ──
+// ── 效果：页面底部留白 ────────────────────────────────────────────────────
+
+function effectPageSpacers() {
+  const pad = (el, { skipSidebar = false } = {}) => {
+    if (el.classList.contains('miuix-padded')) return;
+    el.classList.add('miuix-padded');
+    if (skipSidebar && (el.closest('.sidebar') || el.closest('.settings-sidebar'))) return;
+    el.appendChild(createElement('miuix-page-spacer'));
+  };
+
+  return createDomSync([
+    () => {
+      document
+        .querySelectorAll('.scrollbar-view:not(.miuix-padded)')
+        .forEach((view) => pad(view, { skipSidebar: true }));
+      // 众乐房房间页撑满整页、没有 .scrollbar-view，底部同样会被悬浮播放栏挡住。
+      document
+        .querySelectorAll('.listen-session:not(.miuix-padded)')
+        .forEach((el) => pad(el));
+    },
+  ]);
+}
+
+// ── 效果：榜单卡片收起动画 ────────────────────────────────────────────────
+// 宿主用 v-if 直接卸载面板、没有 leave 过渡，这里拦一次收起点击，先播动画再放行。
+
+function effectRankCollapse() {
+  const DURATION = 240;
+  let skip = false;
+
+  const onClick = (event) => {
+    if (skip) return;
+    const toggle = event.target?.closest?.('.ranking-card-toggle');
+    if (!toggle) return;
+
+    const card = toggle.closest('.ranking-card');
+    if (!card || !card.classList.contains('is-expanded')) return;
+
+    const panel = card.querySelector('.ranking-filter-panel');
+    if (!panel) return;
+
+    event.stopPropagation();
+
+    // 进入动画带 !important，普通内联改不动它；必须用 important 内联停掉，
+    // 否则 fill: both 会把 max-height 锁住，收不回去。
+    panel.style.setProperty('animation', 'none', 'important');
+    panel.style.overflow = 'hidden';
+    panel.style.maxHeight = `${panel.scrollHeight}px`;
+    panel.style.transition = 'max-height 240ms cubic-bezier(0.4, 0, 0.6, 1), opacity 200ms ease';
+
+    void panel.offsetHeight;
+    panel.style.maxHeight = '0px';
+    panel.style.opacity = '0';
+
+    window.setTimeout(() => {
+      skip = true;
+      toggle.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
+      skip = false;
+    }, DURATION);
+  };
+
+  document.addEventListener('click', onClick, true);
+  return () => document.removeEventListener('click', onClick, true);
+}
+
+// ── 效果：底部弹层抓取条 ──────────────────────────────────────────────────
+// 向下拖超过阈值关闭；向上拖不做任何事（改高度会破坏内部滚动区的高度计算）。
+
+function effectSheetDrag() {
+  let drag = null;
+  let hovered = null;
+
+  const setHovered = (sheet) => {
+    if (hovered === sheet) return;
+    hovered?.classList.remove('miuix-handle-hover');
+    hovered = sheet;
+    sheet?.classList.add('miuix-handle-hover');
+  };
+
+  const sheetAtHandle = (x, y) => {
+    const el = document.elementFromPoint(x, y);
+    const sheet = el?.closest?.(SHEET.selector);
+    if (!sheet) return null;
+    return y - sheet.getBoundingClientRect().top <= SHEET.handleZone ? sheet : null;
+  };
+
+  const onPointerDown = (event) => {
+    if (event.button !== 0) return;
+    if (event.target.closest?.('button, a, input, textarea, select, [contenteditable="true"]')) return;
+
+    const sheet = event.target.closest?.(SHEET.selector);
+    if (!sheet) return;
+
+    const rect = sheet.getBoundingClientRect();
+    if (event.clientY - rect.top > SHEET.handleZone) return;
+
+    sheet.classList.add('miuix-handle-active');
+    drag = {
+      sheet,
+      startY: event.clientY,
+      baseHeight: rect.height,
+      // 宿主会在弹层上写内联 height（例如调整顺序是 min(480px, 100vh-96px)），
+      // 收尾时必须把这段原样的值还回去，直接删掉会让高度突变。
+      baseInlineHeight: sheet.style.height,
+      mode: null,
+      offset: 0,
+    };
+    sheet.style.transition = 'none';
+
+    try {
+      sheet.setPointerCapture(event.pointerId);
+    } catch {
+      /* 指针捕获失败不影响拖拽 */
+    }
+    event.preventDefault();
+  };
+
+  const onPointerMove = (event) => {
+    if (!drag) {
+      setHovered(sheetAtHandle(event.clientX, event.clientY));
+      return;
+    }
+
+    const { sheet, startY, baseHeight } = drag;
+    const delta = startY - event.clientY; // >0 上拉，<0 下拉
+
+    if (delta < -8) {
+      const offset = (-delta - 8) * 0.9;
+      drag.mode = 'down';
+      drag.offset = offset;
+      sheet.style.height = `${baseHeight}px`;
+      sheet.style.setProperty('transform', `translateY(${offset}px)`, 'important');
+      return;
+    }
+
+    if (delta > 8) {
+      // 上拉：带着阻尼长高，最多 80px；松手时立即把 height 摘掉，
+      // 只让 transform 回弹，内嵌滚动区会按自然高度重新计算
+      drag.mode = 'up';
+      drag.offset = 0;
+      sheet.style.setProperty('transform', 'translateY(0)', 'important');
+      sheet.style.height = `${baseHeight + SHEET.growMax * (1 - Math.exp(-(delta - 8) / SHEET.growTau))}px`;
+    }
+  };
+
+  const onPointerUp = () => {
+    if (!drag) return;
+
+    const { sheet, mode, offset, baseHeight, baseInlineHeight } = drag;
+    drag = null;
+    sheet.classList.remove('miuix-handle-active');
+
+    const clearInline = () => {
+      sheet.style.removeProperty('transform');
+      // 还回宿主原来那段内联 height，而不是一律删掉：
+      // 删掉会退回样式表的 auto / 其他规则，高度就突变了
+      if (baseInlineHeight) sheet.style.height = baseInlineHeight;
+      else sheet.style.removeProperty('height');
+      sheet.style.transition = '';
+    };
+
+    if (mode === 'down' && offset > SHEET.closeThreshold) {
+      // 从当前位置继续滑出；同时关掉宿主的关闭动画，否则会先弹回顶部再重播
+      sheet.style.setProperty('animation', 'none', 'important');
+      sheet.style.transition = SHEET.dragTransition;
+      sheet.style.setProperty('transform', 'translateY(100%)', 'important');
+      window.setTimeout(() => {
+        const closeBtn = sheet.querySelector('.dialog-close');
+        if (closeBtn) closeBtn.click();
+        else sheet.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+      }, SHEET.closeMs);
+      return;
+    }
+
+    // 高度要「动画」回自然高度，不能直接摘掉（那样是闪现）。
+    // 先过渡回 baseHeight，等过渡彻底结束再删掉内联 height：
+    // 删早了内嵌滚动区会按撑开后的高度重算，删晚了会卡在撑开高度。
+    sheet.style.transition = SHEET.settleTransition;
+    sheet.style.setProperty('transform', 'translateY(0)', 'important');
+    sheet.style.height = `${baseHeight}px`;
+
+    window.setTimeout(() => {
+      clearInline();
+    }, SHEET.settleMs);
+  };
+
+  const onPointerLeave = () => {
+    if (!drag) setHovered(null);
+  };
+
+  document.addEventListener('pointerdown', onPointerDown, true);
+  document.addEventListener('pointermove', onPointerMove, true);
+  document.addEventListener('pointerup', onPointerUp, true);
+  document.addEventListener('pointercancel', onPointerUp, true);
+  document.addEventListener('pointerleave', onPointerLeave, true);
+  // 指针在窗口外松开 / 捕获丢失时也要收尾，否则内联高度会留在弹层上
+  document.addEventListener('lostpointercapture', onPointerUp, true);
+  window.addEventListener('blur', onPointerUp);
+
+  return () => {
+    document.removeEventListener('pointerdown', onPointerDown, true);
+    document.removeEventListener('pointermove', onPointerMove, true);
+    document.removeEventListener('pointerup', onPointerUp, true);
+    document.removeEventListener('pointercancel', onPointerUp, true);
+    document.removeEventListener('pointerleave', onPointerLeave, true);
+    document.removeEventListener('lostpointercapture', onPointerUp, true);
+    window.removeEventListener('blur', onPointerUp);
+    hovered?.classList.remove('miuix-handle-hover');
+    hovered = null;
+    drag = null;
+  };
+}
+
+// ── 效果：右键菜单遮罩 ────────────────────────────────────────────────────
+
+function effectContextScrim() {
+  let scrim = null;
+
+  const remove = () => {
+    scrim?.remove();
+    scrim = null;
+  };
+
+  const sync = () => {
+    if (!document.querySelector('.song-context-menu')) {
+      remove();
+      return;
+    }
+    if (scrim?.isConnected) return;
+    scrim = createElement('miuix-menu-scrim');
+    document.body.appendChild(scrim);
+  };
+
+  const observer = new MutationObserver(sync);
+  observer.observe(document.body, { childList: true, subtree: true });
+  sync();
+
+  return () => {
+    observer.disconnect();
+    remove();
+  };
+}
+
+// ── 设置面板 ──────────────────────────────────────────────────────────────
+// 用宿主现成的 settings-card / settings-item 与 Switch 组件，不写内联样式。
+
+function defineSettings(ctx) {
+  const { defineComponent, defineAsyncComponent, h, ref, onMounted } = ctx.vue;
+  const Switch = defineAsyncComponent(ctx.ui.components.Switch);
+  const Button = defineAsyncComponent(ctx.ui.components.Button);
+
+  const Panel = defineComponent({
+    name: 'EchoMiuixSettings',
+    setup() {
+      const bottomMask = ref(true);
+
+      onMounted(() => {
+        Promise.resolve(ctx.storage.get(STORAGE_KEY))
+          .then((saved) => {
+            bottomMask.value = saved !== false;
+          })
+          .catch(() => {});
+      });
+
+      const setBottomMask = async (value) => {
+        bottomMask.value = Boolean(value);
+        document.documentElement.classList.toggle(BOTTOM_MASK_OFF_CLASS, !value);
+        try {
+          await ctx.storage.set(STORAGE_KEY, Boolean(value));
+        } catch {
+          /* 存储失败时保持当前会话状态 */
+        }
+      };
+
+      const row = (title, description, control) =>
+        h('div', { class: 'settings-item miuix-settings-row' }, [
+          h('div', { class: 'space-y-1' }, [
+            h('h3', { class: 'font-semibold' }, title),
+            h('p', { class: 'text-sm text-text-secondary' }, description),
+          ]),
+          control(),
+        ]);
+
+      return () =>
+        h('div', { class: 'space-y-5' }, [
+          h('div', { class: 'settings-card' }, [
+            row(
+              '底部渐变遮罩',
+              '页面底部渐隐到背景色，让悬浮播放栏更突出',
+              () =>
+                h(Switch, {
+                  modelValue: bottomMask.value,
+                  'onUpdate:modelValue': setBottomMask,
+                  'aria-label': '底部渐变遮罩',
+                }),
+            ),
+          ]),
+          h('div', { class: 'settings-card' }, [
+            row('GitHub', '点击跳转仓库地址，欢迎 Star', () =>
+              h(
+                Button,
+                {
+                  size: 'xs',
+                  variant: 'secondary',
+                  onClick: () => window.open(REPO_URL, '_blank'),
+                },
+                () => 'Github',
+              ),
+            ),
+          ]),
+        ]);
+    },
+  });
+
+  ctx.ui.settings.define({
+    title: `${ctx.manifest.name} 设置`,
+    component: Panel,
+  });
+}
