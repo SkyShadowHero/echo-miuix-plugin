@@ -97,9 +97,7 @@ html.miuix-theme-active {
   --mx-r-sheet: 28px;
   --mx-r-pill: 999px;
 
-  /* 字体：字号只留实际用到的两级；13px / 15px 沿用宿主取值，不再另立刻度 */
-  --mx-font: system-ui, -apple-system, 'Segoe UI', 'Noto Sans CJK SC', 'Microsoft YaHei',
-    sans-serif;
+  /* 字体：皮肤不改字体族，只用到两级字号；13px / 15px 沿用宿主取值 */
   --mx-fs-summary: 12px; /* 摘要 / 说明 */
   --mx-fs-caption: 11px; /* 角标 / 计数 */
   --mx-fw-title: 700;
@@ -227,9 +225,9 @@ html.miuix-theme-active {
 
 /* ── §2 门控与全局 ──────────────────────────────────────────────────────── */
 
+/* 不加字体族：宿主/B 站字体设置由用户自己选，皮肤只做颜色与形状 */
 html.miuix-theme-active body,
 html.miuix-theme-active #app {
-  font-family: var(--mx-font);
   -webkit-font-smoothing: antialiased;
 }
 
@@ -1481,24 +1479,43 @@ html.miuix-theme-active .echo-slider[data-orientation='vertical'] .echo-slider-t
 
 html.miuix-theme-active .echo-slider-range {
   height: 100%;
-  border-radius: 0 var(--mx-r-pill) var(--mx-r-pill) 0;
+  /* 不能靠负外边距去「补」球的位置：不同滑块的拇指内缩量不一样，
+     补多了就从球右边探出一截（进度条那颗小尾巴），补少了又留缝。
+     改成右端做直角、左端保持胶囊：直角端不会收成圆弧，
+     正好和拇指的圆环平齐相接 —— 无论拇指比填充多压进来几像素，看着都是连着的。 */
+  border-radius: var(--mx-r-pill) 0 0 var(--mx-r-pill);
   background: var(--mx-primary);
 }
 
+/* 球的直径比轨道大一圈（18px vs 10px），
+   宿主的居中计算也读这个变量，所以只改这里即可 */
 html.miuix-theme-active .echo-slider {
-  --slider-thumb-size: 16px;
+  --slider-thumb-size: 18px;
 }
 
 html.miuix-theme-active .echo-slider-thumb {
   box-sizing: border-box;
   width: var(--slider-thumb-size);
   height: var(--slider-thumb-size);
-  border: 2px solid var(--mx-primary);
+  border: 3px solid var(--mx-primary);
   border-radius: var(--mx-r-pill);
   background: var(--mx-thumb);
-  box-shadow: var(--mx-thumb-shadow);
+  box-shadow: none;
   outline: none;
   -webkit-tap-highlight-color: transparent;
+  /* 球的白色部分 = 尺寸 - 2 × 边框；hover 时把边框收细，白色就变大 */
+  transition: border-width var(--mx-fast) var(--mx-ease);
+}
+
+html.miuix-theme-active
+  .echo-slider:is(:hover, [data-dragging='true'], [data-dragging='false']:focus-within)
+  .echo-slider-thumb {
+  border-width: 2px;
+}
+
+/* 进度条变体（播放栏 / 歌词页）：拇指默认一直显示，不等 hover */
+html.miuix-theme-active .echo-slider-progress .echo-slider-thumb {
+  opacity: 1;
 }
 
 html.miuix-theme-active
@@ -1870,7 +1887,10 @@ html.miuix-theme-active .dialog-content:not(.shortcut-picker) {
   max-width: 640px;
   max-height: 90vh;
   margin: 0 auto;
-  padding: 16px 6px 0 24px;
+  /* 左右对称：宿主 .dialog-body 自带 pr-6（24px），所以这里右侧留 0，
+     内容实际右内衬是 24；之前写 6px 会和 body 的 24 叠成 30，
+     导致设置卡片、投放里的设备卡右边比左边窄一截、看起来贴着背景。 */
+  padding: 16px 0 0 24px;
   border: 0;
   border-radius: var(--mx-r-sheet) var(--mx-r-sheet) 0 0;
   background: var(--mx-surface);
@@ -1929,6 +1949,13 @@ html.miuix-theme-active .dialog-content.task-panel-dialog {
 
 /* 全局设置内容多，但也不要顶满整屏：桌面窗口下按宿主的 820px 居中，
    两侧留出遮罩；插件设置更窄，保持 640 */
+/* 设置类弹层自己管布局（左侧导航卡 + 右侧内容区，内部还有 18/16 的内衬），
+   这里必须把弹层内边距交回 0，否则会叠成左 40+ / 右 6 的偏心布局 */
+html.miuix-theme-active .dialog-content.global-settings-dialog,
+html.miuix-theme-active .dialog-content.plugin-settings-dialog {
+  padding: 0;
+}
+
 html.miuix-theme-active .dialog-content.global-settings-dialog {
   max-width: min(820px, calc(100vw - 48px));
   min-height: 60vh;
@@ -2514,9 +2541,23 @@ html.miuix-theme-active
   color: inherit;
 }
 
+/* 歌词页右侧这排工具按钮（选择歌词 / 歌词前进后退 / 刷新）不铺任何底色：
+   宿主原本就是透明图标，hover 只出 tooltip。
+   这里用 important 兜底：宿主的次级按钮材质（.soft-secondary-action）
+   和我们全局的「次级按钮白底」都会在这块深色沉浸页上涂出一块方底，
+   而且两边的特异性咬得很紧，普通覆盖在不同状态下会漏 ——
+   直接把这一个类上的底色/阴影清零，任何状态都不会再冒方块。 */
+html.miuix-theme-active .lyric-page .lyric-page-tool-btn,
+html.miuix-theme-active .lyric-page button.lyric-page-tool-btn,
 html.miuix-theme-active
-  :is(.lyric-page .lyric-page-tool-btn, .lyric-page .portrait-switcher):is(:hover, :focus-visible) {
-  background: color-mix(in srgb, currentColor 14%, transparent);
+  :is(.lyric-page-tools, .lyric-page-tools-group)
+  button.lyric-page-tool-btn,
+html.miuix-theme-active
+  :is(.lyric-page-tools, .lyric-page-tools-group)
+  button {
+  background: transparent !important;
+  background-image: none !important;
+  box-shadow: none !important;
 }
 
 /* ── §13 辅助：搜索页、风格面板、徽标、回顶、文本角色 ──────────────────── */
@@ -2999,6 +3040,13 @@ html.miuix-theme-active :is(.cast-device-list, .cast-groups) {
   gap: 10px;
 }
 
+/* 投放设置里有些块不是 .settings-item（工具栏、设备分组标题、清除记录），
+   它们原本贴着卡片边缘，和上下行的 16px 内衬对不齐 ——
+   这里统一给同样的左右内衬和 8px 纵向留白。 */
+html.miuix-theme-active :is(.cast-toolbar, .cast-records) {
+  padding: 8px 16px;
+}
+
 html.miuix-theme-active .cast-device-list section {
   gap: 6px;
 }
@@ -3033,12 +3081,16 @@ html.miuix-theme-active .cast-device-row-expanded {
   background: color-mix(in srgb, var(--mx-primary) 8%, transparent);
 }
 
-html.miuix-theme-active .cast-groups {
-  margin: 0 16px;
+/* 注意要写成 (0,4,1) 这一档：前面的 `.settings-card > *`（(0,4,0)）
+   会把卡片里所有子项的 margin 归零，用它压 space-y；这里必须比它高一级，
+   否则设备分组的左右 16px 和上下呼吸位会被一起清掉。 */
+html.miuix-theme-active.miuix-theme-active .settings-card .cast-groups {
+  margin: 4px 16px 8px;
   gap: 12px;
 }
 
 html.miuix-theme-active .cast-group {
+  padding: 12px 16px;
   border: 0;
   border-radius: var(--mx-r-m);
   background: color-mix(in srgb, var(--mx-on-background) 5%, transparent);
@@ -3263,19 +3315,22 @@ html.miuix-theme-active .plugin-safe-mode-control:hover {
   background: color-mix(in srgb, var(--mx-background) 88%, var(--mx-on-background) 12%);
 }
 
-/* 14.12 统一徽标：宿主通过 --badge-tone 传入色相，皮肤只给形状与明度 */
-html.miuix-theme-active :is(
-  .ui-badge,
-  .comment-badge,
-  .profile-member-badge,
-  .plugin-status-badge,
-  .marketplace-version-pill,
-  .marketplace-tags span,
-  .plugin-feature-tags span,
-  .status-pill,
-  .engine-active-badge,
-  .search-hot-badge
-) {
+/* 14.12 统一徽标：宿主通过 --badge-tone 传入色相，皮肤只给形状与明度。
+   播放栏上那几颗小标签（SQ / OFF / 99+，.playerbar-action-badge）不在此列 ——
+   它们跟着播放栏自己的表面色走，皮肤一律不动。 */
+html.miuix-theme-active
+  :is(
+    .ui-badge,
+    .comment-badge,
+    .profile-member-badge,
+    .plugin-status-badge,
+    .marketplace-version-pill,
+    .marketplace-tags span,
+    .plugin-feature-tags span,
+    .status-pill,
+    .engine-active-badge,
+    .search-hot-badge
+  ):not(.playerbar-action-badge) {
   border: 0;
   border-radius: var(--mx-r-pill);
   background: color-mix(in srgb, var(--badge-tone, var(--mx-on-background)) 9%, transparent);
