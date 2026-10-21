@@ -1714,9 +1714,15 @@ html.miuix-theme-active
 }
 
 /* 所有次级按钮都是白纸（surface 白），不再是宿主的 5% 黑：
-   主色按钮、危险按钮、收藏按钮各有自己的颜色，不在这一组里。 */
+   主色按钮、危险按钮、收藏按钮各有自己的颜色，不在这一组里。
+   歌词页右侧那列工具按钮除外 —— 那是沉浸页，一律用宿主原本的透明材质。 */
 html.miuix-theme-active
-  :is(.soft-secondary-action, .soft-neutral-action, .song-locate-btn, .action-btn.secondary) {
+  :is(
+    .soft-secondary-action,
+    .soft-neutral-action,
+    .song-locate-btn,
+    .action-btn.secondary
+  ):not(.lyric-page-tool-btn) {
   background: var(--mx-background);
   box-shadow: none;
   color: var(--mx-on-background);
@@ -1728,7 +1734,7 @@ html.miuix-theme-active
     .soft-neutral-action,
     .song-locate-btn,
     .action-btn.secondary
-  ):is(:enabled:hover, :enabled:focus-visible) {
+  ):not(.lyric-page-tool-btn):is(:enabled:hover, :enabled:focus-visible) {
   background: var(--mx-hover);
 }
 
@@ -1738,7 +1744,7 @@ html.miuix-theme-active
     .soft-neutral-action,
     .song-locate-btn,
     .action-btn.secondary
-  ):enabled:active {
+  ):not(.lyric-page-tool-btn):enabled:active {
   background: var(--mx-pressed);
 }
 
@@ -2518,9 +2524,12 @@ html.miuix-theme-active .mini-shell.is-expanded.expand-up .mini-queue {
 }
 
 /* ── §12 歌词页 ───────────────────────────────────────────────────────────
-   歌词页是沉浸页：背景是封面/写真，文字自带白色层级，皮肤只负责控件的形状。
-   不要在这里铺卡片或改文字色，否则会盖掉宿主按封面亮度算出来的对比度；
-   右侧那列工具按钮也不铺白底（宿主原本是透明图标），否则会变成一排白方块。 */
+   歌词页是沉浸页：背景是封面/写真，对比度由宿主按封面亮度算。
+   这里只做两件事，且都不写具体控件：
+     1. 把文字色接到本页自己的 --text-main / --text-secondary；
+     2. 把控件材质（control-* 系列）改成跟着本页前景色走的半透明，
+        让宿主的按钮在深色封面上自然呈现，而不是套浅色主题的实色底。
+   按钮本身（右侧工具列、底部工具条）不使用任何皮肤规则。 */
 
 /* 歌词页的文字色统一从该页面自己的 --text-main / --text-secondary 派生：
    宿主的 lyricPageColorVariables 会把这两个变量按封面色重算，
@@ -2533,42 +2542,70 @@ html.miuix-theme-active .lyric-page {
   color: var(--color-text-main);
 }
 
+/* 歌名/歌手名显式跟页面的文字色走：
+   宿主 CoverMode / AmllMode 里的 h1 用的是 --color-text-main，
+   在某些构建里那层变量没被页面重算，标题就会拿到浅色主题的黑色。 */
 html.miuix-theme-active
-  :is(
-    .lyric-page-toolbar button,
-    .lyric-page-toolbar .portrait-collapse-btn,
-    .lyric-page-toolbar .portrait-switcher,
-    .lyric-page-toolbar .portrait-switcher-btn,
-    .lyric-page-toolbar .toolbar-right button,
-    .lyric-page .lyric-page-tool-btn
+  .lyric-page
+  :is(.song-title, .amll-song-title, .toolbar-song-title) {
+  color: var(--text-main, var(--mx-on-background));
+}
+
+html.miuix-theme-active
+  .lyric-page
+  :is(.song-artist, .amll-song-artist) {
+  color: var(--text-secondary, var(--mx-summary));
+}
+
+/* 歌词页右侧的工具按钮、底部工具条按钮一律交给宿主，皮肤不写任何规则：
+   底色、图标颜色、悬停反馈都用宿主原本的（它按封面色自己算对比度）。 */
+html.miuix-theme-active .lyric-page {
+  /* 沉浸页的控件材质要跟着本页的前景色走，否则「次级按钮」会拿到
+     浅色主题的实色底，在深色封面上显示成一块白方块。
+     回退链写全：某些构建里页面只给了 --text-main，没有 --content-tone，
+     那样 color-mix 会失效、变量回落到主题的实色灰。 */
+  --control-muted-bg: color-mix(
+    in srgb,
+    var(--text-main, currentColor) 5%,
+    transparent
+  );
+  --control-secondary-bg: var(--control-muted-bg);
+  --control-hover-bg: color-mix(
+    in srgb,
+    var(--text-main, currentColor) 10%,
+    transparent
+  );
+  --control-secondary-hover-bg: var(--control-hover-bg);
+  --control-neutral-pressed-bg: color-mix(
+    in srgb,
+    var(--text-main, currentColor) 14%,
+    transparent
+  );
+}
+
+/* 右侧工具列的按钮即使被全局「次级按钮白底」匹配到，也要回到宿主材质：
+   这里只引用宿主自己的 control-* 变量，不写死颜色。 */
+html.miuix-theme-active
+  :is(.lyric-page-tools, .lyric-page-tools-group)
+  :is(button, .action-icon):is(.soft-secondary-action, .soft-neutral-action) {
+  background: var(--control-muted-bg);
+  box-shadow: var(--control-neutral-action-shadow, none);
+  color: var(--text-main, inherit);
+}
+
+html.miuix-theme-active
+  :is(.lyric-page-tools, .lyric-page-tools-group)
+  :is(button, .action-icon):is(.soft-secondary-action, .soft-neutral-action):is(
+    :hover,
+    :focus-visible
   ) {
-  border-radius: var(--mx-r-m);
+  background: var(--control-hover-bg);
 }
 
 html.miuix-theme-active
-  :is(.lyric-page .lyric-page-tool-btn, .lyric-page .portrait-switcher, .lyric-page .portrait-collapse-btn) {
-  background: transparent;
-  box-shadow: none;
-  color: inherit;
-}
-
-/* 歌词页右侧这排工具按钮（选择歌词 / 歌词前进后退 / 刷新）不铺任何底色：
-   宿主原本就是透明图标，hover 只出 tooltip。
-   这里用 important 兜底：宿主的次级按钮材质（.soft-secondary-action）
-   和我们全局的「次级按钮白底」都会在这块深色沉浸页上涂出一块方底，
-   而且两边的特异性咬得很紧，普通覆盖在不同状态下会漏 ——
-   直接把这一个类上的底色/阴影清零，任何状态都不会再冒方块。 */
-html.miuix-theme-active .lyric-page .lyric-page-tool-btn,
-html.miuix-theme-active .lyric-page button.lyric-page-tool-btn,
-html.miuix-theme-active
   :is(.lyric-page-tools, .lyric-page-tools-group)
-  button.lyric-page-tool-btn,
-html.miuix-theme-active
-  :is(.lyric-page-tools, .lyric-page-tools-group)
-  button {
-  background: transparent !important;
-  background-image: none !important;
-  box-shadow: none !important;
+  :is(button, .action-icon):is(.soft-secondary-action, .soft-neutral-action):active {
+  background: var(--control-neutral-pressed-bg);
 }
 
 /* ── §13 辅助：搜索页、风格面板、徽标、回顶、文本角色 ──────────────────── */
