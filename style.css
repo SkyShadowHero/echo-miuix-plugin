@@ -223,6 +223,14 @@ html.miuix-theme-active {
   --miuix-primary: var(--mx-primary);
 }
 
+/* 歌词页是沉浸页：宿主的 lyricPageColorVariables 会按封面色把 --text-main
+   重算成浅色。旧插件（local / liquid）用的是 --miuix-on-background，
+   如果一直等于主题的 on-background，浅色主题下就会写成纯黑 ——
+   歌名压在深色封面上直接看不见。这里让它在歌词页跟随该页的文字色。 */
+html.miuix-theme-active .lyric-page {
+  --miuix-on-background: var(--text-main, var(--mx-on-background));
+}
+
 /* ── §2 门控与全局 ──────────────────────────────────────────────────────── */
 
 /* 不加字体族：宿主/B 站字体设置由用户自己选，皮肤只做颜色与形状 */
@@ -1887,10 +1895,9 @@ html.miuix-theme-active .dialog-content:not(.shortcut-picker) {
   max-width: 640px;
   max-height: 90vh;
   margin: 0 auto;
-  /* 左右对称：宿主 .dialog-body 自带 pr-6（24px），所以这里右侧留 0，
-     内容实际右内衬是 24；之前写 6px 会和 body 的 24 叠成 30，
-     导致设置卡片、投放里的设备卡右边比左边窄一截、看起来贴着背景。 */
-  padding: 16px 0 0 24px;
+  /* 左侧 24 给标题/内容，右侧只留 6 —— 宿主的滚动区自己还有 1px 内衬，
+     设置类的 noScroll 弹层则完全靠这 6px 收边（写 0 会顶到圆角上）。 */
+  padding: 16px 6px 0 24px;
   border: 0;
   border-radius: var(--mx-r-sheet) var(--mx-r-sheet) 0 0;
   background: var(--mx-surface);
@@ -1949,13 +1956,6 @@ html.miuix-theme-active .dialog-content.task-panel-dialog {
 
 /* 全局设置内容多，但也不要顶满整屏：桌面窗口下按宿主的 820px 居中，
    两侧留出遮罩；插件设置更窄，保持 640 */
-/* 设置类弹层自己管布局（左侧导航卡 + 右侧内容区，内部还有 18/16 的内衬），
-   这里必须把弹层内边距交回 0，否则会叠成左 40+ / 右 6 的偏心布局 */
-html.miuix-theme-active .dialog-content.global-settings-dialog,
-html.miuix-theme-active .dialog-content.plugin-settings-dialog {
-  padding: 0;
-}
-
 html.miuix-theme-active .dialog-content.global-settings-dialog {
   max-width: min(820px, calc(100vw - 48px));
   min-height: 60vh;
@@ -2521,6 +2521,17 @@ html.miuix-theme-active .mini-shell.is-expanded.expand-up .mini-queue {
    歌词页是沉浸页：背景是封面/写真，文字自带白色层级，皮肤只负责控件的形状。
    不要在这里铺卡片或改文字色，否则会盖掉宿主按封面亮度算出来的对比度；
    右侧那列工具按钮也不铺白底（宿主原本是透明图标），否则会变成一排白方块。 */
+
+/* 歌词页的文字色统一从该页面自己的 --text-main / --text-secondary 派生：
+   宿主的 lyricPageColorVariables 会把这两个变量按封面色重算，
+   但 --color-* 那层可能从根节点继承了浅色主题的黑色，
+   于是歌名（--color-text-main）发黑、歌手名（--color-text-secondary）却是亮的。
+   这里在页面根上重新算一遍，整页文字（含 CoverMode / AmllMode 的标题）都跟着走。 */
+html.miuix-theme-active .lyric-page {
+  --color-text-main: var(--text-main, var(--mx-on-background));
+  --color-text-secondary: var(--text-secondary, var(--mx-summary));
+  color: var(--color-text-main);
+}
 
 html.miuix-theme-active
   :is(
