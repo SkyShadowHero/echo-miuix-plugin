@@ -4822,3 +4822,71 @@ html.miuix-bottom-mask-off .miuix-sidebar-blur,
 html.miuix-bottom-mask-off .miuix-main-blur {
   display: none !important;
 }
+
+/* 任务中心：卡片与详情 MIUIX 化 */
+.dialog-content.task-panel-dialog {
+  border-radius: 28px !important;
+}
+.task-card {
+  background: var(--miuix-background) !important;
+  border: none !important;
+  border-radius: 16px !important;
+  box-shadow: none !important;
+}
+.task-card:hover {
+  background: color-mix(in srgb, var(--miuix-on-background) 6%, var(--miuix-background)) !important;
+}
+.task-heading,
+.task-name {
+  color: var(--miuix-on-background) !important;
+  font-weight: 600 !important;
+}
+.task-status,
+.task-detail-description,
+.task-detail-count,
+.task-progress-label {
+  color: color-mix(in srgb, var(--miuix-on-background) 55%, transparent) !important;
+}
+.task-progress {
+  background: color-mix(in srgb, var(--miuix-on-background) 10%, transparent) !important;
+  border-radius: 9999px !important;
+  overflow: hidden !important;
+}
+.task-progress-bar {
+  background: var(--miuix-primary) !important;
+  border-radius: 9999px !important;
+}
+.task-percent {
+  color: var(--miuix-primary) !important;
+  font-weight: 600 !important;
+}
+.task-empty-icon,
+.task-icon {
+  border-radius: 14px !important;
+  background: color-mix(in srgb, var(--miuix-on-background) 6%, transparent) !important;
+}
+.task-detail-row {
+  border-radius: 12px !important;
+}
+.task-detail-error {
+  color: var(--miuix-error) !important;
+}
+
+/* 下拉/选择器按钮：去掉阴影 */
+.echo-select-trigger,
+.echo-select-trigger:hover,
+.echo-select-trigger:focus,
+.echo-select-trigger:focus-visible,
+.custom-selector,
+.rank-selector {
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+}
+
+/* 任务中心卡片：加描边 */
+.task-card {
+  border: 1px solid color-mix(in srgb, var(--miuix-on-background) 8%, transparent) !important;
+}
+.task-card:hover {
+  border-color: color-mix(in srgb, var(--miuix-on-background) 14%, transparent) !important;
+}
