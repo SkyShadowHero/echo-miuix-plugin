@@ -683,13 +683,22 @@ function defineSettings(ctx) {
       };
 
       const row = (title, description, control) =>
-        h('div', { class: 'settings-item miuix-settings-row' }, [
-          h('div', { class: 'space-y-1' }, [
-            h('h3', { class: 'font-semibold' }, title),
-            h('p', { class: 'text-sm text-text-secondary' }, description),
-          ]),
-          control(),
-        ]);
+        // 行布局走内联样式：宿主 .settings-item 的排版是 scoped 的（带 data-v），
+        // 插件自己渲染的行匹配不到，换个主题（比如锤子）就会掉成上下堆叠
+        h(
+          'div',
+          {
+            class: 'settings-item miuix-settings-row',
+            style: 'display:flex;align-items:center;justify-content:space-between;gap:24px;',
+          },
+          [
+            h('div', { class: 'space-y-1', style: 'min-width:0;flex:1' }, [
+              h('h3', { class: 'font-semibold' }, title),
+              h('p', { class: 'text-sm text-text-secondary' }, description),
+            ]),
+            control(),
+          ],
+        );
 
       return () =>
         h('div', { class: 'space-y-5' }, [
@@ -711,7 +720,7 @@ function defineSettings(ctx) {
                 Button,
                 {
                   size: 'xs',
-                  variant: 'secondary',
+                  // 不传 variant：和 local / liquid-glass 的 GitHub 按钮保持同一个默认色
                   onClick: () => window.open(REPO_URL, '_blank'),
                 },
                 () => 'Github',
